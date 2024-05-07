@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using JsonPowerInspector.Template;
+using TMI_RogueLike_DataEditor.Model;
 
-var definition = TemplateSerializer.CollectDefinition(typeof(MyComplexModel), "Test Model");
+var definition = TemplateSerializer.CollectTypeDefinition(typeof(RogueLikeData), out var referencedPropertyInfo);
 
 
 Console.WriteLine(definition);
 
+Console.WriteLine("Referenced: \n");
+
+foreach (var value in referencedPropertyInfo.Values)
+{
+    Console.WriteLine(value);
+}
 
 
 public class MyComplexModel

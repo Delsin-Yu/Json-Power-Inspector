@@ -50,7 +50,7 @@ public class ObjectDefinition
 
         
         stringBuilder
-            .Append(' ', indentationLevel)
+            .Append(' ', indentationLevel * 4)
             .AppendLine("}");
     }
 }
@@ -90,7 +90,7 @@ public class ObjectPropertyInfo
     public void ToString(StringBuilder stringBuilder, int indentationLevel)
     {
         stringBuilder
-            .Append(' ', indentationLevel);
+            .Append(' ', indentationLevel * 4);
 
         PrintType(stringBuilder);
 
