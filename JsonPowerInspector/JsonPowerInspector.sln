@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonPowerInspector", "JsonP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonPowerInspector.Template", "..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj", "{CF126974-CDE9-46B6-B634-B4E3A7581285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "..\TestApplication\TestApplication\TestApplication.csproj", "{EFA1A05A-2E6B-43C8-9129-289010440016}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "..\TestApplication\TestApplication.csproj", "{EFA1A05A-2E6B-43C8-9129-289010440016}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,7 +8,7 @@ Console.WriteLine(definition);
 
 
 
-class MyComplexModel
+public class MyComplexModel
 {
-    // Create your model here
+    // Create your ultra complex model here
 }

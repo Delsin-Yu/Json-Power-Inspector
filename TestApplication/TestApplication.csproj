@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj" />
+      <ProjectReference Include="..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj" />
     </ItemGroup>
 
 </Project>
