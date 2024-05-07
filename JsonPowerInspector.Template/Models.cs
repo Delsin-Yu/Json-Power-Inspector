@@ -22,7 +22,7 @@ public class JsonFileInfo
 public class ObjectDefinition
 {
     public string ObjectTypeName { get; set; }
-    public ObjectPropertyInfo[] Properties { get; set; }
+    public BaseObjectPropertyInfo[] Properties { get; set; }
 
     public override string ToString()
     {
@@ -55,7 +55,7 @@ public class ObjectDefinition
     }
 }
 
-public class ObjectPropertyInfo
+public class BaseObjectPropertyInfo
 {
     public enum PropertyType
     {
@@ -105,7 +105,7 @@ public class ObjectPropertyInfo
     }
 }
 
-public class NumberProperty : ObjectPropertyInfo
+public class NumberPropertyInfo : BaseObjectPropertyInfo
 {
     public record struct NumberRange(double Lower, double Upper);
 
@@ -115,51 +115,17 @@ public class NumberProperty : ObjectPropertyInfo
         Float
     }
 
-    public enum PrecisionType
-    {
-        Bit8,
-        Bit16,
-        Bit32,
-        Bit64,
-    }
-
-    public enum SignType
-    {
-        Signed,
-        Unsigned
-    }
-
     public NumberType Number { get; set; }
-    public PrecisionType Precision { get; set; }
-    public SignType Sign { get; set; }
     public NumberRange? Range { get; set; }
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
         stringBuilder
             .Append(
-                Sign switch
-                {
-                    SignType.Signed => string.Empty,
-                    SignType.Unsigned => "Unsigned ",
-                    _ => throw new ArgumentOutOfRangeException()
-                }
-            )
-            .Append(
                 Number switch
                 {
                     NumberType.Int => "Int",
                     NumberType.Float => "Float",
-                    _ => throw new ArgumentOutOfRangeException()
-                }
-            )
-            .Append(
-                Precision switch
-                {
-                    PrecisionType.Bit8 => "8",
-                    PrecisionType.Bit16 => "16",
-                    PrecisionType.Bit32 => "32",
-                    PrecisionType.Bit64 => "64",
                     _ => throw new ArgumentOutOfRangeException()
                 }
             );
@@ -177,7 +143,7 @@ public class NumberProperty : ObjectPropertyInfo
     }
 }
 
-public class ObjectProperty : ObjectPropertyInfo
+public class ObjectPropertyInfo : BaseObjectPropertyInfo
 {
     public string ObjectTypeName { get; set; }
 
@@ -187,7 +153,7 @@ public class ObjectProperty : ObjectPropertyInfo
     }
 }
 
-public class ArrayProperty : ObjectPropertyInfo
+public class ArrayPropertyInfo : BaseObjectPropertyInfo
 {
     public string ArrayElementTypeName { get; set; }
     
@@ -200,7 +166,7 @@ public class ArrayProperty : ObjectPropertyInfo
     }
 }
 
-public class DictionaryProperty : ObjectPropertyInfo
+public class DictionaryPropertyInfo : BaseObjectPropertyInfo
 {
     public string KeyTypeName { get; set; }
     public string ValueTypeName { get; set; }

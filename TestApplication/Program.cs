@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JsonPowerInspector.Template;
 using TMI_RogueLike_DataEditor.Model;
 
-var definition = TemplateSerializer.CollectTypeDefinition(typeof(RogueLikeData), out var referencedPropertyInfo);
+var definition = TemplateSerializer.CollectTypeDefinition(typeof(MyComplexModel), out var referencedPropertyInfo);
 
 
 Console.WriteLine(definition);
@@ -19,11 +19,12 @@ foreach (var value in referencedPropertyInfo.Values)
 public class MyComplexModel
 {
     // Create your ultra complex model here
-    public List<NationModel> Nations;
-    public List<CharacterModel> Characters;
-    public List<LocationModel> Locations;
-    public List<WeaponModel> Weapons;
-    public List<ItemModel> Items;
+    public List<NationModel> Nations { get; set; }
+    public List<CharacterModel> Characters { get; set; }
+    public List<LocationModel> Locations { get; set; }
+    public List<WeaponModel> Weapons { get; set; }
+    public List<ItemModel> Items { get; set; }
+    public RogueLikeData RogueLikeData { get; set; }
 }
 
 public enum Alignment
@@ -39,75 +40,82 @@ public enum Gender
     Female,
     Other
 }
+
 public class NationModel
 {
-    public string Name;
-    public List<CharacterModel> Characters;
-    public List<LocationModel> Locations;
+    public string Name { get; set; }
+    public List<CharacterModel> Characters { get; set; }
+    public List<LocationModel> Locations { get; set; }
 }
+
 public class CharacterModel
 {
-    public string Name;
-    public int Age;
-    public int Level;
-    public int Health;
-    public int Mana;
-    public Dictionary<string,ItemModel> Inventory;
-    public List<CharacterModel> Family;
-    public DateTime BirthDate;
-    public RaceModel Race;
-    public Alignment Alignment;
-    public List<WeaponModel>  Weapons;
-    public Gender Gender;
-    public string Description;
-    public string Background;
-    public List<HistoryModel> Histories;
-    public bool IsAlive;
-    public ReligionModel Religion;
-    
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public int Level { get; set; }
+    public int Health { get; set; }
+    public int Mana { get; set; }
+    public Dictionary<string, ItemModel> Inventory { get; set; }
+    public List<CharacterModel> Family { get; set; }
+    public DateTime BirthDate { get; set; }
+    public RaceModel Race { get; set; }
+    public Alignment Alignment { get; set; }
+    public List<WeaponModel> Weapons { get; set; }
+    public Gender Gender { get; set; }
+    public string Description { get; set; }
+    public string Background { get; set; }
+    public List<HistoryModel> Histories { get; set; }
+    public bool IsAlive { get; set; }
+    public ReligionModel Religion { get; set; }
 }
+
 public class ReligionModel
 {
-    public string Name;
-    public string Description;
-    public List<CharacterModel> Characters;
-    public List<LocationModel> Locations;
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public List<CharacterModel> Characters { get; set; }
+    public List<LocationModel> Locations { get; set; }
 }
+
 public class HistoryModel
 {
-    public string Name;
-    public string Description;
-    public List<CharacterModel> Characters;
-    public List<LocationModel> Locations;
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public List<CharacterModel> Characters { get; set; }
+    public List<LocationModel> Locations { get; set; }
 }
+
 public class LocationModel
 {
-    public string Name;
-    public string Description;
-    public List<CharacterModel> Characters;
-    public List<LocationModel> SubLocations;
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public List<CharacterModel> Characters { get; set; }
+    public List<LocationModel> SubLocations { get; set; }
 }
+
 public class WeaponModel
 {
-    public string Name;
-    public int Level;
-    public int Durability;
-    public int Weight;
-    public int Value;
-    public int Damage;
-    public int Range;
+    public string Name { get; set; }
+    public int Level { get; set; }
+    public int Durability { get; set; }
+    public int Weight { get; set; }
+    public int Value { get; set; }
+    public int Damage { get; set; }
+    public int Range { get; set; }
 }
+
 public class ItemModel
 {
-    public string Name;
-    public int Level;
-    public int Durability;
-    public int Weight;
-    public int Value;
+    public string Name { get; set; }
+    public int Level { get; set; }
+    public int Durability { get; set; }
+    public int Weight { get; set; }
+    public int Value { get; set; }
 }
+
 public class RaceModel
 {
-    public string Name;
-    public RaceModel ParentRace;
-    public List<RaceModel> SubRaces;
+    public string Name { get; set; }
+    public RaceModel ParentRace { get; set; }
+    public List<RaceModel> SubRaces { get; set; }
 }
