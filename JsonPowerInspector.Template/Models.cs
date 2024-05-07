@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace JsonPowerInspector.Template;
@@ -21,6 +23,36 @@ public class ObjectDefinition
 {
     public string ObjectTypeName { get; set; }
     public ObjectPropertyInfo[] Properties { get; set; }
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        ToString(builder, 0);
+        return builder.ToString();
+    }
+
+    public void ToString(StringBuilder stringBuilder, int indentationLevel)
+    {
+        stringBuilder
+            .Append(' ', indentationLevel)
+            .AppendLine(ObjectTypeName)
+            .Append(' ', indentationLevel)
+            .AppendLine("{");
+
+        indentationLevel++;
+        
+        foreach (var property in Properties.AsSpan())
+        {
+            property.ToString(stringBuilder, indentationLevel);
+        }
+        
+        indentationLevel--;
+
+        
+        stringBuilder
+            .Append(' ', indentationLevel)
+            .AppendLine("}");
+    }
 }
 
 public class ObjectPropertyInfo
@@ -37,6 +69,18 @@ public class ObjectPropertyInfo
 
     public PropertyType Type { get; set; }
     public string Name { get; set; }
+    
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        ToString(builder, 0);
+        return builder.ToString();
+    }
+    
+    public virtual void ToString(StringBuilder stringBuilder, int indentationLevel)
+    {
+        
+    }
 }
 
 public class NumberProperty : ObjectPropertyInfo
