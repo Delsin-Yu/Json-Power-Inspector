@@ -1,0 +1,27 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonPowerInspector", "JsonPowerInspector.csproj", "{DC5FF70E-E807-4107-9AC0-5829488C6F74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonPowerInspector.Template", "..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj", "{CF126974-CDE9-46B6-B634-B4E3A7581285}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	Debug|Any CPU = Debug|Any CPU
+	ExportDebug|Any CPU = ExportDebug|Any CPU
+	ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC5FF70E-E807-4107-9AC0-5829488C6F74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC5FF70E-E807-4107-9AC0-5829488C6F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC5FF70E-E807-4107-9AC0-5829488C6F74}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{DC5FF70E-E807-4107-9AC0-5829488C6F74}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{DC5FF70E-E807-4107-9AC0-5829488C6F74}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{DC5FF70E-E807-4107-9AC0-5829488C6F74}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{CF126974-CDE9-46B6-B634-B4E3A7581285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF126974-CDE9-46B6-B634-B4E3A7581285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF126974-CDE9-46B6-B634-B4E3A7581285}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF126974-CDE9-46B6-B634-B4E3A7581285}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{CF126974-CDE9-46B6-B634-B4E3A7581285}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF126974-CDE9-46B6-B634-B4E3A7581285}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+EndGlobal
