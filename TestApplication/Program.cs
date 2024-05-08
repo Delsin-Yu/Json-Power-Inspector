@@ -3,18 +3,9 @@ using System.Collections.Generic;
 using JsonPowerInspector.Template;
 using TMI_RogueLike_DataEditor.Model;
 
-var definition = TemplateSerializer.CollectTypeDefinition(typeof(MyComplexModel), out var referencedPropertyInfo);
-
+var definition = TemplateSerializer.CollectTypeDefinition<MyComplexModel>();
 
 Console.WriteLine(definition);
-
-Console.WriteLine("Referenced: \n");
-
-foreach (var value in referencedPropertyInfo.Values)
-{
-    Console.WriteLine(value);
-}
-
 
 public class MyComplexModel
 {
@@ -27,11 +18,12 @@ public class MyComplexModel
     public RogueLikeData RogueLikeData { get; set; }
 }
 
+[Flags]
 public enum Alignment
 {
-    Good,
-    Neutral,
-    Evil
+    Good = 1 << 0,
+    Neutral = 1 << 1,
+    Evil = 1 << 2
 }
 
 public enum Gender
@@ -51,10 +43,10 @@ public class NationModel
 public class CharacterModel
 {
     public string Name { get; set; }
-    public int Age { get; set; }
-    public int Level { get; set; }
-    public int Health { get; set; }
-    public int Mana { get; set; }
+    public int[] Age { get; set; }
+    public int[] Level { get; set; }
+    public int[] Health { get; set; }
+    public int[] Mana { get; set; }
     public Dictionary<string, ItemModel> Inventory { get; set; }
     public List<CharacterModel> Family { get; set; }
     public DateTime BirthDate { get; set; }

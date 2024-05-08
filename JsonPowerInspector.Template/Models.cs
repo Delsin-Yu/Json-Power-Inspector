@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -9,14 +10,41 @@ public partial class PowerTemplateJsonContext : JsonSerializerContext { }
 
 public class ApplicationJsonTypes
 {
-    public JsonFileInfo JsonFileInfo { get; set; }
+    public PackedObjectDefinition PackedObjectDefinition { get; set; }
 }
 
-public class JsonFileInfo
+public class PackedObjectDefinition
 {
-    public string DataPath { get; set; }
+    public PackedObjectDefinition(ObjectDefinition mainObjectDefinition, ObjectDefinition[] referencedObjectDefinition)
+    {
+        MainObjectDefinition = mainObjectDefinition;
+        ReferencedObjectDefinition = referencedObjectDefinition;
+    }
+
     public ObjectDefinition MainObjectDefinition { get; set; }
     public ObjectDefinition[] ReferencedObjectDefinition { get; set; }
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLine("Main Object:\n");
+
+        MainObjectDefinition.ToString(builder, 1);
+
+        if (ReferencedObjectDefinition.Length != 0)
+        {
+            builder.AppendLine("\nReferenced Objects:\n");
+
+            foreach (var referencedDefinition in ReferencedObjectDefinition.AsSpan())
+            {
+                referencedDefinition.ToString(builder, 1);
+                builder.AppendLine();
+            }
+        }
+
+        return builder.ToString();
+    }
 }
 
 public class ObjectDefinition
@@ -34,9 +62,9 @@ public class ObjectDefinition
     public void ToString(StringBuilder stringBuilder, int indentationLevel)
     {
         stringBuilder
-            .Append(' ', indentationLevel)
+            .Append(' ', indentationLevel * 4)
             .AppendLine(ObjectTypeName)
-            .Append(' ', indentationLevel)
+            .Append(' ', indentationLevel * 4)
             .AppendLine("{");
 
         indentationLevel++;
@@ -44,6 +72,7 @@ public class ObjectDefinition
         foreach (var property in Properties.AsSpan())
         {
             property.ToString(stringBuilder, indentationLevel);
+            stringBuilder.AppendLine();
         }
         
         indentationLevel--;
@@ -64,7 +93,8 @@ public class BaseObjectPropertyInfo
         Object,
         Bool,
         Array,
-        Dictionary
+        Dictionary,
+        Enum
     }
 
     public PropertyType Type { get; set; }
@@ -96,12 +126,9 @@ public class BaseObjectPropertyInfo
 
         stringBuilder
             .Append(' ')
-            .Append(Name)
-            .Append(' ');
+            .Append(Name);
         
         PrintAdditional(stringBuilder);
-
-        stringBuilder.AppendLine();
     }
 }
 
@@ -149,35 +176,74 @@ public class ObjectPropertyInfo : BaseObjectPropertyInfo
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
-        stringBuilder.Append(ObjectTypeName);
+        stringBuilder
+            .Append("Object<")
+            .Append(ObjectTypeName)
+            .Append('>');
+    }
+}
+
+public class EnumPropertyInfo : BaseObjectPropertyInfo
+{
+    public record struct EnumValue(string ValueName, long ValueValue);
+    
+    public string EnumTypeName { get; set; }
+    public EnumValue[] EnumValues { get; set; }
+    public bool IsFlags { get; set; }
+
+    protected override void PrintType(StringBuilder stringBuilder)
+    {
+        if (IsFlags)
+        {
+            stringBuilder.Append("EnumFlags<");
+        }
+        else
+        {
+            stringBuilder.Append("Enum<");
+        }
+        
+        stringBuilder
+            .Append(EnumTypeName)
+            .Append('>');
+    }
+
+    protected override void PrintAdditional(StringBuilder stringBuilder)
+    {
+        stringBuilder
+            .Append('[');
+
+        stringBuilder.AppendJoin(", ", EnumValues.Select(x => x.ValueName));
+        
+        stringBuilder
+            .Append(']');
     }
 }
 
 public class ArrayPropertyInfo : BaseObjectPropertyInfo
 {
-    public string ArrayElementTypeName { get; set; }
+    public BaseObjectPropertyInfo ArrayElementTypeInfo { get; set; }
     
     protected override void PrintType(StringBuilder stringBuilder)
     {
         stringBuilder
             .Append("Array<")
-            .Append(ArrayElementTypeName)
+            .Append(ArrayElementTypeInfo)
             .Append('>');
     }
 }
 
 public class DictionaryPropertyInfo : BaseObjectPropertyInfo
 {
-    public string KeyTypeName { get; set; }
-    public string ValueTypeName { get; set; }
+    public BaseObjectPropertyInfo KeyTypeInfo { get; set; }
+    public BaseObjectPropertyInfo ValueTypeInfo { get; set; }
         
     protected override void PrintType(StringBuilder stringBuilder)
     {
         stringBuilder
             .Append("Dictionary<")
-            .Append(KeyTypeName)
+            .Append(KeyTypeInfo)
             .Append(", ")
-            .Append(ValueTypeName)
+            .Append(ValueTypeInfo)
             .Append('>');
     }
 }

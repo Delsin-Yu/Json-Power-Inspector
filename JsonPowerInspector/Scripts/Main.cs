@@ -28,6 +28,5 @@ public partial class Main : Control
 	private void TryLoadJson(string filePath)
 	{
 		var fileStream = File.OpenRead(filePath);
-		var jsonFileInfo = JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.JsonFileInfo);
 	}
 }

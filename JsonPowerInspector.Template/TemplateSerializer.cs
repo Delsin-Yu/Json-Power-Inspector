@@ -12,50 +12,67 @@ namespace JsonPowerInspector.Template;
 
 public static class TemplateSerializer
 {
-    public static JsonFileInfo Deserialize(string templateFilePath)
+    public static PackedObjectDefinition Deserialize(string templateFilePath)
     {
         using var fileStream = File.OpenRead(templateFilePath);
-        return JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.JsonFileInfo);
+        return JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
     }
 
-    [RequiresUnreferencedCode("CollectDefinition is intended to be used in editor to generate JsonFileInfo")]
-    public static ObjectDefinition CollectTypeDefinition(Type objectType, out Dictionary<Type, ObjectDefinition> referencedPropertyInfo, string objectName = null)
+    public static PackedObjectDefinition CollectTypeDefinition<T>(string objectName = null) => CollectTypeDefinition(typeof(T));
+
+    [RequiresUnreferencedCode("CollectDefinition is intended to be used in editor to generate JsonFileInfo only.")]
+    public static PackedObjectDefinition CollectTypeDefinition(Type objectType, string objectName = null)
     {
-        referencedPropertyInfo = new();
-        return CollectTypeDefinitionImpl(objectType, objectName, referencedPropertyInfo);
+        var referencedPropertyInfo = new Dictionary<string,ObjectDefinition>();
+        var mainObjectDefinition = CollectTypeDefinitionImpl(objectType, objectName, referencedPropertyInfo);
+        return new(mainObjectDefinition, referencedPropertyInfo.Values.ToArray());
     }
     
-    private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, string objectName, Dictionary<Type, ObjectDefinition> referencedPropertyInfo)
+    private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, string objectName, Dictionary<string, ObjectDefinition> referencedPropertyInfo)
     {
         var propertyInfos = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         var properties = new List<BaseObjectPropertyInfo>();
         foreach (var propertyInfo in propertyInfos)
         {
-            if (TryParseProperty(propertyInfo, referencedPropertyInfo, out var parsed))
+            if (TryParseProperty(
+                    propertyInfo.Name,
+                    propertyInfo.PropertyType,
+                    referencedPropertyInfo,
+                    out var parsed
+                ))
             {
                 properties.Add(parsed);
             }
         }
-        var definition = new ObjectDefinition()
+        var definition = new ObjectDefinition
         {
-            ObjectTypeName = objectName ?? objectType.Name,
+            ObjectTypeName = objectName ?? GetTypeName(objectType),
             Properties = properties.ToArray()
         };
         return definition;
     }
 
-    private static bool TryParseProperty(PropertyInfo propertyInfo, Dictionary<Type, ObjectDefinition> referencedPropertyInfo, out BaseObjectPropertyInfo baseObjectPropertyInfo)
+    private static string GetTypeName(Type type) => type.FullName;
+
+    private static bool TryParseProperty(
+        string propertyName,
+        Type propertyType,
+        Dictionary<string, ObjectDefinition> referencedPropertyInfo,
+        out BaseObjectPropertyInfo baseObjectPropertyInfo
+    )
     {
         baseObjectPropertyInfo = null;
-        var propertyType = propertyInfo.PropertyType;
 
         if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
-            EnsureTypeExists(elementType);
-            baseObjectPropertyInfo = new ArrayPropertyInfo()
+            if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, out var arrayElementTypeInfo))
             {
-                ArrayElementTypeName = elementType.FullName,
+                return false;
+            }
+            baseObjectPropertyInfo = new ArrayPropertyInfo
+            {
+                ArrayElementTypeInfo = arrayElementTypeInfo,
                 Type = BaseObjectPropertyInfo.PropertyType.Array
             };
         }
@@ -65,10 +82,13 @@ public static class TemplateSerializer
             if (genericTypeDef == typeof(List<>))
             {
                 var elementType = propertyType.GetGenericArguments()[0];
-                EnsureTypeExists(elementType);
-                baseObjectPropertyInfo = new ArrayPropertyInfo()
+                if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, out var arrayElementTypeInfo))
                 {
-                    ArrayElementTypeName = elementType.FullName,
+                    return false;
+                }
+                baseObjectPropertyInfo = new ArrayPropertyInfo
+                {
+                    ArrayElementTypeInfo = arrayElementTypeInfo,
                     Type = BaseObjectPropertyInfo.PropertyType.Array
                 };
             }
@@ -77,12 +97,19 @@ public static class TemplateSerializer
                 var arguments = propertyType.GetGenericArguments();
                 var keyType = arguments[0];
                 var valueType = arguments[1];
-                EnsureTypeExists(keyType);
-                EnsureTypeExists(valueType);
-                baseObjectPropertyInfo = new DictionaryPropertyInfo()
+                if (!TryParseProperty(GetTypeName(keyType), keyType, referencedPropertyInfo, out var keyTypeInfo))
                 {
-                    KeyTypeName = keyType.FullName,
-                    ValueTypeName = valueType.FullName,
+                    return false;
+                }
+                if (!TryParseProperty(GetTypeName(valueType), valueType, referencedPropertyInfo, out var valueTypeInfo))
+                {
+                    referencedPropertyInfo.Remove(GetTypeName(keyType));
+                    return false;
+                }
+                baseObjectPropertyInfo = new DictionaryPropertyInfo
+                {
+                    KeyTypeInfo = keyTypeInfo,
+                    ValueTypeInfo = valueTypeInfo,
                     Type = BaseObjectPropertyInfo.PropertyType.Dictionary
                 };
             }
@@ -93,38 +120,82 @@ public static class TemplateSerializer
         }
         else if (propertyType.IsPrimitive)
         {
-            if (
-                propertyType == typeof(sbyte) ||
-                propertyType == typeof(short) ||
-                propertyType == typeof(int) ||
-                propertyType == typeof(long) ||
-                propertyType == typeof(byte) ||
-                propertyType == typeof(ushort) ||
-                propertyType == typeof(uint) ||
-                propertyType == typeof(ulong)
-            )
+            NumberPropertyInfo.NumberType numberType;
+            double min;
+            double max;
+
+
+            if (propertyType == typeof(byte))
             {
-                baseObjectPropertyInfo = new NumberPropertyInfo()
-                {
-                    Number = NumberPropertyInfo.NumberType.Int,
-                    Type = BaseObjectPropertyInfo.PropertyType.Number
-                };
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = byte.MinValue;
+                max = byte.MaxValue;
             }
-            else if (
-                propertyType == typeof(float) ||
-                propertyType == typeof(double)
-            )
+            else if (propertyType == typeof(ushort))
             {
-                baseObjectPropertyInfo = new NumberPropertyInfo()
-                {
-                    Number = NumberPropertyInfo.NumberType.Float,
-                    Type = BaseObjectPropertyInfo.PropertyType.Number
-                }; 
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = ushort.MinValue;
+                max = ushort.MaxValue;
+            }
+            else if (propertyType == typeof(uint))
+            {
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = uint.MinValue;
+                max = uint.MaxValue;
+            }
+            else if (propertyType == typeof(ulong))
+            {
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = ulong.MinValue;
+                max = ulong.MaxValue;
+            }
+            else if (propertyType == typeof(sbyte))
+            {
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = sbyte.MinValue;
+                max = sbyte.MaxValue;
+            }
+            else if (propertyType == typeof(short))
+            {
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = short.MinValue;
+                max = short.MaxValue;
+            }
+            else if (propertyType == typeof(int))
+            {
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = int.MinValue;
+                max = int.MaxValue;
+            }
+            else if (propertyType == typeof(long))
+            {
+                numberType = NumberPropertyInfo.NumberType.Int;
+                min = long.MinValue;
+                max = long.MaxValue;
+            }
+            else if (propertyType == typeof(float))
+            {
+                numberType = NumberPropertyInfo.NumberType.Float;
+                min = float.MinValue;
+                max = float.MaxValue;
+            }
+            else if (propertyType == typeof(double))
+            {
+                numberType = NumberPropertyInfo.NumberType.Float;
+                min = double.MinValue;
+                max = double.MaxValue;
             }
             else
             {
                 return false;
             }
+
+            baseObjectPropertyInfo = new NumberPropertyInfo
+            {
+                Number = numberType,
+                Type = BaseObjectPropertyInfo.PropertyType.Number,
+                Range = new(min, max)
+            };
         }
         else if (propertyType == typeof(string))
         {
@@ -140,12 +211,35 @@ public static class TemplateSerializer
                 Type = BaseObjectPropertyInfo.PropertyType.Bool
             };
         }
+        else if (propertyType.IsEnum)
+        {
+            var enumValuesArray = propertyType.GetEnumValues();
+            var typedEnumValuesArray = new List<long>(enumValuesArray.Length);
+
+            foreach (var enumValue in enumValuesArray)
+            {
+                typedEnumValuesArray.Add(Convert.ToInt64(enumValue));
+            }
+
+            var enumValues = propertyType.GetEnumNames().Zip(
+                typedEnumValuesArray,
+                (name, value) =>
+                    new EnumPropertyInfo.EnumValue(name, value)
+            ).ToArray();
+            baseObjectPropertyInfo = new EnumPropertyInfo
+            {
+                Type = BaseObjectPropertyInfo.PropertyType.Enum,
+                EnumTypeName = propertyType.Name,
+                EnumValues = enumValues,
+                IsFlags = propertyType.GetCustomAttributes<FlagsAttribute>().Any()
+            };
+        }
         else if (!propertyType.IsGenericType)
         {
             EnsureTypeExists(propertyType);
-            baseObjectPropertyInfo = new ObjectPropertyInfo()
+            baseObjectPropertyInfo = new ObjectPropertyInfo
             {
-                ObjectTypeName = propertyType.FullName,
+                ObjectTypeName = GetTypeName(propertyType),
                 Type = BaseObjectPropertyInfo.PropertyType.Object
             };
         }
@@ -154,16 +248,17 @@ public static class TemplateSerializer
             return false;
         }
 
-        baseObjectPropertyInfo.Name = propertyInfo.Name;
-        
+        baseObjectPropertyInfo.Name = propertyName;
+
         return true;
 
         void EnsureTypeExists(Type type)
         {
             if (type.IsPrimitive || type == typeof(string) || type.IsEnum) return;
-            ref var value = ref CollectionsMarshal.GetValueRefOrAddDefault(referencedPropertyInfo, type, out var exists);
-            if (exists) return;
-            value = CollectTypeDefinitionImpl(type, type.FullName, referencedPropertyInfo);
+            var typeName = GetTypeName(type);
+            if (!referencedPropertyInfo.TryAdd(typeName, null)) return;
+            var typeDefinition = CollectTypeDefinitionImpl(type, typeName, referencedPropertyInfo);
+            referencedPropertyInfo[typeName] = typeDefinition;
         }
     }
 }
