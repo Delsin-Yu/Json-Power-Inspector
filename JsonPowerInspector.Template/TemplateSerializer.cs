@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace JsonPowerInspector.Template;
 
 public static class TemplateSerializer
 {
+    public static string Serialize(PackedObjectDefinition packedObjectDefinition)
+    {
+        return JsonSerializer.Serialize(packedObjectDefinition, PowerTemplateJsonContext.Default.PackedObjectDefinition);
+    }
+    
     public static PackedObjectDefinition Deserialize(string templateFilePath)
     {
         using var fileStream = File.OpenRead(templateFilePath);
@@ -192,7 +195,7 @@ public static class TemplateSerializer
 
             baseObjectPropertyInfo = new NumberPropertyInfo
             {
-                Number = numberType,
+                NumberKind = numberType,
                 Type = BaseObjectPropertyInfo.PropertyType.Number,
                 Range = new(min, max)
             };

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cb3jjo2jf4bss"]
+
+[node name="StringInspector" type="HBoxContainer"]
+auto_translate_mode = 1
+
+[node name="PropertyName" type="Label" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+text = "String Inspector"
+
+[node name="PropertyContent" type="LineEdit" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "String Content"

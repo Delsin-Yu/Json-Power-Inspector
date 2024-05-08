@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dx3t7oouwde40"]
+
+[node name="BooleanInspector" type="HBoxContainer"]
+auto_translate_mode = 1
+
+[node name="PropertyName" type="Label" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Boolean Inspector"
+
+[node name="PropertyContent" type="CheckBox" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0

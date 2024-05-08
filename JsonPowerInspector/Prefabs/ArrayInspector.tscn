@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://cht8r37b1mgmj"]
+
+[node name="ArrayInspector" type="VBoxContainer"]
+auto_translate_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="Foldout" type="CheckButton" parent="HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="PropertyName" type="Label" parent="HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Array Inspector"
+
+[node name="SpinBox" type="SpinBox" parent="HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="ArrayItems" type="VBoxContainer" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="AddButton" type="Button" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+text = "Add"

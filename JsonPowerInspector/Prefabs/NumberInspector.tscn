@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bexkdmc878yx"]
+
+[node name="NumberInspector" type="HBoxContainer"]
+auto_translate_mode = 1
+
+[node name="PropertyName" type="Label" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Number Inspector"
+
+[node name="PropertyContent" type="SpinBox" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+select_all_on_focus = true

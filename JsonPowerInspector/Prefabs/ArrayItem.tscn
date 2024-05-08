@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cdqf6t5uwv701"]
+
+[node name="ArrayItem" type="HBoxContainer"]
+auto_translate_mode = 1
+
+[node name="RemoveButton" type="Button" parent="."]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "X"
+
+[node name="ArrayItemContent" type="VBoxContainer" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3

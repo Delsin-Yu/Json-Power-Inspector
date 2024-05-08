@@ -9,7 +9,7 @@ namespace JsonPowerInspector;
 
 public partial class Main : Control
 {
-	public const string Extension = ".json";
+	public const string Extension = ".jsontemplate";
 	
 	public override void _Ready()
 	{
@@ -27,6 +27,6 @@ public partial class Main : Control
 
 	private void TryLoadJson(string filePath)
 	{
-		var fileStream = File.OpenRead(filePath);
+		var setup = TemplateSerializer.Deserialize(filePath);
 	}
 }

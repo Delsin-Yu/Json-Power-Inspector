@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 namespace JsonPowerInspector.Template;
 
 [JsonSerializable(typeof(ApplicationJsonTypes))]
+[JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
 public partial class PowerTemplateJsonContext : JsonSerializerContext { }
 
 public class ApplicationJsonTypes
@@ -84,6 +85,12 @@ public class ObjectDefinition
     }
 }
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "PropertyType")]
+[JsonDerivedType(typeof(NumberPropertyInfo), typeDiscriminator: "Number")]
+[JsonDerivedType(typeof(ObjectPropertyInfo), typeDiscriminator: "Object")]
+[JsonDerivedType(typeof(ArrayPropertyInfo), typeDiscriminator: "Array")]
+[JsonDerivedType(typeof(DictionaryPropertyInfo), typeDiscriminator: "Dictionary")]
+[JsonDerivedType(typeof(EnumPropertyInfo), typeDiscriminator: "Enum")]
 public class BaseObjectPropertyInfo
 {
     public enum PropertyType
@@ -142,14 +149,14 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
         Float
     }
 
-    public NumberType Number { get; set; }
+    public NumberType NumberKind { get; set; }
     public NumberRange? Range { get; set; }
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
         stringBuilder
             .Append(
-                Number switch
+                NumberKind switch
                 {
                     NumberType.Int => "Int",
                     NumberType.Float => "Float",
