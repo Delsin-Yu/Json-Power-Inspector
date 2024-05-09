@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System.Text.Json.Nodes;
+using Godot;
 using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
@@ -11,5 +12,10 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
 
     protected override void OnPostInitialize(DictionaryPropertyInfo propertyInfo)
     {
+    }
+
+    public override void Bind(JsonNode node)
+    {
+        
     }
 }

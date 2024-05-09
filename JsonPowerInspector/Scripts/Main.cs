@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -50,12 +49,14 @@ public partial class Main : Control
             if (templateFile != null && dataFile != null)
             {
                 LoadBoth(templateFile, dataFile);
+                return;
             }
 
             // Data == null
             if (templateFile != null)
             {
                 LoadTemplate(templateFile, null);
+                return;
             }
             
             // Template == null
@@ -66,7 +67,8 @@ public partial class Main : Control
                     // TODO: Error Handling
                     return;
                 }
-                LoadData(dataFile);
+                
+                CurrentSession.LoadFromJsonObject(LoadData(dataFile));
             }
         };
 
@@ -120,7 +122,7 @@ public partial class Main : Control
         CurrentSession.StartSession(_objectName, _objectContainer, data);
     }
     
-    private JsonObject LoadData(string filePath)
+    private static JsonObject LoadData(string filePath)
     {
         using var fileStream = File.OpenRead(filePath);
         return (JsonObject)JsonObject.Parse(fileStream);

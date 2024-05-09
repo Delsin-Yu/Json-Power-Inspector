@@ -10,17 +10,17 @@ namespace JsonPowerInspector;
 
 public static class Utils
 {
-    public static Control CreateInspectorForProperty(BaseObjectPropertyInfo propertyInfo, InspectorSpawner spawner)
+    public static IPropertyInspector CreateInspectorForProperty(BaseObjectPropertyInfo propertyInfo, InspectorSpawner spawner, string path)
     {
         return propertyInfo switch
         {
-            StringPropertyInfo stringPropertyInfo => spawner.Create(stringPropertyInfo),
-            NumberPropertyInfo numberPropertyInfo => spawner.Create(numberPropertyInfo),
-            ObjectPropertyInfo objectPropertyInfo => spawner.Create(objectPropertyInfo),
-            BooleanPropertyInfo booleanPropertyInfo => spawner.Create(booleanPropertyInfo),
-            ArrayPropertyInfo arrayPropertyInfo => spawner.Create(arrayPropertyInfo),
-            DictionaryPropertyInfo dictionaryPropertyInfo => spawner.Create(dictionaryPropertyInfo),
-            EnumPropertyInfo enumPropertyInfo => spawner.Create(enumPropertyInfo),
+            StringPropertyInfo stringPropertyInfo => spawner.Create(stringPropertyInfo, path),
+            NumberPropertyInfo numberPropertyInfo => spawner.Create(numberPropertyInfo, path),
+            ObjectPropertyInfo objectPropertyInfo => spawner.Create(objectPropertyInfo, path),
+            BooleanPropertyInfo booleanPropertyInfo => spawner.Create(booleanPropertyInfo, path),
+            ArrayPropertyInfo arrayPropertyInfo => spawner.Create(arrayPropertyInfo, path),
+            DictionaryPropertyInfo dictionaryPropertyInfo => spawner.Create(dictionaryPropertyInfo, path),
+            EnumPropertyInfo enumPropertyInfo => spawner.Create(enumPropertyInfo, path),
             _ => throw new InvalidOperationException()
         };
     }

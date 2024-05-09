@@ -10,15 +10,15 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     [Export] private Control _contentPanel;
     [Export] private CheckButton _foldout;
 
-    private readonly List<Node> _nodes = [];
+    protected List<Node> Nodes { get; set; } = [];
     
-    private record struct Node(Control Inspector, BaseObjectPropertyInfo PropertyInfo);
+    protected record struct Node(IPropertyInspector Inspector, BaseObjectPropertyInfo PropertyInfo);
     
     protected void CreateInspector(BaseObjectPropertyInfo propertyInfo)
     {
-        var inspector = Utils.CreateInspectorForProperty(propertyInfo, Main.CurrentSession.InspectorSpawner);
-        _nodes.Add(new(inspector, propertyInfo));
-        _contentControl.AddChild(inspector);
+        var inspector = Utils.CreateInspectorForProperty(propertyInfo, Main.CurrentSession.InspectorSpawner, $"{PropertyPath}.{propertyInfo.Name}");
+        Nodes.Add(new(inspector, propertyInfo));
+        _contentControl.AddChild((Control)inspector);
     }
     
     protected override void OnInitialize(TPropertyInfo propertyInfo)

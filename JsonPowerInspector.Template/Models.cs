@@ -144,7 +144,7 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
     }
 
     public NumberType NumberKind { get; set; }
-    public NumberRange Range { get; set; }
+    public NumberRange? Range { get; set; }
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
@@ -161,11 +161,15 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
 
     protected override void PrintAdditional(StringBuilder stringBuilder)
     {
+        if(!Range.HasValue) return;
+
+        var value = Range.Value;
+        
         stringBuilder
             .Append('[')
-            .Append(Range.Lower)
+            .Append(value.Lower)
             .Append(" ~ ")
-            .Append(Range.Upper)
+            .Append(value.Upper)
             .Append(']');
     }
 }

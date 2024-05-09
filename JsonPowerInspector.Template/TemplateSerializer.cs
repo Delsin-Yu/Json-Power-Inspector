@@ -128,62 +128,42 @@ public static class TemplateSerializer
             if (propertyType == typeof(byte))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = byte.MinValue;
-                max = byte.MaxValue;
             }
             else if (propertyType == typeof(ushort))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = ushort.MinValue;
-                max = ushort.MaxValue;
             }
             else if (propertyType == typeof(uint))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = uint.MinValue;
-                max = uint.MaxValue;
             }
             else if (propertyType == typeof(ulong))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = ulong.MinValue;
-                max = ulong.MaxValue;
             }
             else if (propertyType == typeof(sbyte))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = sbyte.MinValue;
-                max = sbyte.MaxValue;
             }
             else if (propertyType == typeof(short))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = short.MinValue;
-                max = short.MaxValue;
             }
             else if (propertyType == typeof(int))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = int.MinValue;
-                max = int.MaxValue;
             }
             else if (propertyType == typeof(long))
             {
                 numberType = NumberPropertyInfo.NumberType.Int;
-                min = long.MinValue;
-                max = long.MaxValue;
             }
             else if (propertyType == typeof(float))
             {
                 numberType = NumberPropertyInfo.NumberType.Float;
-                min = float.MinValue;
-                max = float.MaxValue;
             }
             else if (propertyType == typeof(double))
             {
                 numberType = NumberPropertyInfo.NumberType.Float;
-                min = double.MinValue;
-                max = double.MaxValue;
             }
             else
             {
@@ -192,8 +172,7 @@ public static class TemplateSerializer
 
             baseObjectPropertyInfo = new NumberPropertyInfo
             {
-                NumberKind = numberType,
-                Range = new(min, max)
+                NumberKind = numberType
             };
         }
         else if (propertyType == typeof(string))

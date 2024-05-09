@@ -18,6 +18,8 @@ public class InspectionSession
     private JsonObject _editingJsonObject;
     private JsonObject _templateJsonObject;
 
+    private readonly List<IPropertyInspector> _inspectorRoot = [];
+
     public InspectionSession(
         PackedObjectDefinition packedObjectDefinition,
         InspectorSpawner inspectorSpawner
@@ -37,17 +39,24 @@ public class InspectionSession
         _templateJsonObject = new();
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
-            rootObjectContainer.AddChild(Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner));
+            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner, propertyInfo.Name);
+            _inspectorRoot.Add(inspectorForProperty);
+            rootObjectContainer.AddChild((Control)inspectorForProperty);
             _templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap));
         }
 
         LoadFromJsonObject(jsonObject ?? _templateJsonObject.DeepClone().AsObject());
     }
-
+    
     public void LoadFromJsonObject(JsonObject jsonObject)
     {
         // TODO: Warn User of data loss
         _editingJsonObject = jsonObject;
-        
+        var objectProperty = _editingJsonObject.ToArray();
+        for (var index = 0; index < _inspectorRoot.Count; index++)
+        {
+            var propertyInspector = _inspectorRoot[index];
+            propertyInspector.Bind(objectProperty[index].Value!);
+        }
     }
 }

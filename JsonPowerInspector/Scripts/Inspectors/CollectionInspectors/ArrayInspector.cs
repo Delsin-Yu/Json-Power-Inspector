@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System.Text.Json.Nodes;
+using Godot;
 using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
@@ -11,5 +12,10 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     
     protected override void OnPostInitialize(ArrayPropertyInfo propertyInfo)
     {
+    }
+
+    public override void Bind(JsonNode node)
+    {
+        
     }
 }
