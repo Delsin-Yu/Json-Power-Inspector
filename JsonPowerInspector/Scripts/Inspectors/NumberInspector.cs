@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -23,8 +22,8 @@ public partial class NumberInspector : BasePropertyInspector<NumberPropertyInfo>
         }
         else
         {
-            _contentControl.MinValue = -10000000;
-            _contentControl.MaxValue = 10000000;
+            _contentControl.MinValue = double.MinValue;
+            _contentControl.MaxValue = double.MaxValue;
             _contentControl.AllowLesser = true;
             _contentControl.AllowGreater = true;
         }
