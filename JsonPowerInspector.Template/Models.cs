@@ -7,7 +7,7 @@ namespace JsonPowerInspector.Template;
 
 [JsonSerializable(typeof(ApplicationJsonTypes))]
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
-public partial class PowerTemplateJsonContext : JsonSerializerContext { }
+public partial class PowerTemplateJsonContext : JsonSerializerContext;
 
 public class ApplicationJsonTypes
 {
@@ -85,26 +85,16 @@ public class ObjectDefinition
     }
 }
 
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "PropertyType")]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "PropertyType", UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization)]
+[JsonDerivedType(typeof(StringPropertyInfo), typeDiscriminator: "String")]
 [JsonDerivedType(typeof(NumberPropertyInfo), typeDiscriminator: "Number")]
 [JsonDerivedType(typeof(ObjectPropertyInfo), typeDiscriminator: "Object")]
+[JsonDerivedType(typeof(BooleanPropertyInfo), typeDiscriminator: "Bool")]
 [JsonDerivedType(typeof(ArrayPropertyInfo), typeDiscriminator: "Array")]
 [JsonDerivedType(typeof(DictionaryPropertyInfo), typeDiscriminator: "Dictionary")]
 [JsonDerivedType(typeof(EnumPropertyInfo), typeDiscriminator: "Enum")]
-public class BaseObjectPropertyInfo
+public abstract class BaseObjectPropertyInfo
 {
-    public enum PropertyType
-    {
-        String,
-        Number,
-        Object,
-        Bool,
-        Array,
-        Dictionary,
-        Enum
-    }
-
-    public PropertyType Type { get; set; }
     public string Name { get; set; }
     
     public override string ToString()
@@ -114,15 +104,9 @@ public class BaseObjectPropertyInfo
         return builder.ToString();
     }
 
-    protected virtual void PrintType(StringBuilder stringBuilder)
-    {
-        stringBuilder.Append(Type.ToString());
-    }
+    protected abstract void PrintType(StringBuilder stringBuilder);
 
-    protected virtual void PrintAdditional(StringBuilder stringBuilder)
-    {
-        
-    }
+    protected virtual void PrintAdditional(StringBuilder stringBuilder) { }
     
     public void ToString(StringBuilder stringBuilder, int indentationLevel)
     {
@@ -139,6 +123,15 @@ public class BaseObjectPropertyInfo
     }
 }
 
+public class StringPropertyInfo : BaseObjectPropertyInfo
+{
+    protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("String");
+}
+public class BooleanPropertyInfo : BaseObjectPropertyInfo
+{
+    protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("Bool");
+}
+
 public class NumberPropertyInfo : BaseObjectPropertyInfo
 {
     public record struct NumberRange(double Lower, double Upper);
@@ -150,7 +143,7 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
     }
 
     public NumberType NumberKind { get; set; }
-    public NumberRange? Range { get; set; }
+    public NumberRange Range { get; set; }
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
@@ -167,12 +160,11 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
 
     protected override void PrintAdditional(StringBuilder stringBuilder)
     {
-        if(!Range.HasValue) return;
         stringBuilder
             .Append('[')
-            .Append(Range.Value.Lower)
+            .Append(Range.Lower)
             .Append(" ~ ")
-            .Append(Range.Value.Upper)
+            .Append(Range.Upper)
             .Append(']');
     }
 }

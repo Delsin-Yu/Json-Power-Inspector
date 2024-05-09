@@ -1,7 +1,12 @@
-[gd_scene format=3 uid="uid://cb3jjo2jf4bss"]
+[gd_scene load_steps=2 format=3 uid="uid://cb3jjo2jf4bss"]
 
-[node name="StringInspector" type="HBoxContainer"]
+[ext_resource type="Script" path="res://Scripts/Inspectors/StringInspector.cs" id="1_d5dxj"]
+
+[node name="StringInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_propertyName")]
 auto_translate_mode = 1
+script = ExtResource("1_d5dxj")
+_contentControl = NodePath("PropertyContent")
+_propertyName = NodePath("PropertyName")
 
 [node name="PropertyName" type="Label" parent="."]
 auto_translate_mode = 1

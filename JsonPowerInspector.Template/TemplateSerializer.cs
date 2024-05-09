@@ -76,7 +76,6 @@ public static class TemplateSerializer
             baseObjectPropertyInfo = new ArrayPropertyInfo
             {
                 ArrayElementTypeInfo = arrayElementTypeInfo,
-                Type = BaseObjectPropertyInfo.PropertyType.Array
             };
         }
         else if (propertyType.IsGenericType)
@@ -92,7 +91,6 @@ public static class TemplateSerializer
                 baseObjectPropertyInfo = new ArrayPropertyInfo
                 {
                     ArrayElementTypeInfo = arrayElementTypeInfo,
-                    Type = BaseObjectPropertyInfo.PropertyType.Array
                 };
             }
             else if (genericTypeDef == typeof(Dictionary<,>))
@@ -113,7 +111,6 @@ public static class TemplateSerializer
                 {
                     KeyTypeInfo = keyTypeInfo,
                     ValueTypeInfo = valueTypeInfo,
-                    Type = BaseObjectPropertyInfo.PropertyType.Dictionary
                 };
             }
             else
@@ -196,23 +193,16 @@ public static class TemplateSerializer
             baseObjectPropertyInfo = new NumberPropertyInfo
             {
                 NumberKind = numberType,
-                Type = BaseObjectPropertyInfo.PropertyType.Number,
                 Range = new(min, max)
             };
         }
         else if (propertyType == typeof(string))
         {
-            baseObjectPropertyInfo = new()
-            {
-                Type = BaseObjectPropertyInfo.PropertyType.String
-            };
+            baseObjectPropertyInfo = new StringPropertyInfo();
         }
         else if (propertyType == typeof(bool))
         {
-            baseObjectPropertyInfo = new()
-            {
-                Type = BaseObjectPropertyInfo.PropertyType.Bool
-            };
+            baseObjectPropertyInfo = new BooleanPropertyInfo();
         }
         else if (propertyType.IsEnum)
         {
@@ -231,7 +221,6 @@ public static class TemplateSerializer
             ).ToArray();
             baseObjectPropertyInfo = new EnumPropertyInfo
             {
-                Type = BaseObjectPropertyInfo.PropertyType.Enum,
                 EnumTypeName = propertyType.Name,
                 EnumValues = enumValues,
                 IsFlags = propertyType.GetCustomAttributes<FlagsAttribute>().Any()
@@ -243,7 +232,6 @@ public static class TemplateSerializer
             baseObjectPropertyInfo = new ObjectPropertyInfo
             {
                 ObjectTypeName = GetTypeName(propertyType),
-                Type = BaseObjectPropertyInfo.PropertyType.Object
             };
         }
         else

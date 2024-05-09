@@ -1,33 +1,47 @@
-[gd_scene format=3 uid="uid://dglp6a0bsyxo8"]
+[gd_scene load_steps=2 format=3 uid="uid://dglp6a0bsyxo8"]
 
-[node name="DictionaryInspector" type="VBoxContainer"]
-auto_translate_mode = 1
+[ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryInspector.cs" id="1_cet7s"]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_contentControl", "_contentPanel", "_foldout", "_propertyName")]
+offset_right = 292.0
+script = ExtResource("1_cet7s")
+_contentControl = NodePath("VBoxContainer/PanelContainer/DictionaryItems")
+_contentPanel = NodePath("VBoxContainer/PanelContainer")
+_foldout = NodePath("VBoxContainer/HBoxContainer/Foldout")
+_propertyName = NodePath("VBoxContainer/HBoxContainer/PropertyName")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="Foldout" type="CheckButton" parent="HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="Foldout" type="CheckButton" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="PropertyName" type="Label" parent="HBoxContainer"]
+[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Dictionary Inspector"
 
-[node name="SpinBox" type="SpinBox" parent="HBoxContainer"]
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 10
 
-[node name="DictionaryItems" type="VBoxContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="DictionaryItems" type="VBoxContainer" parent="VBoxContainer/PanelContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="AddButton" type="Button" parent="."]
+[node name="AddButton" type="Button" parent="VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 text = "Add"

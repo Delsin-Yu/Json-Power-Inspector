@@ -1,58 +1,65 @@
-[gd_scene load_steps=10 format=3 uid="uid://twdmh8uu8yy7"]
+[gd_scene load_steps=9 format=3 uid="uid://twdmh8uu8yy7"]
 
+[ext_resource type="Theme" uid="uid://k0q7g8eecg8h" path="res://Art/Main.tres" id="1_htowe"]
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_qligq"]
-[ext_resource type="PackedScene" uid="uid://cht8r37b1mgmj" path="res://Prefabs/ArrayInspector.tscn" id="2_jkgr5"]
-[ext_resource type="PackedScene" uid="uid://dx3t7oouwde40" path="res://Prefabs/BooleanInspector.tscn" id="3_n28ra"]
-[ext_resource type="PackedScene" uid="uid://bexkdmc878yx" path="res://Prefabs/NumberInspector.tscn" id="4_gdjc7"]
-[ext_resource type="PackedScene" uid="uid://cvn017vlo4nck" path="res://Prefabs/ObjectInspector.tscn" id="5_8emrf"]
-[ext_resource type="PackedScene" uid="uid://cvkq04d4rmaqh" path="res://Prefabs/EnumInspector.tscn" id="5_nr5ji"]
-[ext_resource type="PackedScene" uid="uid://cb3jjo2jf4bss" path="res://Prefabs/StringInspector.tscn" id="6_28us7"]
-[ext_resource type="PackedScene" uid="uid://dglp6a0bsyxo8" path="res://Prefabs/DictionaryInspector.tscn" id="7_1qh4r"]
+[ext_resource type="PackedScene" uid="uid://dglp6a0bsyxo8" path="res://Prefabs/DictionaryInspector.tscn" id="2_u3i45"]
+[ext_resource type="PackedScene" uid="uid://cvkq04d4rmaqh" path="res://Prefabs/EnumInspector.tscn" id="3_tm2nc"]
+[ext_resource type="PackedScene" uid="uid://bexkdmc878yx" path="res://Prefabs/NumberInspector.tscn" id="4_531er"]
+[ext_resource type="PackedScene" uid="uid://cvn017vlo4nck" path="res://Prefabs/ObjectInspector.tscn" id="5_335on"]
+[ext_resource type="PackedScene" uid="uid://cb3jjo2jf4bss" path="res://Prefabs/StringInspector.tscn" id="6_kidi3"]
+[ext_resource type="PackedScene" uid="uid://cht8r37b1mgmj" path="res://Prefabs/ArrayInspector.tscn" id="7_3jwum"]
 
-[sub_resource type="Theme" id="Theme_c7yjl"]
-MarginContainer/constants/margin_bottom = 5
-MarginContainer/constants/margin_left = 5
-MarginContainer/constants/margin_right = 5
-MarginContainer/constants/margin_top = 5
-
-[node name="MainWindow" type="Control"]
-layout_mode = 3
+[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_objectName", "_objectContainer", "_slider")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = SubResource("Theme_c7yjl")
+theme = ExtResource("1_htowe")
 script = ExtResource("1_qligq")
+_dictionaryInspector = ExtResource("2_u3i45")
+_enumInspector = ExtResource("3_tm2nc")
+_numberInspector = ExtResource("4_531er")
+_objectInspector = ExtResource("5_335on")
+_stringInspector = ExtResource("6_kidi3")
+_arrayInspector = ExtResource("7_3jwum")
+_booleanInspector = ExtResource("2_u3i45")
+_objectName = NodePath("ScrollContainer/VBoxContainer/InspectedName")
+_objectContainer = NodePath("ScrollContainer/VBoxContainer/InspectedContents")
+_slider = NodePath("ScrollContainer/VBoxContainer/HBoxContainer/HSlider")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="BooleanInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("3_n28ra")]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+text = "DPI Scale"
 
-[node name="NumberInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("4_gdjc7")]
+[node name="HSlider" type="HSlider" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 0.0
 
-[node name="StringInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("6_28us7")]
+[node name="InspectedName" type="Label" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
+text = "Drop in template file"
 
-[node name="EnumInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("5_nr5ji")]
+[node name="InspectedContents" type="VFlowContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
-
-[node name="ObjectInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("5_8emrf")]
-layout_mode = 2
-
-[node name="ArrayInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("2_jkgr5")]
-layout_mode = 2
-
-[node name="DictionaryInspector" parent="MarginContainer/VBoxContainer" instance=ExtResource("7_1qh4r")]
-layout_mode = 2
+size_flags_vertical = 3

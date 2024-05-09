@@ -13,6 +13,7 @@ config_version=5
 config/name="Json Power Inspector"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [display]
@@ -20,8 +21,6 @@ config/icon="res://icon.svg"
 window/size/viewport_width=500
 window/size/viewport_height=500
 window/subwindows/embed_subwindows=false
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
 window/vsync/vsync_mode=0
 
 [dotnet]
@@ -31,3 +30,7 @@ project/assembly_name="JsonPowerInspector"
 [editor]
 
 naming/scene_name_casing=1
+
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.12103, 0.12103, 0.12103, 1)

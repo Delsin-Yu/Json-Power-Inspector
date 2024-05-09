@@ -1,7 +1,12 @@
-[gd_scene format=3 uid="uid://cvkq04d4rmaqh"]
+[gd_scene load_steps=2 format=3 uid="uid://cvkq04d4rmaqh"]
 
-[node name="EnumInspector" type="HBoxContainer"]
+[ext_resource type="Script" path="res://Scripts/Inspectors/EnumInspector.cs" id="1_qk3cw"]
+
+[node name="EnumInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_propertyName")]
 auto_translate_mode = 1
+script = ExtResource("1_qk3cw")
+_contentControl = NodePath("PropertyContent")
+_propertyName = NodePath("PropertyName")
 
 [node name="PropertyName" type="Label" parent="."]
 auto_translate_mode = 1
