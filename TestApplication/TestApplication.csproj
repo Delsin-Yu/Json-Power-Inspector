@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj" />
+        <ProjectReference Include="..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj"/>
+        <PackageReference Include="Tynamix.ObjectFiller" Version="*"/>
     </ItemGroup>
 
 </Project>

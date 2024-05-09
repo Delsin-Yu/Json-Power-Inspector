@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
 
@@ -22,6 +24,7 @@ public partial class Main : Control
     [Export] private Slider _slider;
     
     public const string Extension = ".jsontemplate";
+    public const string Data = ".json";
 
     private InspectorSpawner _spawner;
     
@@ -40,15 +43,31 @@ public partial class Main : Control
         
         window.FilesDropped += files =>
         {
-            var matchedFile = files.FirstOrDefault(
-                filePath =>
+            var templateFile = TryMatch(files, Extension);
+            var dataFile = TryMatch(files, Data);
+
+
+            if (templateFile != null && dataFile != null)
+            {
+                LoadBoth(templateFile, dataFile);
+            }
+
+            // Data == null
+            if (templateFile != null)
+            {
+                LoadTemplate(templateFile, null);
+            }
+            
+            // Template == null
+            if (dataFile != null)
+            {
+                if (CurrentSession == null)
                 {
-                    var extension = Path.GetExtension(filePath);
-                    return string.Equals(extension, Extension, StringComparison.OrdinalIgnoreCase);
+                    // TODO: Error Handling
+                    return;
                 }
-            );
-            if (matchedFile is null) return;
-            TryLoadJson(matchedFile);
+                LoadData(dataFile);
+            }
         };
 
         _spawner = new(
@@ -62,10 +81,49 @@ public partial class Main : Control
         );
     }
 
-    private void TryLoadJson(string filePath)
+    private static string TryMatch(ReadOnlySpan<string> files, string matchExtension)
     {
-        var setup = TemplateSerializer.Deserialize(filePath);
-        CurrentSession = new(setup, _spawner);
-        CurrentSession.StartSession(_objectName, _objectContainer);
+        foreach (var file in files)
+        {
+            var extension = Path.GetExtension(file);
+            if (string.Equals(extension, matchExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                return file;
+            }
+        }
+
+        return null;
     }
+
+    private void LoadBoth(string filePath, string dataPath)
+    {
+        LoadTemplate(filePath, LoadData(dataPath));
+    }
+    
+    private void LoadTemplate(string filePath, JsonObject data)
+    {
+        // TODO: Serialization Exception Handling
+        var setup = TemplateSerializer.Deserialize(filePath);
+        
+        if (CurrentSession != null)
+        {
+            // TODO: Warn data loss
+            foreach (var child in _objectContainer.GetChildren().ToArray().AsSpan())
+            {
+                child.QueueFree();
+            }
+
+            CurrentSession = null;
+        }
+        
+        CurrentSession = new(setup, _spawner);
+        CurrentSession.StartSession(_objectName, _objectContainer, data);
+    }
+    
+    private JsonObject LoadData(string filePath)
+    {
+        using var fileStream = File.OpenRead(filePath);
+        return (JsonObject)JsonObject.Parse(fileStream);
+    }
+    
 }

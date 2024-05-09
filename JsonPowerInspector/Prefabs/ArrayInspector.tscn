@@ -2,11 +2,12 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/ArrayInspector.cs" id="1_3x8f5"]
 
-[node name="ArrayInspector" type="PanelContainer" node_paths=PackedStringArray("_contentControl", "_contentPanel", "_foldout", "_propertyName")]
+[node name="ArrayInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_contentControl", "_contentPanel", "_foldout", "_propertyName")]
 offset_top = 74.0
 offset_right = 255.0
 offset_bottom = 74.0
 script = ExtResource("1_3x8f5")
+_addElement = NodePath("VBoxContainer/AddButton")
 _contentControl = NodePath("VBoxContainer/PanelContainer/ArrayItems")
 _contentPanel = NodePath("VBoxContainer/PanelContainer")
 _foldout = NodePath("VBoxContainer/HBoxContainer/Foldout")

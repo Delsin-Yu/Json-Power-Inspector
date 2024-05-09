@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using TMI_RogueLike_DataEditor.Model;
+
+[JsonSerializable(typeof(MyComplexModel))]
+[JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
+public partial class TestApplicationJsonContext : JsonSerializerContext;
 
 public class MyComplexModel
 {
-    // Create your ultra complex model here
+    public Dictionary<int, string> Data { get; set; }
+    public Dictionary<string, CharacterModel> Data2 { get; set; }
     public List<NationModel> Nations { get; set; }
     public List<CharacterModel> Characters { get; set; }
     public List<LocationModel> Locations { get; set; }

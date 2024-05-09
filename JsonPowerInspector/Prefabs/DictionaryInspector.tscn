@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryInspector.cs" id="1_cet7s"]
 
-[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_contentControl", "_contentPanel", "_foldout", "_propertyName")]
+[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_contentControl", "_contentPanel", "_foldout", "_propertyName")]
 offset_right = 292.0
 script = ExtResource("1_cet7s")
+_addElement = NodePath("VBoxContainer/AddButton")
 _contentControl = NodePath("VBoxContainer/PanelContainer/DictionaryItems")
 _contentPanel = NodePath("VBoxContainer/PanelContainer")
 _foldout = NodePath("VBoxContainer/HBoxContainer/Foldout")

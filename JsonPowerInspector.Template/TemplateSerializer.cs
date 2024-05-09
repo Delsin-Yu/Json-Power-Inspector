@@ -21,17 +21,17 @@ public static class TemplateSerializer
         return JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
     }
 
-    public static PackedObjectDefinition CollectTypeDefinition<T>(string objectName = null) => CollectTypeDefinition(typeof(T));
+    public static PackedObjectDefinition CollectTypeDefinition<T>() => CollectTypeDefinition(typeof(T));
 
     [RequiresUnreferencedCode("CollectDefinition is intended to be used in editor to generate JsonFileInfo only.")]
-    public static PackedObjectDefinition CollectTypeDefinition(Type objectType, string objectName = null)
+    public static PackedObjectDefinition CollectTypeDefinition(Type objectType)
     {
-        var referencedPropertyInfo = new Dictionary<string,ObjectDefinition>();
-        var mainObjectDefinition = CollectTypeDefinitionImpl(objectType, objectName, referencedPropertyInfo);
+        var referencedPropertyInfo = new Dictionary<string, ObjectDefinition>();
+        var mainObjectDefinition = CollectTypeDefinitionImpl(objectType, referencedPropertyInfo);
         return new(mainObjectDefinition, referencedPropertyInfo.Values.ToArray());
     }
     
-    private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, string objectName, Dictionary<string, ObjectDefinition> referencedPropertyInfo)
+    private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, Dictionary<string, ObjectDefinition> referencedPropertyInfo)
     {
         var propertyInfos = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         var properties = new List<BaseObjectPropertyInfo>();
@@ -49,13 +49,13 @@ public static class TemplateSerializer
         }
         var definition = new ObjectDefinition
         {
-            ObjectTypeName = objectName ?? GetTypeName(objectType),
+            ObjectTypeName = GetTypeName(objectType),
             Properties = properties.ToArray()
         };
         return definition;
     }
 
-    private static string GetTypeName(Type type) => type.FullName;
+    private static string GetTypeName(Type type) => type.Name;
 
     private static bool TryParseProperty(
         string propertyName,
@@ -248,7 +248,7 @@ public static class TemplateSerializer
             if (type.IsPrimitive || type == typeof(string) || type.IsEnum) return;
             var typeName = GetTypeName(type);
             if (!referencedPropertyInfo.TryAdd(typeName, null)) return;
-            var typeDefinition = CollectTypeDefinitionImpl(type, typeName, referencedPropertyInfo);
+            var typeDefinition = CollectTypeDefinitionImpl(type, referencedPropertyInfo);
             referencedPropertyInfo[typeName] = typeDefinition;
         }
     }
