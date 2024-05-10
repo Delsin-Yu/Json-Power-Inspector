@@ -27,7 +27,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
         {
             var info = span[index];
             var inspector = Utils.CreateInspectorForProperty(info, Main.CurrentSession.InspectorSpawner, $"{PropertyPath}.{info.Name}");
-            AddChildNode(inspector, info);
+            AddChildNode(inspector, (Control)inspector, info);
             var jsonNode = jsonProperties[index].Value;
             var newNode = jsonNode;
             inspector.Bind(ref newNode);

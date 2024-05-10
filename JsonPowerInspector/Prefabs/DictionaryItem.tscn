@@ -2,16 +2,18 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryItem.cs" id="1_v4ukq"]
 
-[node name="DictionaryItem" type="GridContainer" node_paths=PackedStringArray("_removeElement", "_keyContainer", "_valueContainer")]
+[node name="DictionaryItem" type="VBoxContainer" node_paths=PackedStringArray("_removeElement", "_key", "_valueContainer")]
 auto_translate_mode = 1
 size_flags_horizontal = 3
-columns = 3
 script = ExtResource("1_v4ukq")
-_removeElement = NodePath("RemoveButton")
-_keyContainer = NodePath("DictionaryKeyContent")
-_valueContainer = NodePath("DictionaryValueContent")
+_removeElement = NodePath("HBoxContainer/RemoveButton")
+_key = NodePath("HBoxContainer/Key")
+_valueContainer = NodePath("PanelContainer/DictionaryValueContent")
 
-[node name="RemoveButton" type="Button" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RemoveButton" type="Button" parent="HBoxContainer"]
 auto_translate_mode = 1
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
@@ -19,31 +21,16 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "X"
 
-[node name="Key" type="Label" parent="."]
+[node name="Key" type="Label" parent="HBoxContainer"]
 auto_translate_mode = 1
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
-size_flags_vertical = 0
 text = "Key"
 
-[node name="DictionaryKeyContent" type="VBoxContainer" parent="."]
-auto_translate_mode = 1
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-
-[node name="Control" type="Control" parent="."]
-auto_translate_mode = 1
+[node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 2
 
-[node name="Value" type="Label" parent="."]
-auto_translate_mode = 1
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-size_flags_vertical = 0
-text = "Value"
-
-[node name="DictionaryValueContent" type="VBoxContainer" parent="."]
+[node name="DictionaryValueContent" type="VBoxContainer" parent="PanelContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3

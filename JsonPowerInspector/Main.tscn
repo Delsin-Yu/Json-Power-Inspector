@@ -25,11 +25,11 @@ _objectInspector = ExtResource("5_335on")
 _stringInspector = ExtResource("6_kidi3")
 _arrayInspector = ExtResource("7_3jwum")
 _booleanInspector = ExtResource("9_fqphr")
-_objectName = NodePath("ScrollContainer/VBoxContainer/InspectedName")
-_objectContainer = NodePath("ScrollContainer/VBoxContainer/InspectedContents")
-_slider = NodePath("ScrollContainer/VBoxContainer/HBoxContainer/HSlider")
+_objectName = NodePath("VBoxContainer/ScrollContainer/VBoxContainer/InspectedName")
+_objectContainer = NodePath("VBoxContainer/ScrollContainer/VBoxContainer/InspectedContents")
+_slider = NodePath("VBoxContainer/HBoxContainer/HSlider")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,31 +40,34 @@ offset_right = -16.0
 offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "DPI Scale"
 
-[node name="HSlider" type="HSlider" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+[node name="HSlider" type="HSlider" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 step = 0.0
 
-[node name="InspectedName" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="InspectedName" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 text = "Drop in template file"
 
-[node name="InspectedContents" type="VFlowContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="InspectedContents" type="VFlowContainer" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3

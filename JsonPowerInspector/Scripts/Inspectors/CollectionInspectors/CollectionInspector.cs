@@ -20,10 +20,10 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     
     protected record struct Node(IPropertyInspector Inspector, BaseObjectPropertyInfo PropertyInfo);
 
-    protected void AddChildNode(IPropertyInspector inspector, BaseObjectPropertyInfo propertyInfo)
+    protected void AddChildNode(IPropertyInspector inspector, Control inspectorControl, BaseObjectPropertyInfo propertyInfo)
     {
         _nodes.Add(new(inspector, propertyInfo));
-        _contentControl.AddChild((Control)inspector);
+        _contentControl.AddChild(inspectorControl);
         _emptyIndicator.Hide();
     }
 

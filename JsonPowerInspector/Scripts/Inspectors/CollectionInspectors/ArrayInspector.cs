@@ -32,7 +32,9 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
                 $"{PropertyPath}.{PropertyInfo.Name}.{index}"
             );
             inspector.Bind(ref jsonArrayElement);
-            AddChildNode(inspector, PropertyInfo.ArrayElementTypeInfo);
+            var arrayItem = _arrayElement.Instantiate<ArrayItem>();
+            arrayItem.Container.AddChild((Control)inspector);
+            AddChildNode(inspector, arrayItem, PropertyInfo.ArrayElementTypeInfo);
         }
     }
 }

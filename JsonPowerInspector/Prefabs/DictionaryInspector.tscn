@@ -1,11 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://dglp6a0bsyxo8"]
+[gd_scene load_steps=3 format=3 uid="uid://dglp6a0bsyxo8"]
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryInspector.cs" id="1_cet7s"]
+[ext_resource type="PackedScene" uid="uid://q1vekgfskixp" path="res://Prefabs/DictionaryItem.tscn" id="2_tnf7b"]
 
-[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
+[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_dictionaryElementCount", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_right = 292.0
 script = ExtResource("1_cet7s")
 _addElement = NodePath("VBoxContainer/AddButton")
+_dictionaryElementCount = NodePath("VBoxContainer/HBoxContainer/SpinBox")
+_dictionaryElement = ExtResource("2_tnf7b")
 _contentControl = NodePath("VBoxContainer/PanelContainer/DictionaryItems")
 _contentPanel = NodePath("VBoxContainer/PanelContainer")
 _emptyIndicator = NodePath("VBoxContainer/PanelContainer/DictionaryItems/EmptyIndicator")
