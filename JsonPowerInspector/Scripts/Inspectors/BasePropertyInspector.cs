@@ -6,30 +6,34 @@ namespace JsonPowerInspector;
 
 public interface IPropertyInspector
 {
-    string PropertyPath { get; }
     string DisplayName { get; }
-    void Bind(ref JsonNode jsonNode);
+    void BindJsonNode(ref JsonNode jsonNode);
 }
 
 public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IPropertyInspector where TPropertyInfo : BaseObjectPropertyInfo
 {
     [Export] private Label _propertyName;
 
-    public string PropertyPath { get; set; }
     public string DisplayName { get; private set; }
     
     protected TPropertyInfo PropertyInfo { get; private set; }
+    protected JsonNode BackingNode { get; private set; }
 
-    public void Initialize(TPropertyInfo propertyInfo, string propertyPath)
+    public void Initialize(TPropertyInfo propertyInfo)
     {
         DisplayName = propertyInfo.Name;
         _propertyName.Text = DisplayName;
-        PropertyPath = propertyPath;
         PropertyInfo = propertyInfo;
         OnInitialize(propertyInfo);
     }
-    
-    protected abstract void OnInitialize(TPropertyInfo propertyInfo);
 
-    public abstract void Bind(ref JsonNode node);
+    protected virtual void OnInitialize(TPropertyInfo propertyInfo) { }
+
+    public void BindJsonNode(ref JsonNode node)
+    {
+        Bind(ref node);
+        BackingNode = node;
+    }
+    
+    protected virtual void Bind(ref JsonNode node) { }
 }

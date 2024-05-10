@@ -39,7 +39,7 @@ public class InspectionSession
         _templateJsonObject = new();
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
-            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner, propertyInfo.Name);
+            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
             _inspectorRoot.Add(inspectorForProperty);
             rootObjectContainer.AddChild((Control)inspectorForProperty);
             var propertyPath = new HashSet<BaseObjectPropertyInfo>();
@@ -59,7 +59,7 @@ public class InspectionSession
             var jsonNode = objectProperty[index].Value;
             var newNode = jsonNode;
             var propertyInspector = _inspectorRoot[index];
-            propertyInspector.Bind(ref newNode);
+            propertyInspector.BindJsonNode(ref newNode);
             if (newNode != jsonNode)
             {
                 _editingJsonObject[index] = newNode;

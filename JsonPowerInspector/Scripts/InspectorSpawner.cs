@@ -32,20 +32,20 @@ public class InspectorSpawner
         _booleanInspector = booleanInspector;
     }
 
-    public StringInspector Create(StringPropertyInfo stringPropertyInfo, string path) => Print<StringInspector, StringPropertyInfo>(_stringInspector, stringPropertyInfo, path);
-    public NumberInspector Create(NumberPropertyInfo numberPropertyInfo, string path) => Print<NumberInspector, NumberPropertyInfo>(_numberInspector, numberPropertyInfo, path);
-    public ObjectInspector Create(ObjectPropertyInfo objectPropertyInfo, string path) => Print<ObjectInspector, ObjectPropertyInfo>(_objectInspector, objectPropertyInfo, path);
-    public BooleanInspector Create(BooleanPropertyInfo booleanPropertyInfo, string path) => Print<BooleanInspector, BooleanPropertyInfo>(_booleanInspector, booleanPropertyInfo, path);
-    public ArrayInspector Create(ArrayPropertyInfo arrayPropertyInfo, string path) => Print<ArrayInspector, ArrayPropertyInfo>(_arrayInspector, arrayPropertyInfo, path);
-    public DictionaryInspector Create(DictionaryPropertyInfo dictionaryPropertyInfo, string path) => Print<DictionaryInspector, DictionaryPropertyInfo>(_dictionaryInspector, dictionaryPropertyInfo, path);
-    public EnumInspector Create(EnumPropertyInfo enumPropertyInfo, string path) => Print<EnumInspector, EnumPropertyInfo>(_enumInspector, enumPropertyInfo, path);
+    public StringInspector Create(StringPropertyInfo stringPropertyInfo) => Print<StringInspector, StringPropertyInfo>(_stringInspector, stringPropertyInfo);
+    public NumberInspector Create(NumberPropertyInfo numberPropertyInfo) => Print<NumberInspector, NumberPropertyInfo>(_numberInspector, numberPropertyInfo);
+    public ObjectInspector Create(ObjectPropertyInfo objectPropertyInfo) => Print<ObjectInspector, ObjectPropertyInfo>(_objectInspector, objectPropertyInfo);
+    public BooleanInspector Create(BooleanPropertyInfo booleanPropertyInfo) => Print<BooleanInspector, BooleanPropertyInfo>(_booleanInspector, booleanPropertyInfo);
+    public ArrayInspector Create(ArrayPropertyInfo arrayPropertyInfo) => Print<ArrayInspector, ArrayPropertyInfo>(_arrayInspector, arrayPropertyInfo);
+    public DictionaryInspector Create(DictionaryPropertyInfo dictionaryPropertyInfo) => Print<DictionaryInspector, DictionaryPropertyInfo>(_dictionaryInspector, dictionaryPropertyInfo);
+    public EnumInspector Create(EnumPropertyInfo enumPropertyInfo) => Print<EnumInspector, EnumPropertyInfo>(_enumInspector, enumPropertyInfo);
     
-    private static TInspector Print<TInspector, TPropertyInfo>(PackedScene inspectorPrefab, TPropertyInfo propertyInfo, string path) 
+    private static TInspector Print<TInspector, TPropertyInfo>(PackedScene inspectorPrefab, TPropertyInfo propertyInfo) 
         where TInspector : BasePropertyInspector<TPropertyInfo> 
         where TPropertyInfo : BaseObjectPropertyInfo
     {
         var instance = inspectorPrefab.Instantiate<TInspector>();
-        instance.Initialize(propertyInfo, path);
+        instance.Initialize(propertyInfo);
         return instance;
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -13,7 +13,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
 
-    protected override void OnBind(ref JsonNode node)
+    protected override void Bind(ref JsonNode node)
     {
         node ??= new JsonArray();
         _arrayElementCount.Value = node.AsArray().Count;
@@ -28,10 +28,9 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
             var jsonArrayElement = jsonArray[index];
             var inspector = Utils.CreateInspectorForProperty(
                 PropertyInfo.ArrayElementTypeInfo,
-                spawner,
-                $"{PropertyPath}.{PropertyInfo.Name}.{index}"
+                spawner
             );
-            inspector.Bind(ref jsonArrayElement);
+            inspector.BindJsonNode(ref jsonArrayElement);
             var arrayItem = _arrayElement.Instantiate<ArrayItem>();
             arrayItem.Container.AddChild((Control)inspector);
             AddChildNode(inspector, arrayItem, PropertyInfo.ArrayElementTypeInfo);

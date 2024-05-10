@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text.Json.Nodes;
 using Godot;
@@ -9,11 +9,6 @@ namespace JsonPowerInspector;
 public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
 {
     [Export] private Button _deleteBtn;
-
-    protected override void OnFoldUpdate(bool shown)
-    {
-
-    }
 
     protected override void OnInitialPrint(JsonNode node)
     {
@@ -26,11 +21,11 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
         for (var index = 0; index < span.Length; index++)
         {
             var info = span[index];
-            var inspector = Utils.CreateInspectorForProperty(info, Main.CurrentSession.InspectorSpawner, $"{PropertyPath}.{info.Name}");
+            var inspector = Utils.CreateInspectorForProperty(info, Main.CurrentSession.InspectorSpawner);
             AddChildNode(inspector, (Control)inspector, info);
             var jsonNode = jsonProperties[index].Value;
             var newNode = jsonNode;
-            inspector.Bind(ref newNode);
+            inspector.BindJsonNode(ref newNode);
             if (newNode != jsonNode)
             {
                 jsonObject[info.Name] = newNode;

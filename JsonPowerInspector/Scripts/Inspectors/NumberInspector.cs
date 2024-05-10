@@ -29,28 +29,30 @@ public partial class NumberInspector : BasePropertyInspector<NumberPropertyInfo>
         }
     }
 
-    public override void Bind(ref JsonNode node)
+    protected override void Bind(ref JsonNode node)
     {
-        var value = node.AsValue();
+        var jsonValue = node.AsValue();
         switch (PropertyInfo.NumberKind)
         {
             case NumberPropertyInfo.NumberType.Int:
-                var contentControlValue = value.GetValue<int>();
+                var contentControlValue = jsonValue.GetValue<int>();
                 _contentControl.Value = contentControlValue;
                 break;
             case NumberPropertyInfo.NumberType.Float:
-                if (value.TryGetValue<double>(out var floatValue))
+                if (jsonValue.TryGetValue<double>(out var floatValue))
                 {
                     _contentControl.Value = floatValue;
                 }
                 else
                 {
-                    contentControlValue = value.GetValue<int>();
+                    contentControlValue = jsonValue.GetValue<int>();
                     _contentControl.Value = contentControlValue;
                 }
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        _contentControl.ValueChanged += value => jsonValue.ReplaceWith(value);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -27,8 +27,10 @@ public partial class EnumInspector : BasePropertyInspector<EnumPropertyInfo>
         _contentControl.Selected = -1;
     }
 
-    public override void Bind(ref JsonNode node)
+    protected override void Bind(ref JsonNode node)
     {
-        _contentControl.Selected = _selections.IndexOf(node.AsValue().GetValue<string>());
+        var jsonValue = node.AsValue();
+        _contentControl.Selected = _selections.IndexOf(jsonValue.GetValue<string>());
+        _contentControl.ItemSelected += index => jsonValue.ReplaceWith(_selections[(int)index]);
     }
 }

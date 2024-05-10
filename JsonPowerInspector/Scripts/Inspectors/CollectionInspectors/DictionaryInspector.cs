@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text.Json.Nodes;
 using Godot;
@@ -14,10 +14,16 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
 
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
     
-    protected override void OnBind(ref JsonNode node)
+    protected override void Bind(ref JsonNode node)
     {
         node ??= new JsonObject();
         _dictionaryElementCount.Value = node.AsObject().Count;
+        
+        _addElement.Pressed += () =>
+        {
+            var jsonObject = (JsonObject)BackingNode;
+            #error TODO: Popup key input panel
+        };
     }
     
     protected override void OnInitialPrint(JsonNode node)
@@ -31,11 +37,10 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
 
             var inspector = Utils.CreateInspectorForProperty(
                 PropertyInfo.ValueTypeInfo,
-                spawner,
-                $"{PropertyPath}.{PropertyInfo.Name}.{index}"
+                spawner
             );
             var newElement = jsonArrayElement.Value;
-            inspector.Bind(ref newElement);
+            inspector.BindJsonNode(ref newElement);
             if (newElement != jsonArrayElement.Value)
             {
                 jsonObject[jsonArrayElement.Key] = newElement;
@@ -45,5 +50,6 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
             dictionaryItem.Container.AddChild((Control)inspector);
             AddChildNode(inspector, dictionaryItem, PropertyInfo.KeyTypeInfo);
         }
+
     }
 }

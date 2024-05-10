@@ -13,24 +13,23 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     [Export] private CheckButton _foldout;
     
     private bool _created;
-    private JsonNode _node;
-    private readonly List<Node> _nodes = [];
+    private readonly List<Node> _childrenNodes = [];
 
-    protected IReadOnlyList<Node> Nodes => _nodes;
+    protected IReadOnlyList<Node> ChildrenNodes => _childrenNodes;
     
     protected record struct Node(IPropertyInspector Inspector, BaseObjectPropertyInfo PropertyInfo);
 
     protected void AddChildNode(IPropertyInspector inspector, Control inspectorControl, BaseObjectPropertyInfo propertyInfo)
     {
-        _nodes.Add(new(inspector, propertyInfo));
+        _childrenNodes.Add(new(inspector, propertyInfo));
         _contentControl.AddChild(inspectorControl);
         _emptyIndicator.Hide();
     }
 
     protected void RemoveNode(int index)
     {
-        _nodes.RemoveAt(index);
-        if(_nodes.Count == 0) _emptyIndicator.Show();
+        _childrenNodes.RemoveAt(index);
+        if(_childrenNodes.Count == 0) _emptyIndicator.Show();
     }
 
     protected sealed override void OnInitialize(TPropertyInfo propertyInfo)
@@ -40,7 +39,7 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
             if (!_created)
             {
                 _created = true;
-                OnInitialPrint(_node);
+                OnInitialPrint(BackingNode);
             }
             _contentPanel.Visible = on;
             OnFoldUpdate(on);
@@ -50,14 +49,6 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
         OnFoldUpdate(false);
         OnPostInitialize(propertyInfo);
     }
-
-    public sealed override void Bind(ref JsonNode node)
-    {
-        OnBind(ref node);
-        _node = node;
-    }
-
-    protected virtual void OnBind(ref JsonNode node) { }
 
     protected virtual void OnFoldUpdate(bool shown) { }
 

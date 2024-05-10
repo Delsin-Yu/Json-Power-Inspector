@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
 
@@ -7,14 +7,11 @@ namespace JsonPowerInspector;
 public partial class StringInspector : BasePropertyInspector<StringPropertyInfo>
 {
     [Export] private LineEdit _contentControl;
-
-    protected override void OnInitialize(StringPropertyInfo propertyInfo)
+    
+    protected override void Bind(ref JsonNode node)
     {
-        
-    }
-
-    public override void Bind(ref JsonNode node)
-    {
-        _contentControl.Text = node.AsValue().GetValue<string>();
+        var jsonValue = node.AsValue();
+        _contentControl.Text = jsonValue.GetValue<string>();
+        _contentControl.TextChanged += text => jsonValue.ReplaceWith(text);
     }
 }

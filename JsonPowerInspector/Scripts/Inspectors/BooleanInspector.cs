@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
 
@@ -8,12 +8,10 @@ public partial class BooleanInspector : BasePropertyInspector<BooleanPropertyInf
 {
     [Export] private CheckBox _contentControl;
 
-    protected override void OnInitialize(BooleanPropertyInfo propertyInfo)
+    protected override void Bind(ref JsonNode node)
     {
-    }
-
-    public override void Bind(ref JsonNode node)
-    {
-        _contentControl.ButtonPressed = node.AsValue().GetValue<bool>();
+        var jsonValue = node.AsValue();
+        _contentControl.ButtonPressed = jsonValue.GetValue<bool>();
+        _contentControl.Toggled += on => jsonValue.ReplaceWith(on);
     }
 }
