@@ -42,7 +42,8 @@ public class InspectionSession
             var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner, propertyInfo.Name);
             _inspectorRoot.Add(inspectorForProperty);
             rootObjectContainer.AddChild((Control)inspectorForProperty);
-            _templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap));
+            var propertyPath = new HashSet<BaseObjectPropertyInfo>();
+            _templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
         }
 
         LoadFromJsonObject(jsonObject ?? _templateJsonObject.DeepClone().AsObject());
@@ -55,8 +56,14 @@ public class InspectionSession
         var objectProperty = _editingJsonObject.ToArray();
         for (var index = 0; index < _inspectorRoot.Count; index++)
         {
+            var jsonNode = objectProperty[index].Value;
+            var newNode = jsonNode;
             var propertyInspector = _inspectorRoot[index];
-            propertyInspector.Bind(objectProperty[index].Value!);
+            propertyInspector.Bind(ref newNode);
+            if (newNode != jsonNode)
+            {
+                _editingJsonObject[index] = newNode;
+            }
         }
     }
 }

@@ -22,14 +22,14 @@ public partial class NumberInspector : BasePropertyInspector<NumberPropertyInfo>
         }
         else
         {
-            _contentControl.MinValue = double.MinValue;
-            _contentControl.MaxValue = double.MaxValue;
+            _contentControl.MinValue = -1_0000_0000;
+            _contentControl.MaxValue = 1_0000_0000;
             _contentControl.AllowLesser = true;
             _contentControl.AllowGreater = true;
         }
     }
 
-    public override void Bind(JsonNode node)
+    public override void Bind(ref JsonNode node)
     {
         var value = node.AsValue();
         switch (PropertyInfo.NumberKind)

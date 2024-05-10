@@ -33,7 +33,7 @@ public static class TemplateSerializer
     
     private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, Dictionary<string, ObjectDefinition> referencedPropertyInfo)
     {
-        var propertyInfos = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        var propertyInfos = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(x => x.CanRead && x.CanWrite).ToArray();
         var properties = new List<BaseObjectPropertyInfo>();
         foreach (var propertyInfo in propertyInfos)
         {
@@ -57,6 +57,11 @@ public static class TemplateSerializer
 
     private static string GetTypeName(Type type) => type.Name;
 
+    private static readonly HashSet<Type> _serializeToStringTypes =
+    [
+        typeof(DateTime)
+    ];
+    
     private static bool TryParseProperty(
         string propertyName,
         Type propertyType,
@@ -66,7 +71,11 @@ public static class TemplateSerializer
     {
         baseObjectPropertyInfo = null;
 
-        if (propertyType.IsArray)
+        if (_serializeToStringTypes.Contains(propertyType))
+        {
+            baseObjectPropertyInfo = new StringPropertyInfo();
+        }
+        else if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
             if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, out var arrayElementTypeInfo))
@@ -117,6 +126,10 @@ public static class TemplateSerializer
             {
                 return false;
             }
+        }
+        else if (propertyType == typeof(bool))
+        {
+            baseObjectPropertyInfo = new BooleanPropertyInfo();
         }
         else if (propertyType.IsPrimitive)
         {
@@ -178,10 +191,6 @@ public static class TemplateSerializer
         else if (propertyType == typeof(string))
         {
             baseObjectPropertyInfo = new StringPropertyInfo();
-        }
-        else if (propertyType == typeof(bool))
-        {
-            baseObjectPropertyInfo = new BooleanPropertyInfo();
         }
         else if (propertyType.IsEnum)
         {

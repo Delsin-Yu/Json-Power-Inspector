@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
 
@@ -7,15 +8,31 @@ namespace JsonPowerInspector;
 public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
 {
     [Export] private Button _addElement;
+    [Export] private SpinBox _arrayElementCount;
+    [Export] private PackedScene _arrayElement;
     
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
-    
-    protected override void OnPostInitialize(ArrayPropertyInfo propertyInfo)
+
+    protected override void OnBind(ref JsonNode node)
     {
+        node ??= new JsonArray();
+        _arrayElementCount.Value = node.AsArray().Count;
     }
 
-    public override void Bind(JsonNode node)
+    protected override void OnInitialPrint(JsonNode node)
     {
-        
+        var jsonArray = node.AsArray();
+        var spawner = Main.CurrentSession.InspectorSpawner;
+        for (var index = 0; index < jsonArray.Count; index++)
+        {
+            var jsonArrayElement = jsonArray[index];
+            var inspector = Utils.CreateInspectorForProperty(
+                PropertyInfo.ArrayElementTypeInfo,
+                spawner,
+                $"{PropertyPath}.{PropertyInfo.Name}.{index}"
+            );
+            inspector.Bind(ref jsonArrayElement);
+            AddChildNode(inspector, PropertyInfo.ArrayElementTypeInfo);
+        }
     }
 }

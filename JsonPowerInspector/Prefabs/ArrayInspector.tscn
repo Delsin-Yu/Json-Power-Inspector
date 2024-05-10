@@ -1,15 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://cht8r37b1mgmj"]
+[gd_scene load_steps=3 format=3 uid="uid://cht8r37b1mgmj"]
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/ArrayInspector.cs" id="1_3x8f5"]
+[ext_resource type="PackedScene" uid="uid://cdqf6t5uwv701" path="res://Prefabs/ArrayItem.tscn" id="2_yacaq"]
 
-[node name="ArrayInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_contentControl", "_contentPanel", "_foldout", "_propertyName")]
+[node name="ArrayInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_arrayElementCount", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_top = 74.0
 offset_right = 255.0
 offset_bottom = 74.0
 script = ExtResource("1_3x8f5")
 _addElement = NodePath("VBoxContainer/AddButton")
+_arrayElementCount = NodePath("VBoxContainer/HBoxContainer/SpinBox")
+_arrayElement = ExtResource("2_yacaq")
 _contentControl = NodePath("VBoxContainer/PanelContainer/ArrayItems")
 _contentPanel = NodePath("VBoxContainer/PanelContainer")
+_emptyIndicator = NodePath("VBoxContainer/PanelContainer/ArrayItems/EmptyIndicator")
 _foldout = NodePath("VBoxContainer/HBoxContainer/Foldout")
 _propertyName = NodePath("VBoxContainer/HBoxContainer/PropertyName")
 
@@ -43,6 +47,12 @@ layout_mode = 2
 [node name="ArrayItems" type="VBoxContainer" parent="VBoxContainer/PanelContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+
+[node name="EmptyIndicator" type="Label" parent="VBoxContainer/PanelContainer/ArrayItems"]
+layout_mode = 2
+text = "(Empty Array)"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AddButton" type="Button" parent="VBoxContainer"]
 auto_translate_mode = 1

@@ -1,7 +1,12 @@
-[gd_scene format=3 uid="uid://cdqf6t5uwv701"]
+[gd_scene load_steps=2 format=3 uid="uid://cdqf6t5uwv701"]
 
-[node name="ArrayItem" type="HBoxContainer"]
+[ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/ArrayItem.cs" id="1_wo6ro"]
+
+[node name="ArrayItem" type="HBoxContainer" node_paths=PackedStringArray("_removeElement", "_elementContainer")]
 auto_translate_mode = 1
+script = ExtResource("1_wo6ro")
+_removeElement = NodePath("RemoveButton")
+_elementContainer = NodePath("ArrayItemContent")
 
 [node name="RemoveButton" type="Button" parent="."]
 auto_translate_mode = 1

@@ -3,9 +3,24 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using TMI_RogueLike_DataEditor.Model;
 
-[JsonSerializable(typeof(MyComplexModel))]
+[JsonSerializable(typeof(TestModels))]
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
 public partial class TestApplicationJsonContext : JsonSerializerContext;
+
+public class TestModels
+{
+    public MySimpleModel MySimpleModel { get; set; }
+    public MyComplexModel MyComplexModel { get; set; }
+} 
+
+public class MySimpleModel
+{
+    public NationModel NationModel { get; set; }
+    public CharacterModel CharacterModel { get; set; }
+    public LocationModel LocationModel { get; set; }
+    public WeaponModel WeaponModel { get; set; }
+    public ItemModel ItemModel { get; set; }
+}
 
 public class MyComplexModel
 {

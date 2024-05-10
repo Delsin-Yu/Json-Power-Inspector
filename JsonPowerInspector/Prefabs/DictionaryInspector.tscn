@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryInspector.cs" id="1_cet7s"]
 
-[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_contentControl", "_contentPanel", "_foldout", "_propertyName")]
+[node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_right = 292.0
 script = ExtResource("1_cet7s")
 _addElement = NodePath("VBoxContainer/AddButton")
 _contentControl = NodePath("VBoxContainer/PanelContainer/DictionaryItems")
 _contentPanel = NodePath("VBoxContainer/PanelContainer")
+_emptyIndicator = NodePath("VBoxContainer/PanelContainer/DictionaryItems/EmptyIndicator")
 _foldout = NodePath("VBoxContainer/HBoxContainer/Foldout")
 _propertyName = NodePath("VBoxContainer/HBoxContainer/PropertyName")
 
@@ -41,6 +42,13 @@ layout_mode = 2
 [node name="DictionaryItems" type="VBoxContainer" parent="VBoxContainer/PanelContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+
+[node name="EmptyIndicator" type="Label" parent="VBoxContainer/PanelContainer/DictionaryItems"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "(Empty Dictionary)"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AddButton" type="Button" parent="VBoxContainer"]
 auto_translate_mode = 1

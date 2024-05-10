@@ -2,13 +2,15 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/ObjectInspector.cs" id="1_fwu4h"]
 
-[node name="ObjectInspector" type="PanelContainer" node_paths=PackedStringArray("_contentControl", "_contentPanel", "_foldout", "_propertyName")]
+[node name="ObjectInspector" type="PanelContainer" node_paths=PackedStringArray("_deleteBtn", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_top = 32.0
 offset_right = 176.0
 offset_bottom = 32.0
 script = ExtResource("1_fwu4h")
+_deleteBtn = NodePath("VBoxContainer/HBoxContainer/DeleteBtn")
 _contentControl = NodePath("VBoxContainer/PanelContainer/PropertyContent")
 _contentPanel = NodePath("VBoxContainer/PanelContainer")
+_emptyIndicator = NodePath("VBoxContainer/PanelContainer/PropertyContent/EmptyIndicator")
 _foldout = NodePath("VBoxContainer/HBoxContainer/Foldout")
 _propertyName = NodePath("VBoxContainer/HBoxContainer/PropertyName")
 
@@ -31,9 +33,21 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Object Inspector"
 
+[node name="DeleteBtn" type="Button" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "X"
+
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="PropertyContent" type="VBoxContainer" parent="VBoxContainer/PanelContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+
+[node name="EmptyIndicator" type="Label" parent="VBoxContainer/PanelContainer/PropertyContent"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "(Null)"
+horizontal_alignment = 1
+vertical_alignment = 1

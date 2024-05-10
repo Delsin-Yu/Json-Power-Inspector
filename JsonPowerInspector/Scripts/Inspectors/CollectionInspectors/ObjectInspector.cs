@@ -1,27 +1,40 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json.Nodes;
+using Godot;
 using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
 
 public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
 {
-    protected override void OnPostInitialize(ObjectPropertyInfo propertyInfo)
+    [Export] private Button _deleteBtn;
+
+    protected override void OnFoldUpdate(bool shown)
     {
-        var objectDefinition = Main.CurrentSession.LookupObject(propertyInfo.ObjectTypeName);
-        foreach (var info in objectDefinition.Properties.AsSpan())
-        {
-            CreateInspector(info);
-        }
+
     }
 
-    public override void Bind(JsonNode node)
+    protected override void OnInitialPrint(JsonNode node)
     {
-        var o = node.AsObject().ToArray();
-        for (var index = 0; index < o.Length; index++)
+        if (node == null) return;
+        
+        var objectDefinition = Main.CurrentSession.LookupObject(PropertyInfo.ObjectTypeName);
+        var span = objectDefinition.Properties.AsSpan();
+        var jsonObject = node.AsObject();
+        var jsonProperties = jsonObject.ToArray();
+        for (var index = 0; index < span.Length; index++)
         {
-            Nodes[index].Inspector.Bind(o[index].Value!);
+            var info = span[index];
+            var inspector = Utils.CreateInspectorForProperty(info, Main.CurrentSession.InspectorSpawner, $"{PropertyPath}.{info.Name}");
+            AddChildNode(inspector, info);
+            var jsonNode = jsonProperties[index].Value;
+            var newNode = jsonNode;
+            inspector.Bind(ref newNode);
+            if (newNode != jsonNode)
+            {
+                jsonObject[info.Name] = newNode;
+            }
         }
     }
 }

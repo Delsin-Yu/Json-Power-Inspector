@@ -23,7 +23,7 @@ public static class Utils
         };
     }
 
-    public static JsonNode CreateJsonObjectForProperty(BaseObjectPropertyInfo propertyInfo, IReadOnlyDictionary<string, ObjectDefinition> objectLookup)
+    public static JsonNode CreateJsonObjectForProperty(BaseObjectPropertyInfo propertyInfo, IReadOnlyDictionary<string, ObjectDefinition> objectLookup, HashSet<BaseObjectPropertyInfo> path)
     {
         switch (propertyInfo)
         {
@@ -31,12 +31,13 @@ public static class Utils
                 return string.Empty;
             case NumberPropertyInfo:
                 return 0;
-            case ObjectPropertyInfo:
-                var objectDefinition = objectLookup[propertyInfo.Name];
+            case ObjectPropertyInfo objectPropertyInfo:
+                var objectDefinition = objectLookup[objectPropertyInfo.ObjectTypeName];
                 var subJsonObject = new JsonObject();
-                foreach (var objectPropertyInfo in objectDefinition.Properties.AsSpan())
+                foreach (var baseObjectPropertyInfo in objectDefinition.Properties.AsSpan())
                 {
-                    subJsonObject.Add(objectPropertyInfo.Name, CreateJsonObjectForProperty(objectPropertyInfo, objectLookup));
+                    if(!path.Add(baseObjectPropertyInfo)) continue;
+                    subJsonObject.Add(baseObjectPropertyInfo.Name, CreateJsonObjectForProperty(baseObjectPropertyInfo, objectLookup, path));
                 }
                 return subJsonObject;
             case BooleanPropertyInfo:

@@ -12,7 +12,7 @@ public partial class BooleanInspector : BasePropertyInspector<BooleanPropertyInf
     {
     }
 
-    public override void Bind(JsonNode node)
+    public override void Bind(ref JsonNode node)
     {
         _contentControl.ButtonPressed = node.AsValue().GetValue<bool>();
     }

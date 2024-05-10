@@ -13,7 +13,7 @@ public partial class StringInspector : BasePropertyInspector<StringPropertyInfo>
         
     }
 
-    public override void Bind(JsonNode node)
+    public override void Bind(ref JsonNode node)
     {
         _contentControl.Text = node.AsValue().GetValue<string>();
     }

@@ -8,7 +8,7 @@ public interface IPropertyInspector
 {
     string PropertyPath { get; }
     string DisplayName { get; }
-    void Bind(JsonNode jsonNode);
+    void Bind(ref JsonNode jsonNode);
 }
 
 public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IPropertyInspector where TPropertyInfo : BaseObjectPropertyInfo
@@ -31,5 +31,5 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
     
     protected abstract void OnInitialize(TPropertyInfo propertyInfo);
 
-    public abstract void Bind(JsonNode node);
+    public abstract void Bind(ref JsonNode node);
 }

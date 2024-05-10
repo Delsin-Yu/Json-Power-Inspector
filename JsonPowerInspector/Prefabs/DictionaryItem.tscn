@@ -1,9 +1,15 @@
-[gd_scene format=3 uid="uid://q1vekgfskixp"]
+[gd_scene load_steps=2 format=3 uid="uid://q1vekgfskixp"]
 
-[node name="DictionaryItem" type="GridContainer"]
+[ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryItem.cs" id="1_v4ukq"]
+
+[node name="DictionaryItem" type="GridContainer" node_paths=PackedStringArray("_removeElement", "_keyContainer", "_valueContainer")]
 auto_translate_mode = 1
 size_flags_horizontal = 3
 columns = 3
+script = ExtResource("1_v4ukq")
+_removeElement = NodePath("RemoveButton")
+_keyContainer = NodePath("DictionaryKeyContent")
+_valueContainer = NodePath("DictionaryValueContent")
 
 [node name="RemoveButton" type="Button" parent="."]
 auto_translate_mode = 1

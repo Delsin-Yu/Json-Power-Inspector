@@ -9,12 +9,8 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
     [Export] private Button _addElement;
 
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
-
-    protected override void OnPostInitialize(DictionaryPropertyInfo propertyInfo)
-    {
-    }
-
-    public override void Bind(JsonNode node)
+    
+    protected override void OnInitialPrint(JsonNode node)
     {
         
     }

@@ -27,7 +27,7 @@ public partial class EnumInspector : BasePropertyInspector<EnumPropertyInfo>
         _contentControl.Selected = -1;
     }
 
-    public override void Bind(JsonNode node)
+    public override void Bind(ref JsonNode node)
     {
         _contentControl.Selected = _selections.IndexOf(node.AsValue().GetValue<string>());
     }
