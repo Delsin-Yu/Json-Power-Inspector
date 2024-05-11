@@ -23,32 +23,33 @@ public static class Utils
         };
     }
 
+    public static JsonNode CreateDefaultJsonObjectForProperty(BaseObjectPropertyInfo propertyInfo) =>
+        propertyInfo switch
+        {
+            StringPropertyInfo => string.Empty,
+            NumberPropertyInfo => 0,
+            ObjectPropertyInfo => new JsonObject(),
+            BooleanPropertyInfo => false,
+            ArrayPropertyInfo => new JsonArray(),
+            DictionaryPropertyInfo => new JsonObject(),
+            EnumPropertyInfo enumPropertyInfo => enumPropertyInfo.EnumValues.FirstOrDefault().ValueName ?? string.Empty,
+            _ => throw new InvalidOperationException()
+        };
+
     public static JsonNode CreateJsonObjectForProperty(BaseObjectPropertyInfo propertyInfo, IReadOnlyDictionary<string, ObjectDefinition> objectLookup, HashSet<BaseObjectPropertyInfo> path)
     {
-        switch (propertyInfo)
+        var jsonProperty = CreateDefaultJsonObjectForProperty(propertyInfo);
+        
+        if (propertyInfo is not ObjectPropertyInfo objectPropertyInfo) return jsonProperty;
+        
+        var subJsonObject = jsonProperty.AsObject();
+        var objectDefinition = objectLookup[objectPropertyInfo.ObjectTypeName];
+        foreach (var baseObjectPropertyInfo in objectDefinition.Properties.AsSpan())
         {
-            case StringPropertyInfo:
-                return string.Empty;
-            case NumberPropertyInfo:
-                return 0;
-            case ObjectPropertyInfo objectPropertyInfo:
-                var objectDefinition = objectLookup[objectPropertyInfo.ObjectTypeName];
-                var subJsonObject = new JsonObject();
-                foreach (var baseObjectPropertyInfo in objectDefinition.Properties.AsSpan())
-                {
-                    if(!path.Add(baseObjectPropertyInfo)) continue;
-                    subJsonObject.Add(baseObjectPropertyInfo.Name, CreateJsonObjectForProperty(baseObjectPropertyInfo, objectLookup, path));
-                }
-                return subJsonObject;
-            case BooleanPropertyInfo:
-                return false;
-            case ArrayPropertyInfo:
-                return new JsonArray();
-            case DictionaryPropertyInfo:
-                return new JsonObject();
-            case EnumPropertyInfo enumPropertyInfo:
-                return enumPropertyInfo.EnumValues.FirstOrDefault().ValueName ?? string.Empty;
-            default: throw new InvalidOperationException();
+            if(!path.Add(baseObjectPropertyInfo)) continue;
+            subJsonObject.Add(baseObjectPropertyInfo.Name, CreateJsonObjectForProperty(baseObjectPropertyInfo, objectLookup, path));
         }
+
+        return jsonProperty;
     }
 }

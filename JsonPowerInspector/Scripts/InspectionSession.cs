@@ -10,7 +10,6 @@ namespace JsonPowerInspector;
 public class InspectionSession
 {
     public InspectorSpawner InspectorSpawner { get; private set; }
-
     private readonly Dictionary<string, ObjectDefinition> _objectDefinitionMap;
 
     private readonly ObjectDefinition _mainObjectDefinition;
