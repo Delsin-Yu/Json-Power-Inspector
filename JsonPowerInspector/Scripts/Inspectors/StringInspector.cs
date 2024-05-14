@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -12,6 +13,6 @@ public partial class StringInspector : BasePropertyInspector<StringPropertyInfo>
     {
         var jsonValue = node.AsValue();
         _contentControl.Text = jsonValue.GetValue<string>();
-        _contentControl.TextChanged += text => jsonValue.ReplaceWith(text);
+        _contentControl.TextChanged += ReplaceValue;
     }
 }

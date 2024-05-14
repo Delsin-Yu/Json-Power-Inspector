@@ -55,14 +55,9 @@ public class InspectionSession
         var objectProperty = _editingJsonObject.ToArray();
         for (var index = 0; index < _inspectorRoot.Count; index++)
         {
-            var jsonNode = objectProperty[index].Value;
-            var newNode = jsonNode;
+            var jsonNode = objectProperty[index].Key;
             var propertyInspector = _inspectorRoot[index];
-            propertyInspector.BindJsonNode(ref newNode);
-            if (newNode != jsonNode)
-            {
-                _editingJsonObject[index] = newNode;
-            }
+            propertyInspector.BindJsonNode(_editingJsonObject, jsonNode);
         }
     }
 }

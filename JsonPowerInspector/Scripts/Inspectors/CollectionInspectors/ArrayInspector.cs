@@ -25,12 +25,11 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
         var spawner = Main.CurrentSession.InspectorSpawner;
         for (var index = 0; index < jsonArray.Count; index++)
         {
-            var jsonArrayElement = jsonArray[index];
             var inspector = Utils.CreateInspectorForProperty(
                 PropertyInfo.ArrayElementTypeInfo,
                 spawner
             );
-            inspector.BindJsonNode(ref jsonArrayElement);
+            inspector.BindJsonNode(node, index.ToString());
             var arrayItem = _arrayElement.Instantiate<ArrayItem>();
             arrayItem.Container.AddChild((Control)inspector);
             AddChildNode(inspector, arrayItem, PropertyInfo.ArrayElementTypeInfo);

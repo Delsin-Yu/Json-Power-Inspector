@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Text.Json.Nodes;
 using Godot;
 using GodotTask;
 using JsonPowerInspector.Template;
@@ -20,37 +21,44 @@ public partial class KeyInputWindow : Window
         _cancelBtn.Pressed += () => _removeClicked = true;
     }
 
-    public async GDTask<double?> ShowAsync(NumberPropertyInfo numberPropertyInfo, InspectorSpawner inspectorSpawner)
+    public GDTask<(bool, double)> ShowAsync(NumberPropertyInfo numberPropertyInfo, InspectorSpawner inspectorSpawner) =>
+        ShowAsync(
+            numberPropertyInfo,
+            static (spawner, info) => spawner.Create(info),
+            inspectorSpawner,
+            0.0
+        );
+
+    public GDTask<(bool, string)> ShowAsync(StringPropertyInfo stringPropertyInfo, InspectorSpawner inspectorSpawner) =>
+        ShowAsync(
+            stringPropertyInfo,
+            static (spawner, info) => spawner.Create(info),
+            inspectorSpawner,
+            ""
+        );
+
+    private async GDTask<(bool, TValue)> ShowAsync<TPropertyInfo, TValue>(
+        TPropertyInfo propertyInfo,
+        Func<InspectorSpawner, TPropertyInfo, IPropertyInspector> inspectorFactory,
+        InspectorSpawner spawner,
+        TValue defaultValue
+    ) where TValue : notnull
     {
-        var inspector = inspectorSpawner.Create(numberPropertyInfo);
-        JsonNode jsonValueNode = JsonValue.Create(0);
-        _container.AddChild(inspector);
-        inspector.BindJsonNode(ref jsonValueNode);
+        var inspector = inspectorFactory(spawner, propertyInfo);
+        var emptyJsonObject = new JsonObject();
+        JsonNode jsonValueNode = JsonValue.Create(defaultValue);
+        const string name = "TempJsonNode";
+        emptyJsonObject.Add(name, jsonValueNode);
+        _container.AddChild((Control)inspector);
+        inspector.BindJsonNode(emptyJsonObject, name);
         Show();
         await GDTask.WaitUntil(() => _addClicked || _removeClicked);
         QueueFree();
         if (_addClicked)
         {
-            ((JsonValue)jsonValueNode).TryGetValue<double>(out var returnValue);
-            return returnValue;
-        };
-        return null;
-    }
-    
-    public async GDTask<string> ShowAsync(StringPropertyInfo stringPropertyInfo, InspectorSpawner inspectorSpawner)
-    {
-        var inspector = inspectorSpawner.Create(stringPropertyInfo);
-        JsonNode jsonValueNode = JsonValue.Create("");
-        _container.AddChild(inspector);
-        inspector.BindJsonNode(ref jsonValueNode);
-        Show();
-        await GDTask.WaitUntil(() => _addClicked || _removeClicked);
-        QueueFree();
-        if (_addClicked)
-        {
-            ((JsonValue)jsonValueNode).TryGetValue<string>(out var returnValue);
-            return returnValue;
-        };
-        return null;
+            emptyJsonObject[name]!.AsValue().TryGetValue<TValue>(out var returnValue);
+            return (true, returnValue);
+        }
+        return (false, default);
     }
 }

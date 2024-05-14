@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
 using Godot;
@@ -24,28 +25,29 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
         _addElement.Pressed += async () =>
         {
             var keyInputWindow = _keyInputWindow.Instantiate<KeyInputWindow>();
+            keyInputWindow.ContentScaleFactor = GetTree().Root.ContentScaleFactor;
             AddChild(keyInputWindow);
             string selectedKey;
             var spawner = Main.CurrentSession.InspectorSpawner;
             switch (PropertyInfo.KeyTypeInfo)
             {
                 case NumberPropertyInfo numberPropertyInfo:
-                    var numberKey = await keyInputWindow.ShowAsync(numberPropertyInfo, spawner);
-                    if(numberKey is null) return;
-                    selectedKey = numberKey.ToString();
+                    var (hasValue, numberKey) = await keyInputWindow.ShowAsync(numberPropertyInfo, spawner);
+                    if(!hasValue) return;
+                    selectedKey = numberKey.ToString(CultureInfo.InvariantCulture);
                     break;
                 case StringPropertyInfo stringPropertyInfo:
-                    var stringKey = await keyInputWindow.ShowAsync(stringPropertyInfo, spawner);
-                    if(stringKey is null) return;
+                    (hasValue, var stringKey) = await keyInputWindow.ShowAsync(stringPropertyInfo, spawner);
+                    if(!hasValue) return;
                     selectedKey = stringKey;
                     break;
                 default:
                     throw new InvalidOperationException(PropertyInfo.KeyTypeInfo.GetType().Name);
             }
-            var jsonObject = (JsonObject)BackingNode;
+            var jsonObject = (JsonObject)GetBackingNode();
             var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ValueTypeInfo);
             jsonObject.Add(selectedKey, newNode);
-            BindDictionaryItem(spawner, selectedKey, newNode, jsonObject);
+            BindDictionaryItem(spawner, selectedKey, jsonObject);
         };
     }
     
@@ -58,23 +60,18 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
         {
             var jsonArrayElement = jsonObjectArray[index];
 
-            BindDictionaryItem(spawner, jsonArrayElement.Key, jsonArrayElement.Value, jsonObject);
+            BindDictionaryItem(spawner, jsonArrayElement.Key, jsonObject);
         }
 
     }
 
-    private void BindDictionaryItem(InspectorSpawner spawner, string key, JsonNode value, JsonObject jsonObject)
+    private void BindDictionaryItem(InspectorSpawner spawner, string key, JsonObject jsonObject)
     {
         var inspector = Utils.CreateInspectorForProperty(
             PropertyInfo.ValueTypeInfo,
             spawner
         );
-        var newElement = value;
-        inspector.BindJsonNode(ref newElement);
-        if (newElement != value)
-        {
-            jsonObject[key] = newElement;
-        }
+        inspector.BindJsonNode(jsonObject, key);
         var dictionaryItem = _dictionaryElement.Instantiate<DictionaryItem>();
         dictionaryItem.KeyName = key;
         dictionaryItem.Container.AddChild((Control)inspector);

@@ -31,6 +31,6 @@ public partial class EnumInspector : BasePropertyInspector<EnumPropertyInfo>
     {
         var jsonValue = node.AsValue();
         _contentControl.Selected = _selections.IndexOf(jsonValue.GetValue<string>());
-        _contentControl.ItemSelected += index => jsonValue.ReplaceWith(_selections[(int)index]);
+        _contentControl.ItemSelected += index => ReplaceValue(_selections[(int)index]);
     }
 }

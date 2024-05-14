@@ -42,7 +42,7 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
             if (!_created)
             {
                 _created = true;
-                OnInitialPrint(BackingNode);
+                OnInitialPrint(GetBackingNode());
             }
             _contentPanel.Visible = on;
             OnFoldUpdate(on);

@@ -35,8 +35,15 @@ public partial class NumberInspector : BasePropertyInspector<NumberPropertyInfo>
         switch (PropertyInfo.NumberKind)
         {
             case NumberPropertyInfo.NumberType.Int:
-                var contentControlValue = jsonValue.GetValue<int>();
-                _contentControl.Value = contentControlValue;
+                if (jsonValue.TryGetValue<int>(out var intValue))
+                {
+                    _contentControl.Value = intValue;
+                }
+                else
+                {
+                    var contentControlValue = jsonValue.GetValue<double>();
+                    _contentControl.Value = Math.Round(contentControlValue);
+                }
                 break;
             case NumberPropertyInfo.NumberType.Float:
                 if (jsonValue.TryGetValue<double>(out var floatValue))
@@ -45,14 +52,14 @@ public partial class NumberInspector : BasePropertyInspector<NumberPropertyInfo>
                 }
                 else
                 {
-                    contentControlValue = jsonValue.GetValue<int>();
+                    var contentControlValue = jsonValue.GetValue<int>();
                     _contentControl.Value = contentControlValue;
                 }
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidOperationException();
         }
 
-        _contentControl.ValueChanged += value => jsonValue.ReplaceWith(value);
+        _contentControl.ValueChanged += ReplaceValue;
     }
 }

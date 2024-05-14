@@ -12,6 +12,6 @@ public partial class BooleanInspector : BasePropertyInspector<BooleanPropertyInf
     {
         var jsonValue = node.AsValue();
         _contentControl.ButtonPressed = jsonValue.GetValue<bool>();
-        _contentControl.Toggled += on => jsonValue.ReplaceWith(on);
+        _contentControl.Toggled += ReplaceValue;
     }
 }

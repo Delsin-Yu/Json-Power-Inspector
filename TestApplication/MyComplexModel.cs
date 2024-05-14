@@ -11,7 +11,15 @@ public class TestModels
 {
     public MySimpleModel MySimpleModel { get; set; }
     public MyComplexModel MyComplexModel { get; set; }
-} 
+    public MyDictionaryModel MyDictionaryModel { get; set; }
+}
+
+public class MyDictionaryModel
+{
+    public Dictionary<string, int> StrInt { get; set; }
+    public Dictionary<int, string> IntStr { get; set; }
+    public Dictionary<float, string> FPStr { get; set; }
+}
 
 public class MySimpleModel
 {

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
 
@@ -7,7 +8,7 @@ namespace JsonPowerInspector;
 public interface IPropertyInspector
 {
     string DisplayName { get; }
-    void BindJsonNode(ref JsonNode jsonNode);
+    void BindJsonNode(JsonNode parent, string propertyName);
 }
 
 public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IPropertyInspector where TPropertyInfo : BaseObjectPropertyInfo
@@ -15,10 +16,11 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
     [Export] private Label _propertyName;
 
     public string DisplayName { get; private set; }
-    
     protected TPropertyInfo PropertyInfo { get; private set; }
-    protected JsonNode BackingNode { get; private set; }
 
+    private JsonNode _parent;
+    private string _jsonPropertyName;
+    
     public void Initialize(TPropertyInfo propertyInfo)
     {
         DisplayName = propertyInfo.Name;
@@ -29,10 +31,32 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
 
     protected virtual void OnInitialize(TPropertyInfo propertyInfo) { }
 
-    public void BindJsonNode(ref JsonNode node)
+    public void BindJsonNode(JsonNode parent, string propertyName)
     {
-        Bind(ref node);
-        BackingNode = node;
+        _parent = parent;
+        _jsonPropertyName = propertyName;
+        var node = GetBackingNode();
+        var newNode = node;
+        Bind(ref newNode);
+        if (newNode == node) return;
+        ReplaceBacking(newNode);
+    }
+
+    protected JsonNode GetBackingNode()
+    {
+        return _parent[_jsonPropertyName];
+    }
+
+    private void ReplaceBacking(JsonNode jsonNode)
+    {
+        _parent[_jsonPropertyName] = jsonNode;
+    }
+    
+    protected void ReplaceValue<TValue>(TValue value)
+    {
+        var node = GetBackingNode();
+        if (node is not JsonValue jsonValue) throw new InvalidOperationException($"{node.GetValueKind()} is not JsonValue!");
+        jsonValue.ReplaceWith(value);
     }
     
     protected virtual void Bind(ref JsonNode node) { }
