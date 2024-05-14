@@ -10,6 +10,8 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
 {
     [Export] private Button _deleteBtn;
 
+    protected override bool DisplayChildObjectByDefault => false;
+
     protected override void OnInitialPrint(JsonNode node)
     {
         if (node == null) return;

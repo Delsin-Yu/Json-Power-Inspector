@@ -15,6 +15,8 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     private bool _created;
     private readonly List<Node> _childrenNodes = [];
 
+    protected virtual bool DisplayChildObjectByDefault => true;
+    
     protected IReadOnlyList<Node> ChildrenNodes => _childrenNodes;
     
     protected record struct Node(IPropertyInspector Inspector, BaseObjectPropertyInfo PropertyInfo);
@@ -24,6 +26,7 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
         _childrenNodes.Add(new(inspector, propertyInfo));
         _contentControl.AddChild(inspectorControl);
         _emptyIndicator.Hide();
+        if(inspector is ObjectInspector objectInspector) objectInspector.ToggleFold(DisplayChildObjectByDefault);
     }
 
     protected void RemoveNode(int index)
@@ -49,6 +52,8 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
         OnFoldUpdate(false);
         OnPostInitialize(propertyInfo);
     }
+
+    public void ToggleFold(bool shown) => _foldout.ButtonPressed = shown;
 
     protected virtual void OnFoldUpdate(bool shown) { }
 
