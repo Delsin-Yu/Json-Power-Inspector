@@ -13,6 +13,7 @@ config_version=5
 config/name="Json Power Inspector"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+run/low_processor_mode=true
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
@@ -23,6 +24,7 @@ window/size/viewport_height=500
 window/energy_saving/keep_screen_on=false
 window/subwindows/embed_subwindows=false
 window/vsync/vsync_mode=0
+window/ios/allow_high_refresh_rate=false
 
 [dotnet]
 

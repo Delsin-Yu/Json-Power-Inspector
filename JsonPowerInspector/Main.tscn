@@ -66,7 +66,8 @@ size_flags_vertical = 3
 
 [node name="InspectedName" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
-text = "Drop in template file"
+size_flags_vertical = 1
+text = "Inspected Object Name"
 
 [node name="InspectedContents" type="VFlowContainer" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
