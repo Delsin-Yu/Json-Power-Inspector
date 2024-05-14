@@ -28,7 +28,7 @@ public static class Utils
         {
             StringPropertyInfo => string.Empty,
             NumberPropertyInfo => 0,
-            ObjectPropertyInfo => new JsonObject(),
+            ObjectPropertyInfo => null,
             BooleanPropertyInfo => false,
             ArrayPropertyInfo => new JsonArray(),
             DictionaryPropertyInfo => new JsonObject(),
@@ -41,7 +41,7 @@ public static class Utils
         var jsonProperty = CreateDefaultJsonObjectForProperty(propertyInfo);
         
         if (propertyInfo is not ObjectPropertyInfo objectPropertyInfo) return jsonProperty;
-        
+        jsonProperty = new JsonObject();
         var subJsonObject = jsonProperty.AsObject();
         var objectDefinition = objectLookup[objectPropertyInfo.ObjectTypeName];
         foreach (var baseObjectPropertyInfo in objectDefinition.Properties.AsSpan())

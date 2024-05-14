@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -13,10 +14,26 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
 
+    private readonly Action<IPropertyInspector, int> _removeCall;
+    
+    private readonly List<ArrayItem> _arrayItems = [];
+
+    public ArrayInspector() => _removeCall = RemoveArrayElement;
+
     protected override void Bind(ref JsonNode node)
     {
         node ??= new JsonArray();
         _arrayElementCount.Value = node.AsArray().Count;
+        _arrayElementCount.Editable = false;
+
+        _addElement.Pressed += () =>
+        {
+            var jsonArray = GetBackingNode().AsArray();
+            var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ArrayElementTypeInfo);
+            jsonArray.Add(newNode);
+            BindArrayItem(Main.CurrentSession.InspectorSpawner, jsonArray.Count - 1, jsonArray);
+            _arrayElementCount.Value++;
+        };
     }
 
     protected override void OnInitialPrint(JsonNode node)
@@ -25,14 +42,33 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
         var spawner = Main.CurrentSession.InspectorSpawner;
         for (var index = 0; index < jsonArray.Count; index++)
         {
-            var inspector = Utils.CreateInspectorForProperty(
-                PropertyInfo.ArrayElementTypeInfo,
-                spawner
-            );
-            inspector.BindJsonNode(node, index.ToString());
-            var arrayItem = _arrayElement.Instantiate<ArrayItem>();
-            arrayItem.Container.AddChild((Control)inspector);
-            AddChildNode(inspector, arrayItem, PropertyInfo.ArrayElementTypeInfo);
+            BindArrayItem(spawner, index, node);
+        }
+    }
+
+    private void BindArrayItem(InspectorSpawner spawner, int index, JsonNode node)
+    {
+        var inspector = Utils.CreateInspectorForProperty(
+            PropertyInfo.ArrayElementTypeInfo,
+            spawner
+        );
+        inspector.BindJsonNode(node, index.ToString());
+        var arrayItem = _arrayElement.Instantiate<ArrayItem>();
+        arrayItem.Initialize(inspector, _removeCall);
+        arrayItem.Index = index;
+        AddChildNode(inspector, arrayItem);
+        _arrayItems.Add(arrayItem);
+    }
+
+    private void RemoveArrayElement(IPropertyInspector inspector, int index)
+    {
+        DeleteChildNode(inspector);
+        _arrayItems.RemoveAt(index);
+        GetBackingNode().AsArray().RemoveAt(index);
+        _arrayElementCount.Value--;
+        for (var i = 0; i < _arrayItems.Count; i++)
+        {
+            _arrayItems[i].Index = i;
         }
     }
 }

@@ -42,14 +42,27 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         ReplaceBacking(newNode);
     }
 
-    protected JsonNode GetBackingNode()
-    {
-        return _parent[_jsonPropertyName];
-    }
+    protected JsonNode GetBackingNode() =>
+        _parent switch
+        {
+            JsonArray jsonArray => jsonArray[int.Parse(_jsonPropertyName)],
+            JsonObject jsonObject => jsonObject[_jsonPropertyName],
+            _ => throw new InvalidOperationException(_parent.GetType().Name)
+        };
 
     private void ReplaceBacking(JsonNode jsonNode)
     {
-        _parent[_jsonPropertyName] = jsonNode;
+        switch (_parent)
+        {
+            case JsonArray jsonArray:
+                jsonArray[int.Parse(_jsonPropertyName)] = jsonNode;
+                break;
+            case JsonObject jsonObject:
+                jsonObject[_jsonPropertyName] = jsonNode;
+                break;
+            default:
+                throw new InvalidOperationException(_parent.GetType().Name);
+        }
     }
     
     protected void ReplaceValue<TValue>(TValue value)

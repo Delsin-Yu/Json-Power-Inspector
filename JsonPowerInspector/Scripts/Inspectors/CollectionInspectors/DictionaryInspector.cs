@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
@@ -21,6 +20,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
     {
         node ??= new JsonObject();
         _dictionaryElementCount.Value = node.AsObject().Count;
+        _dictionaryElementCount.Editable = false;
         
         _addElement.Pressed += async () =>
         {
@@ -44,10 +44,11 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
                 default:
                     throw new InvalidOperationException(PropertyInfo.KeyTypeInfo.GetType().Name);
             }
-            var jsonObject = (JsonObject)GetBackingNode();
+            var jsonObject = GetBackingNode().AsObject();
             var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ValueTypeInfo);
             jsonObject.Add(selectedKey, newNode);
             BindDictionaryItem(spawner, selectedKey, jsonObject);
+            _dictionaryElementCount.Value++;
         };
     }
     
@@ -62,7 +63,6 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
 
             BindDictionaryItem(spawner, jsonArrayElement.Key, jsonObject);
         }
-
     }
 
     private void BindDictionaryItem(InspectorSpawner spawner, string key, JsonObject jsonObject)
@@ -73,8 +73,16 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
         );
         inspector.BindJsonNode(jsonObject, key);
         var dictionaryItem = _dictionaryElement.Instantiate<DictionaryItem>();
-        dictionaryItem.KeyName = key;
-        dictionaryItem.Container.AddChild((Control)inspector);
-        AddChildNode(inspector, dictionaryItem, PropertyInfo.KeyTypeInfo);
+        dictionaryItem.Initialize(
+            key,
+            inspector,
+            () =>
+            {
+                DeleteChildNode(inspector);
+                jsonObject.Remove(key);
+                _dictionaryElementCount.Value--;
+            }
+        );
+        AddChildNode(inspector, dictionaryItem);
     }
 }

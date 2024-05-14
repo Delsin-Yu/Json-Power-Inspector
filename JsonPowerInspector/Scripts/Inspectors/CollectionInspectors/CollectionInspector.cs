@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -13,26 +14,24 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     [Export] private CheckButton _foldout;
     
     private bool _created;
-    private readonly List<Node> _childrenNodes = [];
 
     protected virtual bool DisplayChildObjectByDefault => true;
-    
-    protected IReadOnlyList<Node> ChildrenNodes => _childrenNodes;
-    
-    protected record struct Node(IPropertyInspector Inspector, BaseObjectPropertyInfo PropertyInfo);
 
-    protected void AddChildNode(IPropertyInspector inspector, Control inspectorControl, BaseObjectPropertyInfo propertyInfo)
+    private readonly Dictionary<IPropertyInspector, Control> _controls = [];
+
+    protected void AddChildNode(IPropertyInspector inspector, Control inspectorControl)
     {
-        _childrenNodes.Add(new(inspector, propertyInfo));
         _contentControl.AddChild(inspectorControl);
         _emptyIndicator.Hide();
+        _controls.Add(inspector, inspectorControl);
         if(inspector is ObjectInspector objectInspector) objectInspector.ToggleFold(DisplayChildObjectByDefault);
     }
 
-    protected void RemoveNode(int index)
+    protected void DeleteChildNode(IPropertyInspector inspector)
     {
-        _childrenNodes.RemoveAt(index);
-        if(_childrenNodes.Count == 0) _emptyIndicator.Show();
+        _controls.Remove(inspector, out var control);
+        control!.QueueFree();
+        if (_controls.Count == 0) _emptyIndicator.Show();
     }
 
     protected sealed override void OnInitialize(TPropertyInfo propertyInfo)

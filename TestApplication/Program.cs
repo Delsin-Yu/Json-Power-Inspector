@@ -2,15 +2,14 @@
 using System.Text;
 using System.Text.Json;
 using JsonPowerInspector.Template;
-using TMI_RogueLike_DataEditor.Model;
 using Tynamix.ObjectFiller;
 
-var definition = TemplateSerializer.CollectTypeDefinition<MyDictionaryModel>();
+var definition = TemplateSerializer.CollectTypeDefinition<MyCollectionModel>();
 
 File.WriteAllText("definition.jsontemplate", TemplateSerializer.Serialize(definition), Encoding.UTF8);
 
-var filler = new Filler<MyDictionaryModel>();
+var filler = new Filler<MyCollectionModel>();
 
-var myComplexModel = filler.Create();
+var model = filler.Create();
 
-File.WriteAllText("data.json", JsonSerializer.Serialize(myComplexModel, TestApplicationJsonContext.Default.MyDictionaryModel), Encoding.UTF8);
+File.WriteAllText("data.json", JsonSerializer.Serialize(model, TestApplicationJsonContext.Default.MyCollectionModel), Encoding.UTF8);

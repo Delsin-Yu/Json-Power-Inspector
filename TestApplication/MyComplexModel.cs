@@ -11,14 +11,26 @@ public class TestModels
 {
     public MySimpleModel MySimpleModel { get; set; }
     public MyComplexModel MyComplexModel { get; set; }
-    public MyDictionaryModel MyDictionaryModel { get; set; }
+    public MyCollectionModel MyCollectionModel { get; set; }
 }
 
+public class MyCollectionModel
+{
+    public MyDictionaryModel MyDictionaryModel { get; set; }
+    public MyArrayModel MyArrayModel { get; set; }
+}
 public class MyDictionaryModel
 {
     public Dictionary<string, int> StrInt { get; set; }
     public Dictionary<int, string> IntStr { get; set; }
     public Dictionary<float, string> FPStr { get; set; }
+}
+
+public class MyArrayModel
+{
+    public string[] StrArr { get; set; }
+    public int[] IntArr { get; set; }
+    public MySimpleModel[] MySimpleModels { get; set; }
 }
 
 public class MySimpleModel
