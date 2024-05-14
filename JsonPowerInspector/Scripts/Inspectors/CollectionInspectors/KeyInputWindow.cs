@@ -37,6 +37,12 @@ public partial class KeyInputWindow : Window
             ""
         );
 
+    public override void _Notification(int what)
+    {
+        if (what != NotificationWMCloseRequest) return;
+        _removeClicked = true;
+    }
+
     private async GDTask<(bool, TValue)> ShowAsync<TPropertyInfo, TValue>(
         TPropertyInfo propertyInfo,
         Func<InspectorSpawner, TPropertyInfo, IPropertyInspector> inspectorFactory,

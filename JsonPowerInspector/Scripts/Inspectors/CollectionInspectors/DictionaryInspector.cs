@@ -23,7 +23,8 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
         _addElement.Pressed += async () =>
         {
             var keyInputWindow = _keyInputWindow.Instantiate<KeyInputWindow>();
-            keyInputWindow.ContentScaleFactor = GetTree().Root.ContentScaleFactor;
+            var rootContentScaleFactor = GetTree().Root.ContentScaleFactor;
+            keyInputWindow.ContentScaleFactor = rootContentScaleFactor;
             AddChild(keyInputWindow);
             string selectedKey;
             var spawner = Main.CurrentSession.InspectorSpawner;

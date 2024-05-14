@@ -5,34 +5,47 @@
 
 [node name="KeyInputWindow" type="Window" node_paths=PackedStringArray("_container", "_addBtn", "_cancelBtn")]
 title = "Specify Key"
-initial_position = 2
-size = Vector2i(309, 100)
+initial_position = 4
+size = Vector2i(324, 55)
+wrap_controls = true
 exclusive = true
 theme = ExtResource("1_r8lei")
 script = ExtResource("2_xtab7")
-_container = NodePath("VBoxContainer/VBoxContainer")
-_addBtn = NodePath("VBoxContainer/HBoxContainer2/ConfirmAddBtn")
-_cancelBtn = NodePath("VBoxContainer/HBoxContainer2/CancelAddBtn")
+_container = NodePath("MarginContainer/VBoxContainer/VBoxContainer")
+_addBtn = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/ConfirmAddBtn")
+_cancelBtn = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/CancelAddBtn")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+alignment = 1
 
-[node name="ConfirmAddBtn" type="Button" parent="VBoxContainer/HBoxContainer2"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ConfirmAddBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 text = "Add"
 
-[node name="CancelAddBtn" type="Button" parent="VBoxContainer/HBoxContainer2"]
+[node name="CancelAddBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 text = "Cancel"
