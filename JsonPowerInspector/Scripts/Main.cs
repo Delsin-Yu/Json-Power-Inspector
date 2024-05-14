@@ -29,22 +29,32 @@ public partial class Main : Control
     
     public override void _Ready()
     {
+        UserConfig.LoadConfig();
+        
         var window = GetTree().Root;
+
+        window.WrapControls = true;
+
+        window.Size = UserConfig.Current.Size;
+        
+        window.SizeChanged += () => UserConfig.Current.Size = window.Size;
 
         _slider.MinValue = 0.5f;
         _slider.MaxValue = 2.5f;
         _slider.DragEnded += changed =>
         {
             if(!changed) return;
-            window.ContentScaleFactor = (float)_slider.Value;
+            var sliderValue = (float)_slider.Value;
+            window.ContentScaleFactor = sliderValue;
+            UserConfig.Current.ScaleFactor = sliderValue;
         };
-        _slider.Value = window.ContentScaleFactor;
+        window.ContentScaleFactor = UserConfig.Current.ScaleFactor;
+        _slider.Value = UserConfig.Current.ScaleFactor;
         
         window.FilesDropped += files =>
         {
             var templateFile = TryMatch(files, Extension);
             var dataFile = TryMatch(files, Data);
-
 
             if (templateFile != null && dataFile != null)
             {
@@ -81,6 +91,12 @@ public partial class Main : Control
             _arrayInspector,
             _booleanInspector
         );
+    }
+
+    public override void _Notification(int what)
+    {
+        if(what != NotificationWMCloseRequest) return;
+        UserConfig.SaveConfig();
     }
 
     private static string TryMatch(ReadOnlySpan<string> files, string matchExtension)
