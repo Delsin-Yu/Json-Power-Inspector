@@ -19,6 +19,16 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
 
     private readonly Dictionary<IPropertyInspector, Control> _controls = [];
 
+    protected void CleanChildNode()
+    {
+        foreach (var control in _controls.Values)
+        {
+            control.QueueFree();
+        }
+        _controls.Clear();
+        _emptyIndicator.Show();
+    }
+    
     protected void AddChildNode(IPropertyInspector inspector, Control inspectorControl)
     {
         _contentControl.AddChild(inspectorControl);

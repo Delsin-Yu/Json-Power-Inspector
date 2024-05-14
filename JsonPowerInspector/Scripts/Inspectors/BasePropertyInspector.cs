@@ -39,7 +39,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         var newNode = node;
         Bind(ref newNode);
         if (newNode == node) return;
-        ReplaceBacking(newNode);
+        SetBackingNode(newNode);
     }
 
     protected JsonNode GetBackingNode() =>
@@ -50,7 +50,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
             _ => throw new InvalidOperationException(_parent.GetType().Name)
         };
 
-    private void ReplaceBacking(JsonNode jsonNode)
+    protected void SetBackingNode(JsonNode jsonNode)
     {
         switch (_parent)
         {

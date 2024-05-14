@@ -14,16 +14,13 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
 
-    private readonly Action<IPropertyInspector, int> _removeCall;
+    private Action<IPropertyInspector, int> _removeCall;
     
     private readonly List<ArrayItem> _arrayItems = [];
 
-    public ArrayInspector() => _removeCall = RemoveArrayElement;
-
-    protected override void Bind(ref JsonNode node)
+    protected override void OnPostInitialize(ArrayPropertyInfo propertyInfo)
     {
-        node ??= new JsonArray();
-        _arrayElementCount.Value = node.AsArray().Count;
+        _removeCall = RemoveArrayElement;
         _arrayElementCount.Editable = false;
 
         _addElement.Pressed += () =>
@@ -34,6 +31,12 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
             BindArrayItem(Main.CurrentSession.InspectorSpawner, jsonArray.Count - 1, jsonArray);
             _arrayElementCount.Value++;
         };
+    }
+
+    protected override void Bind(ref JsonNode node)
+    {
+        node ??= new JsonArray();
+        _arrayElementCount.Value = node.AsArray().Count;
     }
 
     protected override void OnInitialPrint(JsonNode node)

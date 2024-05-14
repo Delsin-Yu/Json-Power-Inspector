@@ -15,13 +15,11 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
     [Export] private PackedScene _keyInputWindow;
 
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
-    
-    protected override void Bind(ref JsonNode node)
+
+
+    protected override void OnPostInitialize(DictionaryPropertyInfo propertyInfo)
     {
-        node ??= new JsonObject();
-        _dictionaryElementCount.Value = node.AsObject().Count;
         _dictionaryElementCount.Editable = false;
-        
         _addElement.Pressed += async () =>
         {
             var keyInputWindow = _keyInputWindow.Instantiate<KeyInputWindow>();
@@ -50,6 +48,12 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
             BindDictionaryItem(spawner, selectedKey, jsonObject);
             _dictionaryElementCount.Value++;
         };
+    }
+
+    protected override void Bind(ref JsonNode node)
+    {
+        node ??= new JsonObject();
+        _dictionaryElementCount.Value = node.AsObject().Count;
     }
     
     protected override void OnInitialPrint(JsonNode node)

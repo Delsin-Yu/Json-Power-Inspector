@@ -29,7 +29,7 @@ public class InspectionSession
         InspectorSpawner = inspectorSpawner;
     }
 
-    public ObjectDefinition LookupObject(string objectName) => _objectDefinitionMap[objectName];
+    public IReadOnlyDictionary<string, ObjectDefinition> ObjectDefinitionMap => _objectDefinitionMap;
 
     public void StartSession(Label objectName, Control rootObjectContainer, JsonObject jsonObject)
     {
