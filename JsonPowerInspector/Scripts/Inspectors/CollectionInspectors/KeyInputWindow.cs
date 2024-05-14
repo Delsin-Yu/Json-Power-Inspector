@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Godot;
 using GodotTask;
@@ -11,6 +12,7 @@ public partial class KeyInputWindow : Window
     [Export] private Control _container;
     [Export] private Button _addBtn;
     [Export] private Button _cancelBtn;
+    [Export] private Label _cantAddHelp;
 
     private bool _addClicked;
     private bool _removeClicked;
@@ -21,19 +23,21 @@ public partial class KeyInputWindow : Window
         _cancelBtn.Pressed += () => _removeClicked = true;
     }
 
-    public GDTask<(bool, double)> ShowAsync(NumberPropertyInfo numberPropertyInfo, InspectorSpawner inspectorSpawner) =>
+    public GDTask<(bool, double)> ShowAsync(NumberPropertyInfo numberPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<double> bannedKey) =>
         ShowAsync(
             numberPropertyInfo,
             static (spawner, info) => spawner.Create(info),
             inspectorSpawner,
+            bannedKey,
             0.0
         );
 
-    public GDTask<(bool, string)> ShowAsync(StringPropertyInfo stringPropertyInfo, InspectorSpawner inspectorSpawner) =>
+    public GDTask<(bool, string)> ShowAsync(StringPropertyInfo stringPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<string> bannedKey) =>
         ShowAsync(
             stringPropertyInfo,
             static (spawner, info) => spawner.Create(info),
             inspectorSpawner,
+            bannedKey,
             ""
         );
 
@@ -47,10 +51,18 @@ public partial class KeyInputWindow : Window
         TPropertyInfo propertyInfo,
         Func<InspectorSpawner, TPropertyInfo, IPropertyInspector> inspectorFactory,
         InspectorSpawner spawner,
+        IReadOnlySet<TValue> bannedKey,
         TValue defaultValue
     ) where TValue : notnull
     {
         var inspector = inspectorFactory(spawner, propertyInfo);
+        inspector.ValueChanged += value =>
+        {
+            var typedValue = (TValue)value;
+            var addBtnDisabled = bannedKey.Contains(typedValue);
+            UpdateAddButton(addBtnDisabled);
+        };
+        UpdateAddButton(bannedKey.Contains(defaultValue));
         var emptyJsonObject = new JsonObject();
         JsonNode jsonValueNode = JsonValue.Create(defaultValue);
         const string name = "TempJsonNode";
@@ -66,5 +78,11 @@ public partial class KeyInputWindow : Window
             return (true, returnValue);
         }
         return (false, default);
+    }
+
+    private void UpdateAddButton(bool addBtnDisabled)
+    {
+        _addBtn.Disabled = addBtnDisabled;
+        _cantAddHelp.Visible = addBtnDisabled;
     }
 }

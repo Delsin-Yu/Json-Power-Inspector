@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://cht8r37b1mgmj" path="res://Prefabs/ArrayInspector.tscn" id="7_3jwum"]
 [ext_resource type="PackedScene" uid="uid://dx3t7oouwde40" path="res://Prefabs/BooleanInspector.tscn" id="9_fqphr"]
 
-[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_objectName", "_objectContainer", "_slider")]
+[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_objectName", "_objectContainer", "_slider", "_displayScale")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -28,6 +28,7 @@ _booleanInspector = ExtResource("9_fqphr")
 _objectName = NodePath("VBoxContainer/ScrollContainer/VBoxContainer/InspectedName")
 _objectContainer = NodePath("VBoxContainer/ScrollContainer/VBoxContainer/InspectedContents")
 _slider = NodePath("VBoxContainer/HBoxContainer/HSlider")
+_displayScale = NodePath("VBoxContainer/HBoxContainer/SpinBox")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -53,6 +54,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 step = 0.0
+
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
@@ -28,22 +29,26 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
             AddChild(keyInputWindow);
             string selectedKey;
             var spawner = Main.CurrentSession.InspectorSpawner;
+            var jsonObject = GetBackingNode().AsObject();
             switch (PropertyInfo.KeyTypeInfo)
             {
                 case NumberPropertyInfo numberPropertyInfo:
-                    var (hasValue, numberKey) = await keyInputWindow.ShowAsync(numberPropertyInfo, spawner);
+                    var numberKeysInDictionary = new HashSet<double>();
+                    foreach (var (key, _) in jsonObject) numberKeysInDictionary.Add(double.Parse(key));
+                    var (hasValue, numberKey) = await keyInputWindow.ShowAsync(numberPropertyInfo, spawner, numberKeysInDictionary);
                     if(!hasValue) return;
-                    selectedKey = numberKey.ToString(CultureInfo.InvariantCulture);
+                    selectedKey = numberKey.ToString("N3", CultureInfo.InvariantCulture);
                     break;
                 case StringPropertyInfo stringPropertyInfo:
-                    (hasValue, var stringKey) = await keyInputWindow.ShowAsync(stringPropertyInfo, spawner);
+                    var stringKeysInDictionary = new HashSet<string>();
+                    foreach (var (key, _) in jsonObject) stringKeysInDictionary.Add(key);
+                    (hasValue, var stringKey) = await keyInputWindow.ShowAsync(stringPropertyInfo, spawner, stringKeysInDictionary);
                     if(!hasValue) return;
                     selectedKey = stringKey;
                     break;
                 default:
                     throw new InvalidOperationException(PropertyInfo.KeyTypeInfo.GetType().Name);
             }
-            var jsonObject = GetBackingNode().AsObject();
             var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ValueTypeInfo);
             jsonObject.Add(selectedKey, newNode);
             BindDictionaryItem(spawner, selectedKey, jsonObject);

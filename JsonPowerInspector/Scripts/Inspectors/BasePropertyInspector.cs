@@ -9,6 +9,7 @@ public interface IPropertyInspector
 {
     string DisplayName { get; }
     void BindJsonNode(JsonNode parent, string propertyName);
+    event Action<object> ValueChanged;
 }
 
 public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IPropertyInspector where TPropertyInfo : BaseObjectPropertyInfo
@@ -16,6 +17,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
     [Export] private Label _propertyName;
 
     public string DisplayName { get; private set; }
+    public event Action<object> ValueChanged;
     protected TPropertyInfo PropertyInfo { get; private set; }
 
     private JsonNode _parent;
@@ -41,7 +43,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         if (newNode == node) return;
         SetBackingNode(newNode);
     }
-
+    
     protected JsonNode GetBackingNode() =>
         _parent switch
         {
@@ -70,6 +72,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         var node = GetBackingNode();
         if (node is not JsonValue jsonValue) throw new InvalidOperationException($"{node.GetValueKind()} is not JsonValue!");
         jsonValue.ReplaceWith(value);
+        ValueChanged?.Invoke(value);
     }
     
     protected virtual void Bind(ref JsonNode node) { }

@@ -21,6 +21,7 @@ public partial class Main : Control
     [Export] private Label _objectName;
     [Export] private Control _objectContainer;
     [Export] private Slider _slider;
+    [Export] private SpinBox _displayScale;
     
     public const string Extension = ".jsontemplate";
     public const string Data = ".json";
@@ -34,23 +35,31 @@ public partial class Main : Control
         var window = GetTree().Root;
 
         window.WrapControls = true;
-
-        window.Size = UserConfig.Current.Size;
-        
         window.SizeChanged += () => UserConfig.Current.Size = window.Size;
 
         _slider.MinValue = 0.5f;
         _slider.MaxValue = 2.5f;
+        _slider.Step = 0.1f;
+        _displayScale.MinValue = 0.5f;
+        _displayScale.MaxValue = 2.5f;
+        _displayScale.Step = 0.1f;
+        
         _slider.DragEnded += changed =>
         {
             if(!changed) return;
             var sliderValue = (float)_slider.Value;
             window.ContentScaleFactor = sliderValue;
+            _displayScale.Value = sliderValue;
             UserConfig.Current.ScaleFactor = sliderValue;
         };
-        window.ContentScaleFactor = UserConfig.Current.ScaleFactor;
-        _slider.Value = UserConfig.Current.ScaleFactor;
-        
+        _displayScale.ValueChanged += value =>
+        {
+            var floatValue = (float)value;
+            window.ContentScaleFactor = floatValue;
+            _slider.Value = floatValue;
+            UserConfig.Current.ScaleFactor = floatValue; 
+        };
+
         window.FilesDropped += files =>
         {
             var templateFile = TryMatch(files, Extension);
@@ -91,8 +100,19 @@ public partial class Main : Control
             _arrayInspector,
             _booleanInspector
         );
+
+        CallDeferred(MethodName.ApplyContentScale);
     }
 
+    private void ApplyContentScale()
+    {
+        var window = GetTree().Root;
+        window.Size = UserConfig.Current.Size;
+        window.ContentScaleFactor = UserConfig.Current.ScaleFactor;
+        _slider.Value = UserConfig.Current.ScaleFactor;
+        _displayScale.Value = UserConfig.Current.ScaleFactor;
+    }
+    
     public override void _Notification(int what)
     {
         if(what != NotificationWMCloseRequest) return;
