@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cvn017vlo4nck"]
+[gd_scene load_steps=3 format=3 uid="uid://cvn017vlo4nck"]
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/ObjectInspector.cs" id="1_fwu4h"]
+[ext_resource type="Script" path="res://Scripts/propergate_to_button.gd" id="2_y8bsq"]
 
 [node name="ObjectInspector" type="PanelContainer" node_paths=PackedStringArray("_createOrDeleteBtn", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_top = 32.0
@@ -25,17 +26,22 @@ layout_mode = 2
 [node name="Foldout" type="CheckButton" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
-size_flags_horizontal = 0
+alignment = 1
+icon_alignment = 1
 
-[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer" node_paths=PackedStringArray("button")]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Object Inspector"
+script = ExtResource("2_y8bsq")
+button = NodePath("../Foldout")
 
 [node name="CreateOrDeleteBtn" type="Button" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(30, 0)
+custom_minimum_size = Vector2(25, 0)
 layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
 text = "X"
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]

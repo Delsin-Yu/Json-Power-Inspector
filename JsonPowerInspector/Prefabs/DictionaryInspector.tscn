@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dglp6a0bsyxo8"]
+[gd_scene load_steps=5 format=3 uid="uid://dglp6a0bsyxo8"]
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/DictionaryInspector.cs" id="1_cet7s"]
 [ext_resource type="PackedScene" uid="uid://q1vekgfskixp" path="res://Prefabs/DictionaryItem.tscn" id="2_tnf7b"]
 [ext_resource type="PackedScene" uid="uid://c3rwgi26v7com" path="res://Prefabs/KeyInputWindow.tscn" id="3_1x2mf"]
+[ext_resource type="Script" path="res://Scripts/propergate_to_button.gd" id="4_423rc"]
 
 [node name="DictionaryInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_dictionaryElementCount", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_right = 292.0
@@ -30,11 +31,13 @@ auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer" node_paths=PackedStringArray("button")]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Dictionary Inspector"
+script = ExtResource("4_423rc")
+button = NodePath("../Foldout")
 
 [node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cht8r37b1mgmj"]
+[gd_scene load_steps=4 format=3 uid="uid://cht8r37b1mgmj"]
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/ArrayInspector.cs" id="1_3x8f5"]
 [ext_resource type="PackedScene" uid="uid://cdqf6t5uwv701" path="res://Prefabs/ArrayItem.tscn" id="2_yacaq"]
+[ext_resource type="Script" path="res://Scripts/propergate_to_button.gd" id="3_e7s1m"]
 
 [node name="ArrayInspector" type="PanelContainer" node_paths=PackedStringArray("_addElement", "_arrayElementCount", "_contentControl", "_contentPanel", "_emptyIndicator", "_foldout", "_propertyName")]
 offset_top = 74.0
@@ -30,11 +31,13 @@ auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="PropertyName" type="Label" parent="VBoxContainer/HBoxContainer" node_paths=PackedStringArray("button")]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Array Inspector"
+script = ExtResource("3_e7s1m")
+button = NodePath("../Foldout")
 
 [node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
