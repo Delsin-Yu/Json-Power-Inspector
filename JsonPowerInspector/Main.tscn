@@ -1,6 +1,5 @@
-[gd_scene load_steps=10 format=3 uid="uid://twdmh8uu8yy7"]
+[gd_scene load_steps=9 format=3 uid="uid://twdmh8uu8yy7"]
 
-[ext_resource type="Theme" uid="uid://k0q7g8eecg8h" path="res://Art/Main.tres" id="1_htowe"]
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_qligq"]
 [ext_resource type="PackedScene" uid="uid://dglp6a0bsyxo8" path="res://Prefabs/DictionaryInspector.tscn" id="2_u3i45"]
 [ext_resource type="PackedScene" uid="uid://cvkq04d4rmaqh" path="res://Prefabs/EnumInspector.tscn" id="3_tm2nc"]
@@ -16,7 +15,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_htowe")
 script = ExtResource("1_qligq")
 _dictionaryInspector = ExtResource("2_u3i45")
 _enumInspector = ExtResource("3_tm2nc")

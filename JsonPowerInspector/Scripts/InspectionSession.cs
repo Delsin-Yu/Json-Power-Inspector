@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -14,6 +15,7 @@ public class InspectionSession
 
     private readonly ObjectDefinition _mainObjectDefinition;
 
+    private Control _rootObjectContainer;
     private JsonObject _editingJsonObject;
     private JsonObject _templateJsonObject;
 
@@ -36,11 +38,9 @@ public class InspectionSession
         objectName.Text = _mainObjectDefinition.ObjectTypeName;
 
         _templateJsonObject = new();
+        _rootObjectContainer = rootObjectContainer;
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
-            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
-            _inspectorRoot.Add(inspectorForProperty);
-            rootObjectContainer.AddChild((Control)inspectorForProperty);
             var propertyPath = new HashSet<BaseObjectPropertyInfo>();
             _templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
         }
@@ -50,6 +50,20 @@ public class InspectionSession
     
     public void LoadFromJsonObject(JsonObject jsonObject)
     {
+        foreach (var inspector in CollectionsMarshal.AsSpan(_inspectorRoot))
+        {
+            ((Control)inspector).QueueFree();
+        }
+        
+        _inspectorRoot.Clear();
+        
+        foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
+        {
+            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
+            _inspectorRoot.Add(inspectorForProperty);
+            _rootObjectContainer.AddChild((Control)inspectorForProperty);
+        }
+        
         // TODO: Warn User of data loss
         _editingJsonObject = jsonObject;
         var objectProperty = _editingJsonObject.ToArray();

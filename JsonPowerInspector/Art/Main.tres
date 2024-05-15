@@ -1,7 +1,20 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://k0q7g8eecg8h"]
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://k0q7g8eecg8h"]
 
+[ext_resource type="Texture2D" uid="uid://brggkly7s8dt1" path="res://Art/FoldArrows/Checked.png" id="1_681q6"]
 [ext_resource type="StyleBox" uid="uid://bxng5dmgddima" path="res://Art/SharedPanelBox.tres" id="1_wk866"]
+[ext_resource type="Texture2D" uid="uid://cjsvek2vtbe2o" path="res://Art/FoldArrows/Checked_Disabled.png" id="2_jnhtp"]
+[ext_resource type="Texture2D" uid="uid://brsuit55qyo1l" path="res://Art/FoldArrows/Unchecked.png" id="3_4nq07"]
+[ext_resource type="Texture2D" uid="uid://cmpoq64sqwd46" path="res://Art/FoldArrows/Unchecked_Disabled.png" id="4_rw6sv"]
 
 [resource]
+CheckButton/icons/checked = ExtResource("1_681q6")
+CheckButton/icons/checked_disabled = ExtResource("2_jnhtp")
+CheckButton/icons/checked_disabled_mirrored = ExtResource("2_jnhtp")
+CheckButton/icons/checked_mirrored = ExtResource("1_681q6")
+CheckButton/icons/unchecked = ExtResource("3_4nq07")
+CheckButton/icons/unchecked_disabled = ExtResource("4_rw6sv")
+CheckButton/icons/unchecked_disabled_mirrored = ExtResource("4_rw6sv")
+CheckButton/icons/unchecked_mirrored = ExtResource("3_4nq07")
+Label/font_sizes/font_size = 16
 Panel/styles/panel = ExtResource("1_wk866")
 PanelContainer/styles/panel = ExtResource("1_wk866")

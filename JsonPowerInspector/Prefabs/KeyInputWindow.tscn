@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://c3rwgi26v7com"]
+[gd_scene load_steps=2 format=3 uid="uid://c3rwgi26v7com"]
 
-[ext_resource type="Theme" uid="uid://k0q7g8eecg8h" path="res://Art/Main.tres" id="1_r8lei"]
 [ext_resource type="Script" path="res://Scripts/Inspectors/CollectionInspectors/KeyInputWindow.cs" id="2_xtab7"]
 
 [node name="KeyInputWindow" type="Window" node_paths=PackedStringArray("_container", "_addBtn", "_cancelBtn", "_cantAddHelp")]
@@ -10,7 +9,6 @@ size = Vector2i(377, 82)
 wrap_controls = true
 exclusive = true
 keep_title_visible = true
-theme = ExtResource("1_r8lei")
 script = ExtResource("2_xtab7")
 _container = NodePath("MarginContainer/VBoxContainer/InspectorContainer")
 _addBtn = NodePath("MarginContainer/VBoxContainer/ButtonContainer/ConfirmAddBtn")

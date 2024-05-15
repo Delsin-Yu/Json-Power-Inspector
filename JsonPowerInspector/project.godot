@@ -34,6 +34,10 @@ project/assembly_name="JsonPowerInspector"
 
 naming/scene_name_casing=1
 
+[gui]
+
+theme/custom="res://Art/Main.tres"
+
 [rendering]
 
 environment/defaults/default_clear_color=Color(0.12103, 0.12103, 0.12103, 1)
