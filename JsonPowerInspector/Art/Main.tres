@@ -14,3 +14,5 @@ CheckButton/icons/unchecked_disabled = ExtResource("4_rw6sv")
 Label/font_sizes/font_size = 16
 Panel/styles/panel = ExtResource("1_wk866")
 PanelContainer/styles/panel = ExtResource("1_wk866")
+VFlowContainer/constants/h_separation = 8
+VFlowContainer/constants/v_separation = 8

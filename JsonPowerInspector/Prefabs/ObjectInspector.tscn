@@ -26,6 +26,7 @@ layout_mode = 2
 [node name="Foldout" type="CheckButton" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
+size_flags_horizontal = 0
 alignment = 1
 icon_alignment = 1
 
@@ -33,7 +34,9 @@ icon_alignment = 1
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 1
 text = "Object Inspector"
+vertical_alignment = 1
 script = ExtResource("2_y8bsq")
 button = NodePath("../Foldout")
 

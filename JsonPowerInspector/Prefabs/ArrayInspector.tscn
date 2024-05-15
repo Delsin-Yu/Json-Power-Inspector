@@ -35,14 +35,16 @@ size_flags_horizontal = 0
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 1
 text = "Array Inspector"
+vertical_alignment = 1
 script = ExtResource("3_e7s1m")
 button = NodePath("../Foldout")
 
 [node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
-size_flags_horizontal = 10
+size_flags_horizontal = 8
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
