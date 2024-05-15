@@ -19,6 +19,7 @@ public static class Utils
             ArrayPropertyInfo arrayPropertyInfo => spawner.Create(arrayPropertyInfo),
             DictionaryPropertyInfo dictionaryPropertyInfo => spawner.Create(dictionaryPropertyInfo),
             EnumPropertyInfo enumPropertyInfo => spawner.Create(enumPropertyInfo),
+            DropdownPropertyInfo dropdownPropertyInfo => spawner.Create(dropdownPropertyInfo),
             _ => throw new InvalidOperationException()
         };
     }
@@ -33,6 +34,13 @@ public static class Utils
             ArrayPropertyInfo => new JsonArray(),
             DictionaryPropertyInfo => new JsonObject(),
             EnumPropertyInfo enumPropertyInfo => enumPropertyInfo.EnumValues.FirstOrDefault().ValueName ?? string.Empty,
+            DropdownPropertyInfo dropdownPropertyInfo => dropdownPropertyInfo.Kind switch
+            {
+                DropdownPropertyInfo.DropdownKind.Int => 0,
+                DropdownPropertyInfo.DropdownKind.Float => 0.0,
+                DropdownPropertyInfo.DropdownKind.String => "",
+                _ => throw new InvalidOperationException()
+            },
             _ => throw new InvalidOperationException()
         };
 

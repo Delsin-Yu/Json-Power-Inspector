@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://twdmh8uu8yy7"]
+[gd_scene load_steps=10 format=3 uid="uid://twdmh8uu8yy7"]
 
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_qligq"]
 [ext_resource type="PackedScene" uid="uid://dglp6a0bsyxo8" path="res://Prefabs/DictionaryInspector.tscn" id="2_u3i45"]
 [ext_resource type="PackedScene" uid="uid://cvkq04d4rmaqh" path="res://Prefabs/EnumInspector.tscn" id="3_tm2nc"]
 [ext_resource type="PackedScene" uid="uid://bexkdmc878yx" path="res://Prefabs/NumberInspector.tscn" id="4_531er"]
+[ext_resource type="PackedScene" uid="uid://b0uj6sbonhgar" path="res://Prefabs/DropdownInspector.tscn" id="4_p3rqt"]
 [ext_resource type="PackedScene" uid="uid://cvn017vlo4nck" path="res://Prefabs/ObjectInspector.tscn" id="5_335on"]
 [ext_resource type="PackedScene" uid="uid://cb3jjo2jf4bss" path="res://Prefabs/StringInspector.tscn" id="6_kidi3"]
 [ext_resource type="PackedScene" uid="uid://cht8r37b1mgmj" path="res://Prefabs/ArrayInspector.tscn" id="7_3jwum"]
@@ -18,6 +19,7 @@ grow_vertical = 2
 script = ExtResource("1_qligq")
 _dictionaryInspector = ExtResource("2_u3i45")
 _enumInspector = ExtResource("3_tm2nc")
+_dropdownInspector = ExtResource("4_p3rqt")
 _numberInspector = ExtResource("4_531er")
 _objectInspector = ExtResource("5_335on")
 _stringInspector = ExtResource("6_kidi3")

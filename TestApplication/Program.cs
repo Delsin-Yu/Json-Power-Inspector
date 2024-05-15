@@ -5,11 +5,11 @@ using JsonPowerInspector.Template;
 using TMI_RogueLike_DataEditor.Model;
 using Tynamix.ObjectFiller;
 
-var definition = TemplateSerializer.CollectTypeDefinition<RogueLikeData>();
+var definition = TemplateSerializer.CollectTypeDefinition<TestModels>();
 
 File.WriteAllText("definition.jsontemplate", TemplateSerializer.Serialize(definition), Encoding.UTF8);
 
-var filler = new Filler<RogueLikeData>();
+var filler = new Filler<TestModels>();
 
 filler
     .Setup()
@@ -18,4 +18,4 @@ filler
 
 var model = filler.Create();
 
-File.WriteAllText("data.json", JsonSerializer.Serialize(model, TestApplicationJsonContext.Default.RogueLikeData), Encoding.UTF8);
+File.WriteAllText("data.json", JsonSerializer.Serialize(model, TestApplicationJsonContext.Default.TestModels), Encoding.UTF8);

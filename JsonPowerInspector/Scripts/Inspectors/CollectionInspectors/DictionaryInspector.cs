@@ -46,6 +46,34 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
                     if(!hasValue) return;
                     selectedKey = stringKey;
                     break;
+                case DropdownPropertyInfo dropdownPropertyInfo:
+                    switch (dropdownPropertyInfo.Kind)
+                    {
+                        case DropdownPropertyInfo.DropdownKind.Int:
+                            var intKeysInDictionary = new HashSet<int>();
+                            foreach (var (key, _) in jsonObject) intKeysInDictionary.Add(int.Parse(key));
+                            (hasValue, var intKey) = await keyInputWindow.ShowAsyncInt(dropdownPropertyInfo, spawner, intKeysInDictionary);
+                            if(!hasValue) return;
+                            selectedKey = intKey.ToString();
+                            break;
+                        case DropdownPropertyInfo.DropdownKind.Float:
+                            numberKeysInDictionary = [];
+                            foreach (var (key, _) in jsonObject) numberKeysInDictionary.Add(double.Parse(key));
+                            (hasValue, numberKey) = await keyInputWindow.ShowAsyncFloat(dropdownPropertyInfo, spawner, numberKeysInDictionary);
+                            if(!hasValue) return;
+                            selectedKey = numberKey.ToString("N3", CultureInfo.InvariantCulture);
+                            break;
+                        case DropdownPropertyInfo.DropdownKind.String:
+                            stringKeysInDictionary = [];
+                            foreach (var (key, _) in jsonObject) stringKeysInDictionary.Add(key);
+                            (hasValue, stringKey) = await keyInputWindow.ShowAsyncString(dropdownPropertyInfo, spawner, stringKeysInDictionary);
+                            if(!hasValue) return;
+                            selectedKey = stringKey;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    break;
                 default:
                     throw new InvalidOperationException(PropertyInfo.KeyTypeInfo.GetType().Name);
             }

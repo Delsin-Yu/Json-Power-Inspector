@@ -13,6 +13,7 @@ public partial class Main : Control
     
     [Export] private PackedScene _dictionaryInspector;
     [Export] private PackedScene _enumInspector;
+    [Export] private PackedScene _dropdownInspector;
     [Export] private PackedScene _numberInspector;
     [Export] private PackedScene _objectInspector;
     [Export] private PackedScene _stringInspector;
@@ -94,6 +95,7 @@ public partial class Main : Control
         _spawner = new(
             _dictionaryInspector,
             _enumInspector,
+            _dropdownInspector,
             _numberInspector,
             _objectInspector,
             _stringInspector,
@@ -153,9 +155,16 @@ public partial class Main : Control
 
             CurrentSession = null;
         }
-        
-        CurrentSession = new(setup, _spawner);
-        CurrentSession.StartSession(_objectName, _objectContainer, data);
+
+        CurrentSession = new(
+            setup,
+            _spawner,
+            filePath,
+            _objectName,
+            _objectContainer
+        );
+
+        CurrentSession.StartSession(data);
     }
     
     private static JsonObject LoadData(string filePath)

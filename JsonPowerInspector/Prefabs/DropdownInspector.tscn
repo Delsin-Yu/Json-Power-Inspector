@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0uj6sbonhgar"]
+
+[ext_resource type="Script" path="res://Scripts/Inspectors/DropdownInspector.cs" id="1_fcq17"]
+
+[node name="DropdownInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_propertyName")]
+auto_translate_mode = 1
+script = ExtResource("1_fcq17")
+_contentControl = NodePath("PropertyContent")
+_propertyName = NodePath("PropertyName")
+
+[node name="PropertyName" type="Label" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Dropdown Inspector"
+vertical_alignment = 1
+
+[node name="PropertyContent" type="OptionButton" parent="."]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+selected = 0
+item_count = 1
+popup/item_0/text = "Dropdown Content"
+popup/item_0/id = 0

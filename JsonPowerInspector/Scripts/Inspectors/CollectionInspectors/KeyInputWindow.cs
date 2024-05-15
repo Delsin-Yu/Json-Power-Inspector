@@ -40,6 +40,33 @@ public partial class KeyInputWindow : Window
             bannedKey,
             ""
         );
+    
+    public GDTask<(bool, int)> ShowAsyncInt(DropdownPropertyInfo dropdownPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<int> bannedKey) =>
+        ShowAsync(
+            dropdownPropertyInfo,
+            static (spawner, info) => spawner.Create(info),
+            inspectorSpawner,
+            bannedKey,
+            0
+        );
+    
+    public GDTask<(bool, double)> ShowAsyncFloat(DropdownPropertyInfo dropdownPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<double> bannedKey) =>
+        ShowAsync(
+            dropdownPropertyInfo,
+            static (spawner, info) => spawner.Create(info),
+            inspectorSpawner,
+            bannedKey,
+            0.0
+        );
+
+    public GDTask<(bool, string)> ShowAsyncString(DropdownPropertyInfo dropdownPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<string> bannedKey) =>
+        ShowAsync(
+            dropdownPropertyInfo,
+            static (spawner, info) => spawner.Create(info),
+            inspectorSpawner,
+            bannedKey,
+            ""
+        );
 
     public override void _Notification(int what)
     {

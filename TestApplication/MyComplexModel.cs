@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using JsonPowerInspector.Template;
 using TMI_RogueLike_DataEditor.Model;
 
 [JsonSerializable(typeof(TestModels))]
@@ -12,6 +13,17 @@ public class TestModels
     public MySimpleModel MySimpleModel { get; set; }
     public MyComplexModel MyComplexModel { get; set; }
     public MyCollectionModel MyCollectionModel { get; set; }
+    public MyDropdownModel MyDropdownModel { get; set; }
+}
+
+public class MyDropdownModel
+{
+    [JsonDropdown("StringSelection.tsv")] public string StringData { get; set; }
+    [JsonDropdown("FloatSelection.tsv")] public float FloatData { get; set; }
+    [JsonDropdown("IntSelection.tsv")] public int IntData { get; set; }
+    [DictionaryKeyJsonDropdown("IntSelection.tsv")] public Dictionary<int, float> DictionaryKeyData { get; set; }
+    [DictionaryValueJsonDropdown("FloatSelection.tsv")] public Dictionary<int, float> DictionaryValueData { get; set; }
+    [DictionaryKeyJsonDropdown("IntSelection.tsv"), DictionaryValueJsonDropdown("FloatSelection.tsv")] public Dictionary<int, float> DictionaryData { get; set; }
 }
 
 public class MyCollectionModel
@@ -19,6 +31,7 @@ public class MyCollectionModel
     public MyDictionaryModel MyDictionaryModel { get; set; }
     public MyArrayModel MyArrayModel { get; set; }
 }
+
 public class MyDictionaryModel
 {
     public Dictionary<string, int> StrInt { get; set; }

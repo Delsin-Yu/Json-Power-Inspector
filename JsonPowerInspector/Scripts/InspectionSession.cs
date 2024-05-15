@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
@@ -15,39 +16,50 @@ public class InspectionSession
 
     private readonly ObjectDefinition _mainObjectDefinition;
 
-    private Control _rootObjectContainer;
+    private readonly Control _rootObjectContainer;
     private JsonObject _editingJsonObject;
-    private JsonObject _templateJsonObject;
 
     private readonly List<IPropertyInspector> _inspectorRoot = [];
+    public string TemplateDirectory { get; set; }
+    public IReadOnlyDictionary<string, ObjectDefinition> ObjectDefinitionMap => _objectDefinitionMap;
 
     public InspectionSession(
         PackedObjectDefinition packedObjectDefinition,
-        InspectorSpawner inspectorSpawner
+        InspectorSpawner inspectorSpawner,
+        string templatePath,
+        Label objectName,
+        Control rootObjectContainer
     )
     {
         _objectDefinitionMap = packedObjectDefinition.ReferencedObjectDefinition.ToDictionary(x => x.ObjectTypeName, x => x);
         _mainObjectDefinition = packedObjectDefinition.MainObjectDefinition;
         InspectorSpawner = inspectorSpawner;
+        TemplateDirectory = Path.GetDirectoryName(templatePath)!;
+        objectName.Text = _mainObjectDefinition.ObjectTypeName;
+        _rootObjectContainer = rootObjectContainer;
+
     }
 
-    public IReadOnlyDictionary<string, ObjectDefinition> ObjectDefinitionMap => _objectDefinitionMap;
-
-    public void StartSession(Label objectName, Control rootObjectContainer, JsonObject jsonObject)
+    public void StartSession(JsonObject jsonObject)
     {
-        objectName.Text = _mainObjectDefinition.ObjectTypeName;
+        
+        if (jsonObject != null)
+        {
+            LoadFromJsonObject(jsonObject);
+            return;
+        }
 
-        _templateJsonObject = new();
-        _rootObjectContainer = rootObjectContainer;
+        JsonObject templateJsonObject = new();
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
             var propertyPath = new HashSet<BaseObjectPropertyInfo>();
-            _templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
+            templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
         }
 
-        LoadFromJsonObject(jsonObject ?? _templateJsonObject.DeepClone().AsObject());
+        LoadFromJsonObject(templateJsonObject);
     }
-    
+
+
     public void LoadFromJsonObject(JsonObject jsonObject)
     {
         foreach (var inspector in CollectionsMarshal.AsSpan(_inspectorRoot))

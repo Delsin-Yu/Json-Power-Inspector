@@ -7,6 +7,7 @@ public class InspectorSpawner
 {
     private readonly PackedScene _dictionaryInspector;
     private readonly PackedScene _enumInspector;
+    private readonly PackedScene _dropdownInspector;
     private readonly PackedScene _numberInspector;
     private readonly PackedScene _objectInspector;
     private readonly PackedScene _stringInspector;
@@ -16,6 +17,7 @@ public class InspectorSpawner
     public InspectorSpawner(
         PackedScene dictionaryInspector,
         PackedScene enumInspector,
+        PackedScene dropdownInspector,
         PackedScene numberInspector,
         PackedScene objectInspector,
         PackedScene stringInspector,
@@ -30,6 +32,7 @@ public class InspectorSpawner
         _stringInspector = stringInspector;
         _arrayInspector = arrayInspector;
         _booleanInspector = booleanInspector;
+        _dropdownInspector = dropdownInspector;
     }
 
     public StringInspector Create(StringPropertyInfo stringPropertyInfo) => Print<StringInspector, StringPropertyInfo>(_stringInspector, stringPropertyInfo);
@@ -39,6 +42,7 @@ public class InspectorSpawner
     public ArrayInspector Create(ArrayPropertyInfo arrayPropertyInfo) => Print<ArrayInspector, ArrayPropertyInfo>(_arrayInspector, arrayPropertyInfo);
     public DictionaryInspector Create(DictionaryPropertyInfo dictionaryPropertyInfo) => Print<DictionaryInspector, DictionaryPropertyInfo>(_dictionaryInspector, dictionaryPropertyInfo);
     public EnumInspector Create(EnumPropertyInfo enumPropertyInfo) => Print<EnumInspector, EnumPropertyInfo>(_enumInspector, enumPropertyInfo);
+    public DropdownInspector Create(DropdownPropertyInfo dropdownPropertyInfo) => Print<DropdownInspector, DropdownPropertyInfo>(_dropdownInspector, dropdownPropertyInfo);
     
     private static TInspector Print<TInspector, TPropertyInfo>(PackedScene inspectorPrefab, TPropertyInfo propertyInfo) 
         where TInspector : BasePropertyInspector<TPropertyInfo> 

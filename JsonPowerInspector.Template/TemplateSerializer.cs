@@ -41,6 +41,7 @@ public static class TemplateSerializer
                     propertyInfo.Name,
                     propertyInfo.PropertyType,
                     referencedPropertyInfo,
+                    propertyInfo.GetCustomAttributes(),
                     out var parsed
                 ))
             {
@@ -61,11 +62,12 @@ public static class TemplateSerializer
     [
         typeof(DateTime)
     ];
-    
+
     private static bool TryParseProperty(
         string propertyName,
         Type propertyType,
         Dictionary<string, ObjectDefinition> referencedPropertyInfo,
+        IEnumerable<Attribute> attributes,
         out BaseObjectPropertyInfo baseObjectPropertyInfo
     )
     {
@@ -78,7 +80,8 @@ public static class TemplateSerializer
         else if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
-            if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, out var arrayElementTypeInfo))
+            var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+            if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, [dropdown], out var arrayElementTypeInfo))
             {
                 return false;
             }
@@ -93,7 +96,8 @@ public static class TemplateSerializer
             if (genericTypeDef == typeof(List<>))
             {
                 var elementType = propertyType.GetGenericArguments()[0];
-                if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, out var arrayElementTypeInfo))
+                var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+                if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, [dropdown], out var arrayElementTypeInfo))
                 {
                     return false;
                 }
@@ -107,11 +111,14 @@ public static class TemplateSerializer
                 var arguments = propertyType.GetGenericArguments();
                 var keyType = arguments[0];
                 var valueType = arguments[1];
-                if (!TryParseProperty(GetTypeName(keyType), keyType, referencedPropertyInfo, out var keyTypeInfo))
+                var attributeArray = attributes.ToArray();
+                var keyDropdown = (JsonDropdownAttribute)attributeArray.OfType<DictionaryKeyJsonDropdownAttribute>().FirstOrDefault();
+                if (!TryParseProperty(GetTypeName(keyType), keyType, referencedPropertyInfo, [keyDropdown], out var keyTypeInfo))
                 {
                     return false;
                 }
-                if (!TryParseProperty(GetTypeName(valueType), valueType, referencedPropertyInfo, out var valueTypeInfo))
+                var valueDropdown = (JsonDropdownAttribute)attributeArray.OfType<DictionaryValueJsonDropdownAttribute>().FirstOrDefault();
+                if (!TryParseProperty(GetTypeName(valueType), valueType, referencedPropertyInfo, [valueDropdown], out var valueTypeInfo))
                 {
                     referencedPropertyInfo.Remove(GetTypeName(keyType));
                     return false;
@@ -134,63 +141,58 @@ public static class TemplateSerializer
         else if (propertyType.IsPrimitive)
         {
             NumberPropertyInfo.NumberType numberType;
-            double min;
-            double max;
 
+            if (propertyType == typeof(byte)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(ushort)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(uint)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(ulong)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(sbyte)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(short)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(int)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(long)) numberType = NumberPropertyInfo.NumberType.Int;
+            else if (propertyType == typeof(float)) numberType = NumberPropertyInfo.NumberType.Float;
+            else if (propertyType == typeof(double)) numberType = NumberPropertyInfo.NumberType.Float;
+            else return false;
 
-            if (propertyType == typeof(byte))
+            var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+            if (dropdown != null)
             {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(ushort))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(uint))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(ulong))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(sbyte))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(short))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(int))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(long))
-            {
-                numberType = NumberPropertyInfo.NumberType.Int;
-            }
-            else if (propertyType == typeof(float))
-            {
-                numberType = NumberPropertyInfo.NumberType.Float;
-            }
-            else if (propertyType == typeof(double))
-            {
-                numberType = NumberPropertyInfo.NumberType.Float;
+                baseObjectPropertyInfo = new DropdownPropertyInfo
+                {
+                    DataSourcePath = dropdown.DataPath,
+                    ValueDisplayRegex = dropdown.Regex,
+                    Kind = numberType switch
+                    {
+                        NumberPropertyInfo.NumberType.Int => DropdownPropertyInfo.DropdownKind.Int,
+                        NumberPropertyInfo.NumberType.Float => DropdownPropertyInfo.DropdownKind.Float,
+                        _ => throw new InvalidOperationException()
+                    }
+                };
             }
             else
             {
-                return false;
+                baseObjectPropertyInfo = new NumberPropertyInfo
+                {
+                    NumberKind = numberType
+                };
             }
-
-            baseObjectPropertyInfo = new NumberPropertyInfo
-            {
-                NumberKind = numberType
-            };
         }
         else if (propertyType == typeof(string))
         {
-            baseObjectPropertyInfo = new StringPropertyInfo();
+            var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+            if (dropdown != null)
+            {
+                baseObjectPropertyInfo = new DropdownPropertyInfo
+                {
+                    DataSourcePath = dropdown.DataPath,
+                    ValueDisplayRegex = dropdown.Regex,
+                    Kind = DropdownPropertyInfo.DropdownKind.String
+                };
+            }
+            else
+            {
+                baseObjectPropertyInfo = new StringPropertyInfo();
+            }
         }
         else if (propertyType.IsEnum)
         {

@@ -14,6 +14,30 @@ public class ApplicationJsonTypes
     public PackedObjectDefinition PackedObjectDefinition { get; set; }
 }
 
+[AttributeUsage(AttributeTargets.Property)]
+public class JsonDropdownAttribute : Attribute
+{
+    public JsonDropdownAttribute(string dataPath, string regex = null)
+    {
+        DataPath = dataPath;
+        Regex = regex;
+    }
+    public string DataPath { get; }
+    public string Regex { get; }
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public class DictionaryKeyJsonDropdownAttribute : JsonDropdownAttribute
+{
+    public DictionaryKeyJsonDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public class DictionaryValueJsonDropdownAttribute : JsonDropdownAttribute
+{
+    public DictionaryValueJsonDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
+}
+
 public class PackedObjectDefinition
 {
     public PackedObjectDefinition(ObjectDefinition mainObjectDefinition, ObjectDefinition[] referencedObjectDefinition)
@@ -93,6 +117,7 @@ public class ObjectDefinition
 [JsonDerivedType(typeof(ArrayPropertyInfo), typeDiscriminator: "Array")]
 [JsonDerivedType(typeof(DictionaryPropertyInfo), typeDiscriminator: "Dictionary")]
 [JsonDerivedType(typeof(EnumPropertyInfo), typeDiscriminator: "Enum")]
+[JsonDerivedType(typeof(DropdownPropertyInfo), typeDiscriminator: "Dropdown")]
 public abstract class BaseObjectPropertyInfo
 {
     public string Name { get; set; }
@@ -186,6 +211,33 @@ public class ObjectPropertyInfo : BaseObjectPropertyInfo
     }
 }
 
+public class DropdownPropertyInfo : BaseObjectPropertyInfo
+{
+    public enum DropdownKind
+    {
+        Int,
+        Float,
+        String
+    }
+    public DropdownKind Kind { get; set; }
+    public string DataSourcePath { get; set; }
+    public string ValueDisplayRegex { get; set; }
+
+    protected override void PrintType(StringBuilder stringBuilder) => 
+        stringBuilder
+            .Append("Dropdown<")
+            .Append(Kind.ToString()).Append('>');
+
+    protected override void PrintAdditional(StringBuilder stringBuilder) =>
+        stringBuilder
+            .Append('[')
+            .Append(ValueDisplayRegex)
+            .Append(", \"")
+            .Append("./")
+            .Append(DataSourcePath)
+            .Append("\"]");
+}
+
 public class EnumPropertyInfo : BaseObjectPropertyInfo
 {
     public record struct EnumValue(string ValueName, long ValueValue);
@@ -194,45 +246,27 @@ public class EnumPropertyInfo : BaseObjectPropertyInfo
     public EnumValue[] EnumValues { get; set; }
     public bool IsFlags { get; set; }
 
-    protected override void PrintType(StringBuilder stringBuilder)
-    {
-        if (IsFlags)
-        {
-            stringBuilder.Append("EnumFlags<");
-        }
-        else
-        {
-            stringBuilder.Append("Enum<");
-        }
-        
-        stringBuilder
+    protected override void PrintType(StringBuilder stringBuilder) =>
+        stringBuilder.Append(IsFlags ? "EnumFlags<" : "Enum<")
             .Append(EnumTypeName)
             .Append('>');
-    }
 
-    protected override void PrintAdditional(StringBuilder stringBuilder)
-    {
+    protected override void PrintAdditional(StringBuilder stringBuilder) =>
         stringBuilder
-            .Append('[');
-
-        stringBuilder.AppendJoin(", ", EnumValues.Select(x => x.ValueName));
-        
-        stringBuilder
+            .Append('[')
+            .AppendJoin(", ", EnumValues.Select(x => x.ValueName))
             .Append(']');
-    }
 }
 
 public class ArrayPropertyInfo : BaseObjectPropertyInfo
 {
     public BaseObjectPropertyInfo ArrayElementTypeInfo { get; set; }
     
-    protected override void PrintType(StringBuilder stringBuilder)
-    {
+    protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder
             .Append("Array<")
             .Append(ArrayElementTypeInfo)
             .Append('>');
-    }
 }
 
 public class DictionaryPropertyInfo : BaseObjectPropertyInfo
@@ -240,13 +274,11 @@ public class DictionaryPropertyInfo : BaseObjectPropertyInfo
     public BaseObjectPropertyInfo KeyTypeInfo { get; set; }
     public BaseObjectPropertyInfo ValueTypeInfo { get; set; }
         
-    protected override void PrintType(StringBuilder stringBuilder)
-    {
+    protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder
             .Append("Dictionary<")
             .Append(KeyTypeInfo)
             .Append(", ")
             .Append(ValueTypeInfo)
             .Append('>');
-    }
 }
