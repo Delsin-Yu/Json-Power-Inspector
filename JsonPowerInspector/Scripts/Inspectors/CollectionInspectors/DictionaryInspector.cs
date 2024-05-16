@@ -28,7 +28,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
             keyInputWindow.ContentScaleFactor = rootContentScaleFactor;
             AddChild(keyInputWindow);
             string selectedKey;
-            var spawner = Main.CurrentSession.InspectorSpawner;
+            var spawner = CurrentSession.InspectorSpawner;
             var jsonObject = GetBackingNode().AsObject();
             switch (PropertyInfo.KeyTypeInfo)
             {
@@ -94,7 +94,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
     {
         var jsonObject = node.AsObject();
         var jsonObjectArray = jsonObject.ToArray().AsSpan();
-        var spawner = Main.CurrentSession.InspectorSpawner;
+        var spawner = CurrentSession.InspectorSpawner;
         for (var index = 0; index < jsonObjectArray.Length; index++)
         {
             var jsonArrayElement = jsonObjectArray[index];

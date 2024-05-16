@@ -19,12 +19,14 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
     public string DisplayName { get; private set; }
     public event Action<object> ValueChanged;
     protected TPropertyInfo PropertyInfo { get; private set; }
-
+    protected InspectionSessionController CurrentSession { get; private set; }
+    
     private JsonNode _parent;
     private string _jsonPropertyName;
     
-    public void Initialize(TPropertyInfo propertyInfo)
+    public void Initialize(TPropertyInfo propertyInfo, InspectionSessionController currentSession)
     {
+        CurrentSession = currentSession;
         DisplayName = propertyInfo.Name;
         _propertyName.Text = DisplayName;
         PropertyInfo = propertyInfo;

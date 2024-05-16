@@ -28,7 +28,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
             var jsonArray = GetBackingNode().AsArray();
             var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ArrayElementTypeInfo);
             jsonArray.Add(newNode);
-            BindArrayItem(Main.CurrentSession.InspectorSpawner, jsonArray.Count - 1, jsonArray);
+            BindArrayItem(CurrentSession.InspectorSpawner, jsonArray.Count - 1, jsonArray);
             _arrayElementCount.Value++;
         };
     }
@@ -42,7 +42,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     protected override void OnInitialPrint(JsonNode node)
     {
         var jsonArray = node.AsArray();
-        var spawner = Main.CurrentSession.InspectorSpawner;
+        var spawner = CurrentSession.InspectorSpawner;
         for (var index = 0; index < jsonArray.Count; index++)
         {
             BindArrayItem(spawner, index, node);

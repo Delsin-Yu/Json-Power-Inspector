@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://twdmh8uu8yy7"]
+[gd_scene load_steps=11 format=3 uid="uid://twdmh8uu8yy7"]
 
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_qligq"]
 [ext_resource type="PackedScene" uid="uid://dglp6a0bsyxo8" path="res://Prefabs/DictionaryInspector.tscn" id="2_u3i45"]
@@ -9,8 +9,9 @@
 [ext_resource type="PackedScene" uid="uid://cb3jjo2jf4bss" path="res://Prefabs/StringInspector.tscn" id="6_kidi3"]
 [ext_resource type="PackedScene" uid="uid://cht8r37b1mgmj" path="res://Prefabs/ArrayInspector.tscn" id="7_3jwum"]
 [ext_resource type="PackedScene" uid="uid://dx3t7oouwde40" path="res://Prefabs/BooleanInspector.tscn" id="9_fqphr"]
+[ext_resource type="PackedScene" uid="uid://crc1232l8bmix" path="res://Prefabs/SessionController.tscn" id="10_crymd"]
 
-[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_objectName", "_objectContainer", "_slider", "_displayScale")]
+[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_tabContainer", "_slider", "_displayScale")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -25,8 +26,8 @@ _objectInspector = ExtResource("5_335on")
 _stringInspector = ExtResource("6_kidi3")
 _arrayInspector = ExtResource("7_3jwum")
 _booleanInspector = ExtResource("9_fqphr")
-_objectName = NodePath("VBoxContainer/ScrollContainer/VBoxContainer/InspectedName")
-_objectContainer = NodePath("VBoxContainer/ScrollContainer/VBoxContainer/InspectedContents")
+_sessionPrefab = ExtResource("10_crymd")
+_tabContainer = NodePath("VBoxContainer/TabContainer")
 _slider = NodePath("VBoxContainer/HBoxContainer/HSlider")
 _displayScale = NodePath("VBoxContainer/HBoxContainer/SpinBox")
 
@@ -58,21 +59,6 @@ step = 0.0
 [node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="InspectedName" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 1
-text = "Inspected Object Name"
-
-[node name="InspectedContents" type="VFlowContainer" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3

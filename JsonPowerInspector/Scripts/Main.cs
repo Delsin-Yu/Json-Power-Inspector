@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -9,8 +8,6 @@ namespace JsonPowerInspector;
 
 public partial class Main : Control
 {
-    public static InspectionSession CurrentSession { get; private set; }
-    
     [Export] private PackedScene _dictionaryInspector;
     [Export] private PackedScene _enumInspector;
     [Export] private PackedScene _dropdownInspector;
@@ -19,15 +16,15 @@ public partial class Main : Control
     [Export] private PackedScene _stringInspector;
     [Export] private PackedScene _arrayInspector;
     [Export] private PackedScene _booleanInspector;
-    [Export] private Label _objectName;
-    [Export] private Control _objectContainer;
+    [Export] private PackedScene _sessionPrefab;
+    [Export] private TabContainer _tabContainer;
     [Export] private Slider _slider;
     [Export] private SpinBox _displayScale;
     
     public const string Extension = ".jsontemplate";
     public const string Data = ".json";
 
-    private InspectorSpawner _spawner;
+    private InspectionSessionController _currentFocusedSession;
     
     public override void _Ready()
     {
@@ -61,6 +58,8 @@ public partial class Main : Control
             UserConfig.Current.ScaleFactor = floatValue; 
         };
 
+        _tabContainer.TabChanged += tabIndex => _currentFocusedSession = _tabContainer.GetChild<InspectionSessionController>((int)tabIndex);
+
         window.FilesDropped += files =>
         {
             var templateFile = TryMatch(files, Extension);
@@ -82,27 +81,16 @@ public partial class Main : Control
             // Template == null
             if (dataFile != null)
             {
-                if (CurrentSession == null)
+                if (_currentFocusedSession == null)
                 {
                     // TODO: Error Handling
                     return;
                 }
                 
-                CurrentSession.LoadFromJsonObject(LoadData(dataFile));
+                _currentFocusedSession.LoadFromJsonObject(LoadData(dataFile));
             }
         };
-
-        _spawner = new(
-            _dictionaryInspector,
-            _enumInspector,
-            _dropdownInspector,
-            _numberInspector,
-            _objectInspector,
-            _stringInspector,
-            _arrayInspector,
-            _booleanInspector
-        );
-
+        
         CallDeferred(MethodName.ApplyContentScale);
     }
 
@@ -135,42 +123,40 @@ public partial class Main : Control
         return null;
     }
 
-    private void LoadBoth(string filePath, string dataPath)
-    {
-        LoadTemplate(filePath, LoadData(dataPath));
-    }
-    
-    private void LoadTemplate(string filePath, JsonObject data)
-    {
-        // TODO: Serialization Exception Handling
-        var setup = TemplateSerializer.Deserialize(filePath);
-        
-        if (CurrentSession != null)
-        {
-            // TODO: Warn data loss
-            foreach (var child in _objectContainer.GetChildren().ToArray().AsSpan())
-            {
-                child.QueueFree();
-            }
-
-            CurrentSession = null;
-        }
-
-        CurrentSession = new(
-            setup,
-            _spawner,
-            filePath,
-            _objectName,
-            _objectContainer
-        );
-
-        CurrentSession.StartSession(data);
-    }
-    
     private static JsonObject LoadData(string filePath)
     {
         using var fileStream = File.OpenRead(filePath);
         return (JsonObject)JsonObject.Parse(fileStream);
     }
     
+    private void LoadBoth(string filePath, string dataPath)
+    {
+        LoadTemplate(filePath, LoadData(dataPath));
+    }
+
+    private void LoadTemplate(string filePath, JsonObject data)
+    {
+        // TODO: Serialization Exception Handling
+        var setup = TemplateSerializer.Deserialize(filePath);
+
+        var sessionController = _sessionPrefab.Instantiate<InspectionSessionController>();
+        sessionController.Name = setup.MainObjectDefinition.ObjectTypeName;
+        _tabContainer.AddChild(sessionController);
+        sessionController.StartSession(
+            setup,
+            new(
+                _dictionaryInspector,
+                _enumInspector,
+                _dropdownInspector,
+                _numberInspector,
+                _objectInspector,
+                _stringInspector,
+                _arrayInspector,
+                _booleanInspector,
+                sessionController
+            ),
+            filePath,
+            data
+        );
+    }
 }

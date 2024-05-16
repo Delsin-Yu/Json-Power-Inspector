@@ -21,7 +21,7 @@ public partial class DropdownInspector : BasePropertyInspector<DropdownPropertyI
     
     protected override void OnInitialize(DropdownPropertyInfo propertyInfo)
     {
-        var fileLines = File.ReadAllLines(Path.Combine(Main.CurrentSession.TemplateDirectory, propertyInfo.DataSourcePath));
+        var fileLines = File.ReadAllLines(Path.Combine(CurrentSession.TemplateDirectory, propertyInfo.DataSourcePath));
 
         Regex lineMatchingRegex;
         if (string.IsNullOrWhiteSpace(propertyInfo.ValueDisplayRegex)) lineMatchingRegex = GetDefaultLineMatchingRegex();

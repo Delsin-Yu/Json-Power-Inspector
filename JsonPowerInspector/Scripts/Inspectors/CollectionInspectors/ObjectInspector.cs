@@ -27,7 +27,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
             else
             {
                 var hashSet = new HashSet<BaseObjectPropertyInfo>();
-                var jsonObject = Utils.CreateJsonObjectForProperty(PropertyInfo, Main.CurrentSession.ObjectDefinitionMap, hashSet);
+                var jsonObject = Utils.CreateJsonObjectForProperty(PropertyInfo, CurrentSession.ObjectDefinitionMap, hashSet);
                 SetBackingNode(jsonObject);
                 BindObject(jsonObject);
                 _createOrDeleteBtn.Text = "X";
@@ -50,14 +50,14 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
 
     private void BindObject(JsonNode node)
     {
-        var objectDefinition = Main.CurrentSession.ObjectDefinitionMap[PropertyInfo.ObjectTypeName];
+        var objectDefinition = CurrentSession.ObjectDefinitionMap[PropertyInfo.ObjectTypeName];
         var span = objectDefinition.Properties.AsSpan();
         var jsonObject = node.AsObject();
         var jsonProperties = jsonObject.ToArray();
         for (var index = 0; index < span.Length; index++)
         {
             var info = span[index];
-            var inspector = Utils.CreateInspectorForProperty(info, Main.CurrentSession.InspectorSpawner);
+            var inspector = Utils.CreateInspectorForProperty(info, CurrentSession.InspectorSpawner);
             AddChildNode(inspector, (Control)inspector);
             var propertyName = jsonProperties[index].Key;
             inspector.BindJsonNode(jsonObject, propertyName);

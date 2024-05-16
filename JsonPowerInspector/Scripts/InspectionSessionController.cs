@@ -9,39 +9,30 @@ using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
 
-public class InspectionSession
+public partial class InspectionSessionController : Control
 {
+    [Export] private Control _container;
+    
     public InspectorSpawner InspectorSpawner { get; private set; }
-    private readonly Dictionary<string, ObjectDefinition> _objectDefinitionMap;
-
-    private readonly ObjectDefinition _mainObjectDefinition;
-
-    private readonly Control _rootObjectContainer;
-    private JsonObject _editingJsonObject;
-
     private readonly List<IPropertyInspector> _inspectorRoot = [];
     public string TemplateDirectory { get; set; }
     public IReadOnlyDictionary<string, ObjectDefinition> ObjectDefinitionMap => _objectDefinitionMap;
 
-    public InspectionSession(
+    private Dictionary<string, ObjectDefinition> _objectDefinitionMap;
+    private ObjectDefinition _mainObjectDefinition;
+    private JsonObject _editingJsonObject;
+
+    public void StartSession(
         PackedObjectDefinition packedObjectDefinition,
         InspectorSpawner inspectorSpawner,
         string templatePath,
-        Label objectName,
-        Control rootObjectContainer
+        JsonObject jsonObject
     )
     {
         _objectDefinitionMap = packedObjectDefinition.ReferencedObjectDefinition.ToDictionary(x => x.ObjectTypeName, x => x);
         _mainObjectDefinition = packedObjectDefinition.MainObjectDefinition;
         InspectorSpawner = inspectorSpawner;
         TemplateDirectory = Path.GetDirectoryName(templatePath)!;
-        objectName.Text = _mainObjectDefinition.ObjectTypeName;
-        _rootObjectContainer = rootObjectContainer;
-
-    }
-
-    public void StartSession(JsonObject jsonObject)
-    {
         
         if (jsonObject != null)
         {
@@ -73,7 +64,7 @@ public class InspectionSession
         {
             var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
             _inspectorRoot.Add(inspectorForProperty);
-            _rootObjectContainer.AddChild((Control)inspectorForProperty);
+            _container.AddChild((Control)inspectorForProperty);
         }
         
         // TODO: Warn User of data loss

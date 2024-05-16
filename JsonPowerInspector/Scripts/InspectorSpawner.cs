@@ -13,6 +13,7 @@ public class InspectorSpawner
     private readonly PackedScene _stringInspector;
     private readonly PackedScene _arrayInspector;
     private readonly PackedScene _booleanInspector;
+    private readonly InspectionSessionController _currentSession;
 
     public InspectorSpawner(
         PackedScene dictionaryInspector,
@@ -22,7 +23,8 @@ public class InspectorSpawner
         PackedScene objectInspector,
         PackedScene stringInspector,
         PackedScene arrayInspector,
-        PackedScene booleanInspector
+        PackedScene booleanInspector,
+        InspectionSessionController currentSession
     )
     {
         _dictionaryInspector = dictionaryInspector;
@@ -32,6 +34,7 @@ public class InspectorSpawner
         _stringInspector = stringInspector;
         _arrayInspector = arrayInspector;
         _booleanInspector = booleanInspector;
+        _currentSession = currentSession;
         _dropdownInspector = dropdownInspector;
     }
 
@@ -44,12 +47,12 @@ public class InspectorSpawner
     public EnumInspector Create(EnumPropertyInfo enumPropertyInfo) => Print<EnumInspector, EnumPropertyInfo>(_enumInspector, enumPropertyInfo);
     public DropdownInspector Create(DropdownPropertyInfo dropdownPropertyInfo) => Print<DropdownInspector, DropdownPropertyInfo>(_dropdownInspector, dropdownPropertyInfo);
     
-    private static TInspector Print<TInspector, TPropertyInfo>(PackedScene inspectorPrefab, TPropertyInfo propertyInfo) 
+    private TInspector Print<TInspector, TPropertyInfo>(PackedScene inspectorPrefab, TPropertyInfo propertyInfo) 
         where TInspector : BasePropertyInspector<TPropertyInfo> 
         where TPropertyInfo : BaseObjectPropertyInfo
     {
         var instance = inspectorPrefab.Instantiate<TInspector>();
-        instance.Initialize(propertyInfo);
+        instance.Initialize(propertyInfo, _currentSession);
         return instance;
     }
 }

@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://crc1232l8bmix"]
+
+[ext_resource type="Script" path="res://Scripts/InspectionSessionController.cs" id="1_efht6"]
+
+[node name="SessionController" type="ScrollContainer" node_paths=PackedStringArray("_container")]
+auto_translate_mode = 1
+size_flags_vertical = 3
+script = ExtResource("1_efht6")
+_container = NodePath("InspectedContents")
+
+[node name="InspectedContents" type="VFlowContainer" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 0
