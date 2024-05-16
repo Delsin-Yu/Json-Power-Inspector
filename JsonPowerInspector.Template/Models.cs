@@ -9,11 +9,15 @@ namespace JsonPowerInspector.Template;
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
 public partial class PowerTemplateJsonContext : JsonSerializerContext;
 
-public class ApplicationJsonTypes
+internal class ApplicationJsonTypes
 {
     public PackedObjectDefinition PackedObjectDefinition { get; set; }
 }
 
+/// <summary>
+/// Instruct the jsontemplate serializer to give the
+/// annotated Property or Enum value a customized name when displaying this Property or Enum value.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 public class InspectorNameAttribute : Attribute
 {
@@ -25,6 +29,12 @@ public class InspectorNameAttribute : Attribute
     public string DisplayName { get; }
 }
 
+/// <summary>
+/// Instruct the jsontemplate serializer to mark the
+/// annotated Property as a dropdown.
+/// The JsonPowerInspector will collect the information from the provided data source
+/// and construct a dropdown for this property.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class InspectorDropdownAttribute : Attribute
 {
@@ -37,18 +47,33 @@ public class InspectorDropdownAttribute : Attribute
     public string Regex { get; }
 }
 
+/// <summary>
+/// Instruct the jsontemplate serializer to mark the Key of the
+/// annotated Dictionary Property as a dropdown.
+/// The JsonPowerInspector will collect the information from the provided data source
+/// and construct a dropdown for this property.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 {
     public InspectorKeyDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
 }
 
+/// <summary>
+/// Instruct the jsontemplate serializer to mark the Value of the
+/// annotated Dictionary Property as a dropdown.
+/// The JsonPowerInspector will collect the information from the provided data source
+/// and construct a dropdown for this property.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
 {
     public InspectorValueDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
 }
 
+/// <summary>
+/// Contains the necessary information required to create an inspector for a type.
+/// </summary>
 public class PackedObjectDefinition
 {
     public PackedObjectDefinition(ObjectDefinition mainObjectDefinition, ObjectDefinition[] referencedObjectDefinition)
@@ -57,7 +82,14 @@ public class PackedObjectDefinition
         ReferencedObjectDefinition = referencedObjectDefinition;
     }
 
+    /// <summary>
+    /// Contains the information for the type.
+    /// </summary>
     public ObjectDefinition MainObjectDefinition { get; set; }
+    
+    /// <summary>
+    /// Contains the information for the types that are referenced by the <see cref="MainObjectDefinition"/>.
+    /// </summary>
     public ObjectDefinition[] ReferencedObjectDefinition { get; set; }
 
     public override string ToString()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Godot;
 using GodotTask;
@@ -132,7 +133,8 @@ public partial class InspectionSessionController : Control
         PackedObjectDefinition setup;
         try
         {
-            setup = TemplateSerializer.Deserialize(templatePath);
+            using var fileStream = File.OpenRead(templatePath);
+            setup = JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
         }
         catch (Exception)
         {

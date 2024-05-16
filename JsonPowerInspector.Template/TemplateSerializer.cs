@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -10,19 +9,27 @@ namespace JsonPowerInspector.Template;
 
 public static class TemplateSerializer
 {
-    public static string Serialize(PackedObjectDefinition packedObjectDefinition)
-    {
-        return JsonSerializer.Serialize(packedObjectDefinition, PowerTemplateJsonContext.Default.PackedObjectDefinition);
-    }
-    
-    public static PackedObjectDefinition Deserialize(string templateFilePath)
-    {
-        using var fileStream = File.OpenRead(templateFilePath);
-        return JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
-    }
+    /// <summary>
+    /// Serialize the specified <see cref="PackedObjectDefinition"/> data model to the jsontemplate string.
+    /// The developer should save the result into a .jsontemplate file for JsonPowerInspector usage.
+    /// </summary>
+    /// <param name="packedObjectDefinition">The data model to serialize from.</param>
+    /// <returns>A JSON string that should be saved into a .jsontemplate file for JsonPowerInspector usage.</returns>
+    public static string Serialize(PackedObjectDefinition packedObjectDefinition) => 
+        JsonSerializer.Serialize(packedObjectDefinition, PowerTemplateJsonContext.Default.PackedObjectDefinition);
 
+    /// <summary>
+    /// Collect the required serialization info for the specified type for JsonPowerInspector to use.
+    /// </summary>
+    /// <typeparam name="T">The type for collecting the info from.</typeparam>
+    /// <returns>A data model for serializing to .jsontemplate file.</returns>
     public static PackedObjectDefinition CollectTypeDefinition<T>() => CollectTypeDefinition(typeof(T));
 
+    /// <summary>
+    /// Collect the required serialization info for the specified type for JsonPowerInspector to use.
+    /// </summary>
+    /// <param name="objectType">The type for collecting the info from.</param>
+    /// <returns>A data model for serializing to .jsontemplate file.</returns>
     [RequiresUnreferencedCode("CollectDefinition is intended to be used in editor to generate JsonFileInfo only.")]
     public static PackedObjectDefinition CollectTypeDefinition(Type objectType)
     {
