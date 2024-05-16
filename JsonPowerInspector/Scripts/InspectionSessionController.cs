@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Godot;
 using GodotTask;
 using JsonPowerInspector.Template;
@@ -234,6 +235,8 @@ public partial class InspectionSessionController : Control
         _inspectorRoot.Clear();
     }
 
+    private readonly JsonSerializerOptions _options = new() { WriteIndented = true, };
+    
     public async GDTask Save()
     {
         PickPath:
@@ -243,7 +246,18 @@ public partial class InspectionSessionController : Control
             if (selected == null) return;
             DataPath = selected;
         }
-        var jsonString = _editingJsonObject.ToJsonString(PowerTemplateJsonContext.Default.Options);
+
+        string jsonString;
+        try
+        {
+            if(!_options.IsReadOnly) _options.MakeReadOnly(true);
+            jsonString = _editingJsonObject.ToJsonString(_options);
+        }
+        catch (Exception e)
+        {
+            await Dialogs.OpenErrorDialog($"{e.GetType().Name} when serializing the editing data:\n{e}");
+            return;
+        }
         
         try
         {
