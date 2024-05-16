@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using Godot;
+using GodotTask;
 using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
@@ -13,6 +14,8 @@ public partial class InspectionSessionController : Control
 {
     [Export] private Control _container;
     [Export] private Label _info;
+    [Export] private Button _save;
+    [Export] private Button _revert;
     
     public InspectorSpawner InspectorSpawner { get; private set; }
     private readonly List<IPropertyInspector> _inspectorRoot = [];
@@ -24,6 +27,16 @@ public partial class InspectionSessionController : Control
     private JsonObject _editingJsonObject;
     private string _templatePath;
     private string _dataPath;
+
+    public override void _Ready()
+    {
+        _save.Pressed += () => Save().Forget();
+        _revert.Pressed += () =>
+        {
+            if (_dataPath == null) MountJsonObject(CreateTemplateJsonObject());
+            else LoadFromJsonObject(_dataPath);
+        };
+    }
 
     public void StartSession(
         InspectorSpawner inspectorSpawner,
@@ -48,6 +61,13 @@ public partial class InspectionSessionController : Control
             return;
         }
 
+        var templateJsonObject = CreateTemplateJsonObject();
+
+        MountJsonObject(templateJsonObject);
+    }
+
+    private JsonObject CreateTemplateJsonObject()
+    {
         JsonObject templateJsonObject = new();
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
@@ -55,7 +75,7 @@ public partial class InspectionSessionController : Control
             templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
         }
 
-        MountJsonObject(templateJsonObject);
+        return templateJsonObject;
     }
 
     public void LoadFromJsonObject(string dataPath)
@@ -102,5 +122,17 @@ public partial class InspectionSessionController : Control
              Current Data:
              "{_dataPath ?? "New Data"}"
              """;
+    }
+
+    public async GDTask Save()
+    {
+        var jsonString = _editingJsonObject.ToJsonString(PowerTemplateJsonContext.Default.Options);
+        if (_dataPath == null)
+        {
+            var selected = await Dialogs.OpenSaveFileDialog(TemplateDirectory);
+            if (selected == null) return;
+            _dataPath = selected;
+        }
+        File.WriteAllText(_dataPath, jsonString);
     }
 }

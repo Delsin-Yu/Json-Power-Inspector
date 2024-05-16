@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Godot;
+using GodotTask;
 
 namespace JsonPowerInspector;
 
@@ -53,7 +56,7 @@ public partial class Main : Control
             var floatValue = (float)value;
             window.ContentScaleFactor = floatValue;
             _slider.Value = floatValue;
-            UserConfig.Current.ScaleFactor = floatValue; 
+            UserConfig.Current.ScaleFactor = floatValue;
         };
 
         _tabContainer.TabChanged += tabIndex => _currentFocusedSession = _tabContainer.GetChild<InspectionSessionController>((int)tabIndex);
@@ -135,6 +138,25 @@ public partial class Main : Control
         };
         
         CallDeferred(MethodName.ApplyContentScale);
+    }
+
+    private bool _isPressed;
+    public override void _Input(InputEvent inputEvent)
+    {
+        if (!InputMap.ActionHasEvent("save", inputEvent)) return;
+        if (inputEvent.IsPressed())
+        {
+            if (!_isPressed)
+            {
+                _isPressed = true;
+                if(_currentFocusedSession == null) return;
+                _currentFocusedSession.Save().Forget();
+            }
+        }
+        else
+        {
+            _isPressed = false;
+        }
     }
 
     private void ApplyContentScale()
