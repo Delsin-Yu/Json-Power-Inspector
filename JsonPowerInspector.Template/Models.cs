@@ -9,7 +9,7 @@ namespace JsonPowerInspector.Template;
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
 public partial class PowerTemplateJsonContext : JsonSerializerContext;
 
-internal class ApplicationJsonTypes
+public class ApplicationJsonTypes
 {
     public PackedObjectDefinition PackedObjectDefinition { get; set; }
 }
