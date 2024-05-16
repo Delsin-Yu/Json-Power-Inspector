@@ -7,6 +7,7 @@ title = "Specify Key"
 initial_position = 4
 size = Vector2i(377, 82)
 wrap_controls = true
+transient = true
 exclusive = true
 keep_title_visible = true
 script = ExtResource("2_xtab7")
