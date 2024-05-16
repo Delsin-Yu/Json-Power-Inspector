@@ -53,12 +53,12 @@ public static class Dialogs
         window.AddChild(errorDialog);
         // errorDialog.ContentScaleFactor = window.ContentScaleFactor;
 
-        errorDialog.PopupCentered();
 
         var closed = false;
 
-        errorDialog.CloseRequested += () => closed = true;
+        errorDialog.Confirmed += () => closed = true;
 
+        errorDialog.PopupCentered();
         await GDTask.WaitUntil(() => closed);
         
         errorDialog.QueueFree();

@@ -102,8 +102,7 @@ public partial class InspectionSessionController : Control
         {
             if (DataPath == null) MountJsonObject(CreateTemplateJsonObject());
             else LoadFromJsonObject(DataPath);
-            Name = _mainObjectDefinition.ObjectTypeName;
-            Changed = false;
+            ResetChanged();
         };
         _templatePathBtn.Pressed += () => OpenTemplateFile().Forget();
         _dataPathBtn.Pressed += () => OpenDataFile().Forget();
@@ -114,6 +113,12 @@ public partial class InspectionSessionController : Control
         if(Changed) return;
         Changed = true;
         Name += " (*)";
+    }
+
+    private void ResetChanged()
+    {
+        Name = _mainObjectDefinition.ObjectTypeName;
+        Changed = false;
     }
 
     public void StartSession(
@@ -147,9 +152,7 @@ public partial class InspectionSessionController : Control
         }
 
         DataPath = null;
-
         var templateJsonObject = CreateTemplateJsonObject();
-
         MountJsonObject(templateJsonObject);
     }
 
@@ -186,13 +189,8 @@ public partial class InspectionSessionController : Control
             if(!discard) return;
         }
         
-        foreach (var inspector in _inspectorRoot)
-        {
-            ((Control)inspector).QueueFree();
-        }
-        
-        _inspectorRoot.Clear();
-        
+        ResetControls();
+
         foreach (var propertyInfo in _mainObjectDefinition.Properties)
         {
             var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
@@ -204,10 +202,34 @@ public partial class InspectionSessionController : Control
         var objectProperty = _editingJsonObject.ToArray();
         for (var index = 0; index < _inspectorRoot.Count; index++)
         {
-            var jsonNode = objectProperty[index].Key;
-            var propertyInspector = _inspectorRoot[index];
-            propertyInspector.BindJsonNode(_editingJsonObject, jsonNode);
+            try
+            {
+                var jsonNode = objectProperty[index].Key;
+                var propertyInspector = _inspectorRoot[index];
+                propertyInspector.BindJsonNode(_editingJsonObject, jsonNode);
+            }
+            catch (Exception e)
+            {
+                await Dialogs.OpenErrorDialog(
+                    $"{e.GetType()} when trying to load the specified Json to the active data template, " +
+                    $"it's most likely that the template does not belongs to the JSON format.\n{e}"
+                );
+                ResetControls();
+                DataPath = null;
+                MountJsonObject(CreateTemplateJsonObject());
+                return;
+            }
         }
+    }
+
+    private void ResetControls()
+    {
+        foreach (var inspector in _inspectorRoot)
+        {
+            ((Control)inspector).QueueFree();
+        }
+
+        _inspectorRoot.Clear();
     }
 
     public async GDTask Save()
@@ -228,7 +250,8 @@ public partial class InspectionSessionController : Control
         catch (Exception e)
         {
             var yes = await Dialogs.OpenYesNoDialog(
-                $"Error when saving the data file to the specified path, do you wish to pick another path?\n{e.Message}",
+                $"Error when saving the data file to the specified path, " +
+                $"do you wish to pick another path?\n{e.Message}",
                 $"{e.GetType().TypeHandle} when saving.",
                 "Yes",
                 "No"
@@ -241,6 +264,6 @@ public partial class InspectionSessionController : Control
             }
             return;
         }
-        Changed = false;
+        ResetChanged();
     }
 }
