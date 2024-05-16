@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Nodes;
 using Godot;
@@ -14,9 +13,13 @@ namespace JsonPowerInspector;
 public partial class InspectionSessionController : Control
 {
     [Export] private Control _container;
-    [Export] private Label _info;
+    [Export] private Button _templatePathBtn;
+    [Export] private Button _dataPathBtn;
     [Export] private Button _save;
     [Export] private Button _revert;
+    [Export] private PanelContainer _dataContainer;
+    [Export] private Color _validDataColor;
+    [Export] private Color _invalidDataColor;
     
     public InspectorSpawner InspectorSpawner { get; private set; }
     private readonly List<IPropertyInspector> _inspectorRoot = [];
@@ -30,16 +33,68 @@ public partial class InspectionSessionController : Control
     private string _templatePath;
     private string _dataPath;
 
+    private string TemplatePath
+    {
+        get => _templatePath;
+        set
+        {
+            _templatePath = value;
+            _templatePathBtn.Text = value;
+        }
+    }
+
+    private string DataPath
+    {
+        get => _dataPath;
+        set
+        {
+            _dataPath = value;
+            _dataPathBtn.Text = value ?? "New Data";
+            _dataContainer.SelfModulate = value != null ? _validDataColor : _invalidDataColor;
+        }
+    }
+
+    private async GDTask OpenTemplateFile()
+    {
+        OS.ShellOpen(TemplatePath);
+        if (!File.Exists(DataPath))
+        {
+            await Dialogs.OpenErrorDialog("The active data for this dialog no longer belongs to a file anymore, try recreate the template file and start a new session with it.", "The file does not exist");
+            DataPath = null;
+            return;
+        }
+    }
+
+    private async GDTask OpenDataFile()
+    {
+        if (DataPath == null)
+        {
+            await Dialogs.OpenErrorDialog("The active data for this dialog does not belongs to a file yet, please perform save first.", "The file does not exist");
+            return;
+        }
+
+        if (!File.Exists(DataPath))
+        {
+            await Dialogs.OpenErrorDialog("The active data for this dialog no longer belongs to a file anymore, please perform save first.", "The file does not exist");
+            DataPath = null;
+            return;
+        }
+
+        OS.ShellOpen(DataPath);
+    }
+
     public override void _Ready()
     {
         _save.Pressed += () => Save().Forget();
         _revert.Pressed += () =>
         {
-            if (_dataPath == null) MountJsonObject(CreateTemplateJsonObject());
-            else LoadFromJsonObject(_dataPath);
+            if (DataPath == null) MountJsonObject(CreateTemplateJsonObject());
+            else LoadFromJsonObject(DataPath);
             Name = _mainObjectDefinition.ObjectTypeName;
             Changed = false;
         };
+        _templatePathBtn.Pressed += () => OpenTemplateFile().Forget();
+        _dataPathBtn.Pressed += () => OpenDataFile().Forget();
     }
 
     public void MarkChanged()
@@ -55,7 +110,7 @@ public partial class InspectionSessionController : Control
         string dataPath
     )
     {
-        _templatePath = templatePath;
+        TemplatePath = templatePath;
 
         PackedObjectDefinition setup;
         try
@@ -79,6 +134,8 @@ public partial class InspectionSessionController : Control
             return;
         }
 
+        DataPath = null;
+
         var templateJsonObject = CreateTemplateJsonObject();
 
         MountJsonObject(templateJsonObject);
@@ -98,7 +155,7 @@ public partial class InspectionSessionController : Control
 
     public void LoadFromJsonObject(string dataPath)
     {
-        _dataPath = dataPath;
+        DataPath = dataPath;
         JsonObject jsonObject;
         {
             using var fileStream = File.OpenRead(dataPath);
@@ -139,25 +196,39 @@ public partial class InspectionSessionController : Control
             var propertyInspector = _inspectorRoot[index];
             propertyInspector.BindJsonNode(_editingJsonObject, jsonNode);
         }
-
-        _info.Text =
-            $"""
-             Current Template:
-             "{_templatePath}"
-             Current Data:
-             "{_dataPath ?? "New Data"}"
-             """;
     }
 
     public async GDTask Save()
     {
-        var jsonString = _editingJsonObject.ToJsonString(PowerTemplateJsonContext.Default.Options);
-        if (_dataPath == null)
+        PickPath:
+        if (DataPath == null)
         {
-            var selected = await Dialogs.OpenSaveFileDialog(TemplateDirectory);
+            var selected = await Dialogs.OpenSaveFileDialog();
             if (selected == null) return;
-            _dataPath = selected;
+            DataPath = selected;
         }
-        File.WriteAllText(_dataPath, jsonString);
+        var jsonString = _editingJsonObject.ToJsonString(PowerTemplateJsonContext.Default.Options);
+        
+        try
+        {
+            File.WriteAllText(DataPath, jsonString);
+        }
+        catch (Exception e)
+        {
+            var yes = await Dialogs.OpenYesNoDialog(
+                $"Error when saving the data file to the specified path, do you wish to pick another path?\n{e.Message}",
+                $"{e.GetType().TypeHandle} when saving.",
+                "Yes",
+                "No"
+            );
+
+            if (yes)
+            {
+                DataPath = null;
+                goto PickPath;
+            }
+            return;
+        }
+        Changed = false;
     }
 }

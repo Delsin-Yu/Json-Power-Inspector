@@ -64,7 +64,7 @@ public static class Dialogs
         errorDialog.QueueFree();
     }
     
-    public static GDTask<string> OpenSaveFileDialog(string defaultDir)
+    public static GDTask<string> OpenSaveFileDialog()
     {
         var fileDialog = new FileDialog
         {
@@ -72,8 +72,7 @@ public static class Dialogs
             Access = FileDialog.AccessEnum.Filesystem,
             UseNativeDialog = true,
             Filters = ["*.json;Json Data File"],
-            Title = "Specify Path",
-            CurrentDir = defaultDir
+            Title = "Specify Path"
         };
 
         var window = ((SceneTree)Engine.GetMainLoop()).Root;
@@ -88,6 +87,6 @@ public static class Dialogs
 
         if (string.IsNullOrEmpty(path)) return GDTask.FromResult<string>(null);
 
-        return GDTask.FromResult(fileDialog.CurrentPath);
+        return GDTask.FromResult(path);
     }
 }

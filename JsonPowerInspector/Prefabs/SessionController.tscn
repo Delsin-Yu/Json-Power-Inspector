@@ -1,24 +1,99 @@
-[gd_scene load_steps=2 format=3 uid="uid://crc1232l8bmix"]
+[gd_scene load_steps=4 format=3 uid="uid://crc1232l8bmix"]
 
 [ext_resource type="Script" path="res://Scripts/InspectionSessionController.cs" id="1_efht6"]
 
-[node name="SessionController" type="PanelContainer" node_paths=PackedStringArray("_container", "_info", "_save", "_revert")]
-offset_top = 66.0
-offset_right = 204.0
-offset_bottom = 66.0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mecgu"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.25, 0.995659, 1, 0.0823529)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.11, 0.11, 0.11, 0.407843)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4hym3"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(1, 1, 1, 0.0823529)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.11, 0.11, 0.11, 0.407843)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 3
+
+[node name="SessionController" type="PanelContainer" node_paths=PackedStringArray("_container", "_templatePathBtn", "_dataPathBtn", "_save", "_revert", "_dataContainer")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_efht6")
 _container = NodePath("VBoxContainer/PanelContainer/ScrollContainer/InspectedContents")
-_info = NodePath("VBoxContainer/EditingInfo")
+_templatePathBtn = NodePath("VBoxContainer/EditingInfoContainer/PanelContainer/TemplateInfo/TemplatePath")
+_dataPathBtn = NodePath("VBoxContainer/EditingInfoContainer/PanelContainer2/DataInfo/DataPath")
 _save = NodePath("VBoxContainer/HBoxContainer/SaveButton")
 _revert = NodePath("VBoxContainer/HBoxContainer/RevertButton")
+_dataContainer = NodePath("VBoxContainer/EditingInfoContainer/PanelContainer2")
+_validDataColor = Color(0, 1, 0.2, 1)
+_invalidDataColor = Color(1, 0.949368, 0, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="EditingInfo" type="Label" parent="VBoxContainer"]
-custom_minimum_size = Vector2(1, 0)
+[node name="EditingInfoContainer" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
-text = "Editing Info"
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/EditingInfoContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mecgu")
+
+[node name="TemplateInfo" type="VBoxContainer" parent="VBoxContainer/EditingInfoContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="TemplateText" type="Label" parent="VBoxContainer/EditingInfoContainer/PanelContainer/TemplateInfo"]
+layout_mode = 2
+text = "Template"
+
+[node name="TemplatePath" type="Button" parent="VBoxContainer/EditingInfoContainer/PanelContainer/TemplateInfo"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "G:\\repos\\Json-Power-Inspector\\TestApplication\\bin\\Debug\\net8.0\\Data\\MyCollectionModel.jsontemplate"
+alignment = 0
+autowrap_mode = 1
+
+[node name="PanelContainer2" type="PanelContainer" parent="VBoxContainer/EditingInfoContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4hym3")
+
+[node name="DataInfo" type="VBoxContainer" parent="VBoxContainer/EditingInfoContainer/PanelContainer2"]
+layout_mode = 2
+
+[node name="DataText" type="Label" parent="VBoxContainer/EditingInfoContainer/PanelContainer2/DataInfo"]
+layout_mode = 2
+text = "Data"
+
+[node name="DataPath" type="Button" parent="VBoxContainer/EditingInfoContainer/PanelContainer2/DataInfo"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "G:\\repos\\Json-Power-Inspector\\TestApplication\\bin\\Debug\\net8.0\\Data\\MyCollectionModel.jsontemplate"
+alignment = 0
 autowrap_mode = 1
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
