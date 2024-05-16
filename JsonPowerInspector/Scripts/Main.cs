@@ -57,6 +57,14 @@ public partial class Main : Control
         };
 
         _tabContainer.TabChanged += tabIndex => _currentFocusedSession = _tabContainer.GetChild<InspectionSessionController>((int)tabIndex);
+        var tabBar = _tabContainer.GetTabBar();
+        tabBar.TabCloseDisplayPolicy = TabBar.CloseButtonDisplayPolicy.ShowActiveOnly;
+        tabBar.TabClosePressed += tabIndex =>
+        {
+            // TODO: Notify data loss
+            var child = _tabContainer.GetChild<InspectionSessionController>((int)tabIndex);
+            child.QueueFree();
+        };
 
         window.FilesDropped += files =>
         {

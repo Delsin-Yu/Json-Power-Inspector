@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using JsonPowerInspector.Template;
-using TMI_RogueLike_DataEditor.Model;
 using Tynamix.ObjectFiller;
 
 var definition = TemplateSerializer.CollectTypeDefinition<TestModels>();

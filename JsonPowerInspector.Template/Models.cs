@@ -14,10 +14,21 @@ public class ApplicationJsonTypes
     public PackedObjectDefinition PackedObjectDefinition { get; set; }
 }
 
-[AttributeUsage(AttributeTargets.Property)]
-public class JsonDropdownAttribute : Attribute
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class InspectorNameAttribute : Attribute
 {
-    public JsonDropdownAttribute(string dataPath, string regex = null)
+    public InspectorNameAttribute(string displayName)
+    {
+        DisplayName = displayName;
+    }
+
+    public string DisplayName { get; }
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public class InspectorDropdownAttribute : Attribute
+{
+    public InspectorDropdownAttribute(string dataPath, string regex = null)
     {
         DataPath = dataPath;
         Regex = regex;
@@ -27,15 +38,15 @@ public class JsonDropdownAttribute : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Property)]
-public class DictionaryKeyJsonDropdownAttribute : JsonDropdownAttribute
+public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 {
-    public DictionaryKeyJsonDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
+    public InspectorKeyDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
 }
 
 [AttributeUsage(AttributeTargets.Property)]
-public class DictionaryValueJsonDropdownAttribute : JsonDropdownAttribute
+public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
 {
-    public DictionaryValueJsonDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
+    public InspectorValueDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
 }
 
 public class PackedObjectDefinition
@@ -121,6 +132,7 @@ public class ObjectDefinition
 public abstract class BaseObjectPropertyInfo
 {
     public string Name { get; set; }
+    public string DisplayName { get; set; }
     
     public override string ToString()
     {
@@ -240,7 +252,7 @@ public class DropdownPropertyInfo : BaseObjectPropertyInfo
 
 public class EnumPropertyInfo : BaseObjectPropertyInfo
 {
-    public record struct EnumValue(string ValueName, long ValueValue);
+    public record struct EnumValue(string DisplayName, string DeclareName, long Value);
     
     public string EnumTypeName { get; set; }
     public EnumValue[] EnumValues { get; set; }
@@ -254,7 +266,7 @@ public class EnumPropertyInfo : BaseObjectPropertyInfo
     protected override void PrintAdditional(StringBuilder stringBuilder) =>
         stringBuilder
             .Append('[')
-            .AppendJoin(", ", EnumValues.Select(x => x.ValueName))
+            .AppendJoin(", ", EnumValues.Select(x => x.DeclareName))
             .Append(']');
 }
 

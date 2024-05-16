@@ -27,7 +27,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
     public void Initialize(TPropertyInfo propertyInfo, InspectionSessionController currentSession)
     {
         CurrentSession = currentSession;
-        DisplayName = propertyInfo.Name;
+        DisplayName = propertyInfo.DisplayName;
         _propertyName.Text = DisplayName;
         PropertyInfo = propertyInfo;
         OnInitialize(propertyInfo);

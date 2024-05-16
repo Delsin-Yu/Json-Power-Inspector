@@ -73,6 +73,7 @@ public static class TemplateSerializer
     {
         baseObjectPropertyInfo = null;
 
+        var enumerable = attributes as Attribute[] ?? attributes.ToArray();
         if (_serializeToStringTypes.Contains(propertyType))
         {
             baseObjectPropertyInfo = new StringPropertyInfo();
@@ -80,7 +81,7 @@ public static class TemplateSerializer
         else if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
-            var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+            var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, [dropdown], out var arrayElementTypeInfo))
             {
                 return false;
@@ -96,7 +97,7 @@ public static class TemplateSerializer
             if (genericTypeDef == typeof(List<>))
             {
                 var elementType = propertyType.GetGenericArguments()[0];
-                var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+                var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
                 if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, [dropdown], out var arrayElementTypeInfo))
                 {
                     return false;
@@ -111,13 +112,13 @@ public static class TemplateSerializer
                 var arguments = propertyType.GetGenericArguments();
                 var keyType = arguments[0];
                 var valueType = arguments[1];
-                var attributeArray = attributes.ToArray();
-                var keyDropdown = (JsonDropdownAttribute)attributeArray.OfType<DictionaryKeyJsonDropdownAttribute>().FirstOrDefault();
+                var attributeArray = enumerable.ToArray();
+                var keyDropdown = (InspectorDropdownAttribute)attributeArray.OfType<InspectorKeyDropdownAttribute>().FirstOrDefault();
                 if (!TryParseProperty(GetTypeName(keyType), keyType, referencedPropertyInfo, [keyDropdown], out var keyTypeInfo))
                 {
                     return false;
                 }
-                var valueDropdown = (JsonDropdownAttribute)attributeArray.OfType<DictionaryValueJsonDropdownAttribute>().FirstOrDefault();
+                var valueDropdown = (InspectorDropdownAttribute)attributeArray.OfType<InspectorValueDropdownAttribute>().FirstOrDefault();
                 if (!TryParseProperty(GetTypeName(valueType), valueType, referencedPropertyInfo, [valueDropdown], out var valueTypeInfo))
                 {
                     referencedPropertyInfo.Remove(GetTypeName(keyType));
@@ -154,7 +155,7 @@ public static class TemplateSerializer
             else if (propertyType == typeof(double)) numberType = NumberPropertyInfo.NumberType.Float;
             else return false;
 
-            var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+            var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
                 baseObjectPropertyInfo = new DropdownPropertyInfo
@@ -179,7 +180,7 @@ public static class TemplateSerializer
         }
         else if (propertyType == typeof(string))
         {
-            var dropdown = attributes.OfType<JsonDropdownAttribute>().FirstOrDefault();
+            var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
                 baseObjectPropertyInfo = new DropdownPropertyInfo
@@ -196,23 +197,24 @@ public static class TemplateSerializer
         }
         else if (propertyType.IsEnum)
         {
-            var enumValuesArray = propertyType.GetEnumValues();
-            var typedEnumValuesArray = new List<long>(enumValuesArray.Length);
+            var enumValuesList = new List<EnumPropertyInfo.EnumValue>();
 
-            foreach (var enumValue in enumValuesArray)
+            foreach (var enumField in propertyType.GetFields(BindingFlags.Static | BindingFlags.Public))
             {
-                typedEnumValuesArray.Add(Convert.ToInt64(enumValue));
+                var inspectorNameAttribute = enumField.GetCustomAttribute<InspectorNameAttribute>();
+                enumValuesList.Add(
+                    new(
+                        inspectorNameAttribute?.DisplayName ?? enumField.Name,
+                        enumField.Name,
+                        Convert.ToInt64(enumField.GetRawConstantValue())
+                    )
+                );
             }
-
-            var enumValues = propertyType.GetEnumNames().Zip(
-                typedEnumValuesArray,
-                (name, value) =>
-                    new EnumPropertyInfo.EnumValue(name, value)
-            ).ToArray();
+            
             baseObjectPropertyInfo = new EnumPropertyInfo
             {
                 EnumTypeName = propertyType.Name,
-                EnumValues = enumValues,
+                EnumValues = enumValuesList.ToArray(),
                 IsFlags = propertyType.GetCustomAttributes<FlagsAttribute>().Any()
             };
         }
@@ -230,6 +232,8 @@ public static class TemplateSerializer
         }
 
         baseObjectPropertyInfo.Name = propertyName;
+        var inspectorName = enumerable.OfType<InspectorNameAttribute>().FirstOrDefault();
+        baseObjectPropertyInfo.DisplayName = inspectorName != null ? inspectorName.DisplayName : baseObjectPropertyInfo.Name;
 
         return true;
 

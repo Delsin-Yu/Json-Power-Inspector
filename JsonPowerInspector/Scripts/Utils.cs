@@ -33,7 +33,7 @@ public static class Utils
             BooleanPropertyInfo => false,
             ArrayPropertyInfo => new JsonArray(),
             DictionaryPropertyInfo => new JsonObject(),
-            EnumPropertyInfo enumPropertyInfo => enumPropertyInfo.EnumValues.FirstOrDefault().ValueName ?? string.Empty,
+            EnumPropertyInfo enumPropertyInfo => enumPropertyInfo.EnumValues.FirstOrDefault().DeclareName ?? string.Empty,
             DropdownPropertyInfo dropdownPropertyInfo => dropdownPropertyInfo.Kind switch
             {
                 DropdownPropertyInfo.DropdownKind.Int => 0,
