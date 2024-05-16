@@ -56,26 +56,38 @@ public partial class InspectionSessionController : Control
 
     private async GDTask OpenTemplateFile()
     {
-        OS.ShellOpen(TemplatePath);
-        if (!File.Exists(DataPath))
+        if (!File.Exists(TemplatePath))
         {
-            await Dialogs.OpenErrorDialog("The active data for this dialog no longer belongs to a file anymore, try recreate the template file and start a new session with it.", "The file does not exist");
+            await Dialogs.OpenErrorDialog(
+                "The active template for this dialog no longer belongs to a file anymore, " +
+                "try recreate the template file and start a new session with it.",
+                "The file no longer exists"
+            );
             DataPath = null;
             return;
         }
+        OS.ShellOpen(TemplatePath);
     }
 
     private async GDTask OpenDataFile()
     {
         if (DataPath == null)
         {
-            await Dialogs.OpenErrorDialog("The active data for this dialog does not belongs to a file yet, please perform save first.", "The file does not exist");
+            await Dialogs.OpenErrorDialog(
+                "The active data for this dialog does not belongs to a file yet, " +
+                "please perform a save first.",
+                "The file does not exist"
+            );
             return;
         }
 
         if (!File.Exists(DataPath))
         {
-            await Dialogs.OpenErrorDialog("The active data for this dialog no longer belongs to a file anymore, please perform save first.", "The file does not exist");
+            await Dialogs.OpenErrorDialog(
+                "The active data for this dialog no longer belongs to a file anymore, " +
+                "please perform a save to recreate it.",
+                "The file no longer exist"
+            );
             DataPath = null;
             return;
         }
