@@ -12,6 +12,7 @@ namespace JsonPowerInspector;
 public partial class InspectionSessionController : Control
 {
     [Export] private Control _container;
+    [Export] private Label _info;
     
     public InspectorSpawner InspectorSpawner { get; private set; }
     private readonly List<IPropertyInspector> _inspectorRoot = [];
@@ -21,22 +22,29 @@ public partial class InspectionSessionController : Control
     private Dictionary<string, ObjectDefinition> _objectDefinitionMap;
     private ObjectDefinition _mainObjectDefinition;
     private JsonObject _editingJsonObject;
+    private string _templatePath;
+    private string _dataPath;
 
     public void StartSession(
-        PackedObjectDefinition packedObjectDefinition,
         InspectorSpawner inspectorSpawner,
         string templatePath,
-        JsonObject jsonObject
+        string dataPath
     )
     {
-        _objectDefinitionMap = packedObjectDefinition.ReferencedObjectDefinition.ToDictionary(x => x.ObjectTypeName, x => x);
-        _mainObjectDefinition = packedObjectDefinition.MainObjectDefinition;
+        _templatePath = templatePath;
+        
+        // TODO: Serialization Exception Handling
+        var setup = TemplateSerializer.Deserialize(templatePath);
+        
+        _objectDefinitionMap = setup.ReferencedObjectDefinition.ToDictionary(x => x.ObjectTypeName, x => x);
+        _mainObjectDefinition = setup.MainObjectDefinition;
         InspectorSpawner = inspectorSpawner;
         TemplateDirectory = Path.GetDirectoryName(templatePath)!;
+        Name = setup.MainObjectDefinition.ObjectTypeName;
         
-        if (jsonObject != null)
+        if (dataPath != null)
         {
-            LoadFromJsonObject(jsonObject);
+            LoadFromJsonObject(dataPath);
             return;
         }
 
@@ -47,11 +55,21 @@ public partial class InspectionSessionController : Control
             templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
         }
 
-        LoadFromJsonObject(templateJsonObject);
+        MountJsonObject(templateJsonObject);
     }
 
+    public void LoadFromJsonObject(string dataPath)
+    {
+        _dataPath = dataPath;
+        JsonObject jsonObject;
+        {
+            using var fileStream = File.OpenRead(dataPath);
+            jsonObject = (JsonObject)JsonObject.Parse(fileStream);
+        }
+        MountJsonObject(jsonObject);
+    }
 
-    public void LoadFromJsonObject(JsonObject jsonObject)
+    private void MountJsonObject(JsonObject jsonObject)
     {
         foreach (var inspector in CollectionsMarshal.AsSpan(_inspectorRoot))
         {
@@ -65,7 +83,7 @@ public partial class InspectionSessionController : Control
             var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
             _inspectorRoot.Add(inspectorForProperty);
             _container.AddChild((Control)inspectorForProperty);
-        }
+        }        
         
         // TODO: Warn User of data loss
         _editingJsonObject = jsonObject;
@@ -76,5 +94,13 @@ public partial class InspectionSessionController : Control
             var propertyInspector = _inspectorRoot[index];
             propertyInspector.BindJsonNode(_editingJsonObject, jsonNode);
         }
+
+        _info.Text =
+            $"""
+             Current Template:
+             "{_templatePath}"
+             Current Data:
+             "{_dataPath ?? "New Data"}"
+             """;
     }
 }

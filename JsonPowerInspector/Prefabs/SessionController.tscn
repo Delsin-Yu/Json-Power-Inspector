@@ -2,13 +2,21 @@
 
 [ext_resource type="Script" path="res://Scripts/InspectionSessionController.cs" id="1_efht6"]
 
-[node name="SessionController" type="ScrollContainer" node_paths=PackedStringArray("_container")]
-auto_translate_mode = 1
-size_flags_vertical = 3
+[node name="SessionController" type="VBoxContainer" node_paths=PackedStringArray("_container", "_info")]
 script = ExtResource("1_efht6")
-_container = NodePath("InspectedContents")
+_container = NodePath("ScrollContainer/InspectedContents")
+_info = NodePath("Label")
 
-[node name="InspectedContents" type="VFlowContainer" parent="."]
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Editing Info"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InspectedContents" type="VFlowContainer" parent="ScrollContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 0

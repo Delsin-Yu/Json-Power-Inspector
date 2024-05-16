@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using System.Text.Json.Nodes;
 using Godot;
-using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
 
@@ -67,7 +65,7 @@ public partial class Main : Control
 
             if (templateFile != null && dataFile != null)
             {
-                LoadBoth(templateFile, dataFile);
+                LoadTemplate(templateFile, dataFile);
                 return;
             }
 
@@ -87,7 +85,44 @@ public partial class Main : Control
                     return;
                 }
                 
-                _currentFocusedSession.LoadFromJsonObject(LoadData(dataFile));
+                _currentFocusedSession.LoadFromJsonObject(dataFile);
+            }
+
+            return;
+
+            static string TryMatch(ReadOnlySpan<string> files, string matchExtension)
+            {
+                foreach (var file in files)
+                {
+                    var extension = Path.GetExtension(file);
+                    if (string.Equals(extension, matchExtension, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return file;
+                    }
+                }
+
+                return null;
+            }
+            
+            void LoadTemplate(string templatePath, string dataPath)
+            {
+                var sessionController = _sessionPrefab.Instantiate<InspectionSessionController>();
+                _tabContainer.AddChild(sessionController);
+                sessionController.StartSession(
+                    new(
+                        _dictionaryInspector,
+                        _enumInspector,
+                        _dropdownInspector,
+                        _numberInspector,
+                        _objectInspector,
+                        _stringInspector,
+                        _arrayInspector,
+                        _booleanInspector,
+                        sessionController
+                    ),
+                    templatePath,
+                    dataPath
+                );
             }
         };
         
@@ -107,56 +142,5 @@ public partial class Main : Control
     {
         if(what != NotificationWMCloseRequest) return;
         UserConfig.SaveConfig();
-    }
-
-    private static string TryMatch(ReadOnlySpan<string> files, string matchExtension)
-    {
-        foreach (var file in files)
-        {
-            var extension = Path.GetExtension(file);
-            if (string.Equals(extension, matchExtension, StringComparison.OrdinalIgnoreCase))
-            {
-                return file;
-            }
-        }
-
-        return null;
-    }
-
-    private static JsonObject LoadData(string filePath)
-    {
-        using var fileStream = File.OpenRead(filePath);
-        return (JsonObject)JsonObject.Parse(fileStream);
-    }
-    
-    private void LoadBoth(string filePath, string dataPath)
-    {
-        LoadTemplate(filePath, LoadData(dataPath));
-    }
-
-    private void LoadTemplate(string filePath, JsonObject data)
-    {
-        // TODO: Serialization Exception Handling
-        var setup = TemplateSerializer.Deserialize(filePath);
-
-        var sessionController = _sessionPrefab.Instantiate<InspectionSessionController>();
-        sessionController.Name = setup.MainObjectDefinition.ObjectTypeName;
-        _tabContainer.AddChild(sessionController);
-        sessionController.StartSession(
-            setup,
-            new(
-                _dictionaryInspector,
-                _enumInspector,
-                _dropdownInspector,
-                _numberInspector,
-                _objectInspector,
-                _stringInspector,
-                _arrayInspector,
-                _booleanInspector,
-                sessionController
-            ),
-            filePath,
-            data
-        );
     }
 }
