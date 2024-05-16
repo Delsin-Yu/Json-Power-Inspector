@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text.Json.Nodes;
 using Godot;
 using GodotTask;
@@ -21,6 +22,7 @@ public partial class InspectionSessionController : Control
     private readonly List<IPropertyInspector> _inspectorRoot = [];
     public string TemplateDirectory { get; set; }
     public IReadOnlyDictionary<string, ObjectDefinition> ObjectDefinitionMap => _objectDefinitionMap;
+    public bool Changed { get; private set; }
 
     private Dictionary<string, ObjectDefinition> _objectDefinitionMap;
     private ObjectDefinition _mainObjectDefinition;
@@ -35,7 +37,16 @@ public partial class InspectionSessionController : Control
         {
             if (_dataPath == null) MountJsonObject(CreateTemplateJsonObject());
             else LoadFromJsonObject(_dataPath);
+            Name = _mainObjectDefinition.ObjectTypeName;
+            Changed = false;
         };
+    }
+
+    public void MarkChanged()
+    {
+        if(Changed) return;
+        Changed = true;
+        Name += " (*)";
     }
 
     public void StartSession(
@@ -45,9 +56,16 @@ public partial class InspectionSessionController : Control
     )
     {
         _templatePath = templatePath;
-        
-        // TODO: Serialization Exception Handling
-        var setup = TemplateSerializer.Deserialize(templatePath);
+
+        PackedObjectDefinition setup;
+        try
+        {
+            setup = TemplateSerializer.Deserialize(templatePath);
+        }
+        catch (Exception)
+        {
+            throw new SerializationException($"Error when reading the template file: {templatePath}");
+        }
         
         _objectDefinitionMap = setup.ReferencedObjectDefinition.ToDictionary(x => x.ObjectTypeName, x => x);
         _mainObjectDefinition = setup.MainObjectDefinition;
@@ -89,23 +107,30 @@ public partial class InspectionSessionController : Control
         MountJsonObject(jsonObject);
     }
 
-    private void MountJsonObject(JsonObject jsonObject)
+    private void MountJsonObject(JsonObject jsonObject) => MountJsonObjectImpl(jsonObject).Forget();
+    
+    private async GDTask MountJsonObjectImpl(JsonObject jsonObject)
     {
-        foreach (var inspector in CollectionsMarshal.AsSpan(_inspectorRoot))
+        if (Changed)
+        {
+            var discard = await Dialogs.OpenDataLossDialog();
+            if(!discard) return;
+        }
+        
+        foreach (var inspector in _inspectorRoot)
         {
             ((Control)inspector).QueueFree();
         }
         
         _inspectorRoot.Clear();
         
-        foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
+        foreach (var propertyInfo in _mainObjectDefinition.Properties)
         {
             var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
             _inspectorRoot.Add(inspectorForProperty);
             _container.AddChild((Control)inspectorForProperty);
         }        
         
-        // TODO: Warn User of data loss
         _editingJsonObject = jsonObject;
         var objectProperty = _editingJsonObject.ToArray();
         for (var index = 0; index < _inspectorRoot.Count; index++)

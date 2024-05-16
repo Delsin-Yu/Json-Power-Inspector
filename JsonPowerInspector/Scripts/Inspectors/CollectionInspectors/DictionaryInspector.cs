@@ -18,7 +18,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
     protected override void OnFoldUpdate(bool shown) => _addElement.Visible = shown;
 
 
-    protected override void OnPostInitialize(DictionaryPropertyInfo propertyInfo)
+    protected override void OnPostInitialize()
     {
         _dictionaryElementCount.Editable = false;
         _addElement.Pressed += async () =>
@@ -81,6 +81,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
             jsonObject.Add(selectedKey, newNode);
             BindDictionaryItem(spawner, selectedKey, jsonObject);
             _dictionaryElementCount.Value++;
+            CurrentSession.MarkChanged();
         };
     }
 
@@ -119,6 +120,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
                 DeleteChildNode(inspector);
                 jsonObject.Remove(key);
                 _dictionaryElementCount.Value--;
+                CurrentSession.MarkChanged();
             }
         );
         AddChildNode(inspector, dictionaryItem);

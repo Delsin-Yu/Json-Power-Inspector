@@ -67,12 +67,14 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
             default:
                 throw new InvalidOperationException(_parent.GetType().Name);
         }
+        CurrentSession.MarkChanged();
     }
     
     protected void ReplaceValue<TValue>(TValue value)
     {
         var node = GetBackingNode();
         if (node is not JsonValue jsonValue) throw new InvalidOperationException($"{node.GetValueKind()} is not JsonValue!");
+        CurrentSession.MarkChanged();
         jsonValue.ReplaceWith(value);
         ValueChanged?.Invoke(value);
     }

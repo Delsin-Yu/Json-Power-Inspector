@@ -18,7 +18,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     
     private readonly List<ArrayItem> _arrayItems = [];
 
-    protected override void OnPostInitialize(ArrayPropertyInfo propertyInfo)
+    protected override void OnPostInitialize()
     {
         _removeCall = RemoveArrayElement;
         _arrayElementCount.Editable = false;
@@ -30,6 +30,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
             jsonArray.Add(newNode);
             BindArrayItem(CurrentSession.InspectorSpawner, jsonArray.Count - 1, jsonArray);
             _arrayElementCount.Value++;
+            CurrentSession.MarkChanged();
         };
     }
 
@@ -69,6 +70,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
         _arrayItems.RemoveAt(index);
         GetBackingNode().AsArray().RemoveAt(index);
         _arrayElementCount.Value--;
+        CurrentSession.MarkChanged();
         for (var i = 0; i < _arrayItems.Count; i++)
         {
             _arrayItems[i].Index = i;

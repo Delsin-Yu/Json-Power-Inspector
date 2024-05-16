@@ -14,7 +14,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
     protected override bool DisplayChildObjectByDefault => false;
 
 
-    protected override void OnPostInitialize(ObjectPropertyInfo propertyInfo)
+    protected override void OnPostInitialize()
     {
         _createOrDeleteBtn.Pressed += () =>
         {
@@ -32,6 +32,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
                 BindObject(jsonObject);
                 _createOrDeleteBtn.Text = "X";
             }
+            CurrentSession.MarkChanged();
         };
     }
 

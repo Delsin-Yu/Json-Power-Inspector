@@ -12,14 +12,14 @@ public static partial class UserConfig
     
     public class ConfigData
     {
-        public record struct ScreenSize(int X, int Y)
+        public record struct SerializableVector2(int X, int Y)
         {
-            public static implicit operator Vector2I(ScreenSize a) => new(a.X, a.Y);
-            public static implicit operator ScreenSize(Vector2I a) => new(a.X, a.Y);
+            public static implicit operator Vector2I(SerializableVector2 a) => new(a.X, a.Y);
+            public static implicit operator SerializableVector2(Vector2I a) => new(a.X, a.Y);
         }
         
         public float ScaleFactor { get; set; } = 1;
-        public ScreenSize Size { get; set; } = new (500, 500);
+        public SerializableVector2 Size { get; set; } = new (500, 500);
     }
 
     public static ConfigData Current { get; set; }

@@ -59,7 +59,7 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
         _foldout.ButtonPressed = false;
         _contentPanel.Visible = false;
         OnFoldUpdate(false);
-        OnPostInitialize(propertyInfo);
+        OnPostInitialize();
     }
 
     public void ToggleFold(bool shown) => _foldout.ButtonPressed = shown;
@@ -68,5 +68,5 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
 
     protected abstract void OnInitialPrint(JsonNode node);
 
-    protected virtual void OnPostInitialize(TPropertyInfo propertyInfo) { }
+    protected virtual void OnPostInitialize() { }
 }

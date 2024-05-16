@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using Godot;
 using GodotTask;
 
@@ -35,7 +34,7 @@ public partial class Main : Control
 
         window.WrapControls = true;
         window.SizeChanged += () => UserConfig.Current.Size = window.Size;
-
+        
         _slider.MinValue = 0.5f;
         _slider.MaxValue = 2.5f;
         _slider.Step = 0.1f;
@@ -62,28 +61,33 @@ public partial class Main : Control
         _tabContainer.TabChanged += tabIndex => _currentFocusedSession = _tabContainer.GetChild<InspectionSessionController>((int)tabIndex);
         var tabBar = _tabContainer.GetTabBar();
         tabBar.TabCloseDisplayPolicy = TabBar.CloseButtonDisplayPolicy.ShowActiveOnly;
-        tabBar.TabClosePressed += tabIndex =>
+        tabBar.TabClosePressed += async tabIndex =>
         {
-            // TODO: Notify data loss
             var child = _tabContainer.GetChild<InspectionSessionController>((int)tabIndex);
+            if (child.Changed)
+            {
+                var ok = await Dialogs.OpenDataLossDialog();
+                if (!ok) return;
+            }
+
             child.QueueFree();
         };
 
-        window.FilesDropped += files =>
+        window.FilesDropped += async files =>
         {
             var templateFile = TryMatch(files, Extension);
             var dataFile = TryMatch(files, Data);
 
             if (templateFile != null && dataFile != null)
             {
-                LoadTemplate(templateFile, dataFile);
+                await LoadTemplate(templateFile, dataFile);
                 return;
             }
 
             // Data == null
             if (templateFile != null)
             {
-                LoadTemplate(templateFile, null);
+                await LoadTemplate(templateFile, null);
                 return;
             }
             
@@ -92,7 +96,7 @@ public partial class Main : Control
             {
                 if (_currentFocusedSession == null)
                 {
-                    // TODO: Error Handling
+                    await Dialogs.OpenErrorDialog("You are trying to load a Json data, where no template has loaded.", "No Template loaded!");
                     return;
                 }
                 
@@ -115,25 +119,34 @@ public partial class Main : Control
                 return null;
             }
             
-            void LoadTemplate(string templatePath, string dataPath)
+            async GDTask LoadTemplate(string templatePath, string dataPath)
             {
                 var sessionController = _sessionPrefab.Instantiate<InspectionSessionController>();
                 _tabContainer.AddChild(sessionController);
-                sessionController.StartSession(
-                    new(
-                        _dictionaryInspector,
-                        _enumInspector,
-                        _dropdownInspector,
-                        _numberInspector,
-                        _objectInspector,
-                        _stringInspector,
-                        _arrayInspector,
-                        _booleanInspector,
-                        sessionController
-                    ),
-                    templatePath,
-                    dataPath
-                );
+                
+                try
+                {
+                    sessionController.StartSession(
+                        new(
+                            _dictionaryInspector,
+                            _enumInspector,
+                            _dropdownInspector,
+                            _numberInspector,
+                            _objectInspector,
+                            _stringInspector,
+                            _arrayInspector,
+                            _booleanInspector,
+                            sessionController
+                        ),
+                        templatePath,
+                        dataPath
+                    );
+                }
+                catch (SerializationException serializationException)
+                {
+                    sessionController.QueueFree();
+                    await Dialogs.OpenErrorDialog(serializationException.Message);
+                }
             }
         };
         
@@ -166,6 +179,7 @@ public partial class Main : Control
         window.ContentScaleFactor = UserConfig.Current.ScaleFactor;
         _slider.Value = UserConfig.Current.ScaleFactor;
         _displayScale.Value = UserConfig.Current.ScaleFactor;
+        window.MoveToCenter();
     }
     
     public override void _Notification(int what)

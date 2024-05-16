@@ -5,7 +5,66 @@ namespace JsonPowerInspector;
 
 public static class Dialogs
 {
-    public static async GDTask<string> OpenSaveFileDialog(string defaultDir)
+    public static GDTask<bool> OpenDataLossDialog() =>
+        OpenYesNoDialog(
+            "The dialog you are closing contains unsaved data, please confirm.",
+            "Potential Data Loss",
+            "Discard",
+            "Back"
+        );
+
+    public static async GDTask<bool> OpenYesNoDialog(string message, string title = "Confirm!", string okText = "Ok", string cancelText = "Cancel")
+    {
+        var dialog = new ConfirmationDialog()
+        {
+            DialogText = message,
+            Title = title,
+            OkButtonText = okText,
+            CancelButtonText = cancelText,
+        };
+        
+        dialog.GetLabel().AutowrapMode = TextServer.AutowrapMode.Arbitrary;
+        var window = ((SceneTree)Engine.GetMainLoop()).Root;
+        // dialog.ContentScaleFactor = window.ContentScaleFactor;
+
+        bool? status = null;
+
+        window.AddChild(dialog);
+
+        dialog.Confirmed += () => status = true;
+        dialog.Canceled += () => status = false;
+        dialog.PopupCentered();
+
+        await GDTask.WaitUntil(() => status.HasValue);
+
+        return status!.Value;
+    }
+    public static async GDTask OpenErrorDialog(string message, string title = "Error!")
+    {
+        var errorDialog = new AcceptDialog
+        {
+            DialogText = message,
+            Title = title,
+        };
+
+        errorDialog.GetLabel().AutowrapMode = TextServer.AutowrapMode.Word;
+
+        var window = ((SceneTree)Engine.GetMainLoop()).Root;
+        window.AddChild(errorDialog);
+        // errorDialog.ContentScaleFactor = window.ContentScaleFactor;
+
+        errorDialog.PopupCentered();
+
+        var closed = false;
+
+        errorDialog.CloseRequested += () => closed = true;
+
+        await GDTask.WaitUntil(() => closed);
+        
+        errorDialog.QueueFree();
+    }
+    
+    public static GDTask<string> OpenSaveFileDialog(string defaultDir)
     {
         var fileDialog = new FileDialog
         {
@@ -16,8 +75,10 @@ public static class Dialogs
             Title = "Specify Path",
             CurrentDir = defaultDir
         };
-        
-        ((SceneTree)Engine.GetMainLoop()).Root.AddChild(fileDialog);
+
+        var window = ((SceneTree)Engine.GetMainLoop()).Root;
+        window.AddChild(fileDialog);
+        // fileDialog.ContentScaleFactor = window.ContentScaleFactor;
         
         fileDialog.PopupCentered();
 
@@ -25,8 +86,8 @@ public static class Dialogs
         
         fileDialog.QueueFree();
 
-        if (string.IsNullOrEmpty(path)) return null;
+        if (string.IsNullOrEmpty(path)) return GDTask.FromResult<string>(null);
 
-        return fileDialog.CurrentPath;
+        return GDTask.FromResult(fileDialog.CurrentPath);
     }
 }

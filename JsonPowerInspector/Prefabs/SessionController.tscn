@@ -16,8 +16,10 @@ _revert = NodePath("VBoxContainer/HBoxContainer/RevertButton")
 layout_mode = 2
 
 [node name="EditingInfo" type="Label" parent="VBoxContainer"]
+custom_minimum_size = Vector2(1, 0)
 layout_mode = 2
 text = "Editing Info"
+autowrap_mode = 1
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
