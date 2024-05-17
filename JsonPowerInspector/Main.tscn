@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dx3t7oouwde40" path="res://Prefabs/BooleanInspector.tscn" id="9_fqphr"]
 [ext_resource type="PackedScene" uid="uid://crc1232l8bmix" path="res://Prefabs/SessionController.tscn" id="10_crymd"]
 
-[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_tabContainer", "_slider", "_displayScale")]
+[node name="MainWindow" type="Panel" node_paths=PackedStringArray("_tabContainer", "_slider", "_displayScale", "_versionInfo")]
 custom_minimum_size = Vector2(600, 700)
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,6 +31,7 @@ _sessionPrefab = ExtResource("10_crymd")
 _tabContainer = NodePath("VBoxContainer/TabContainer")
 _slider = NodePath("VBoxContainer/HBoxContainer/HSlider")
 _displayScale = NodePath("VBoxContainer/HBoxContainer/SpinBox")
+_versionInfo = NodePath("VBoxContainer/Label")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -63,3 +64,7 @@ layout_mode = 2
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Version:"

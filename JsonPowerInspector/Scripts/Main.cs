@@ -20,6 +20,7 @@ public partial class Main : Control
     [Export] private TabContainer _tabContainer;
     [Export] private Slider _slider;
     [Export] private SpinBox _displayScale;
+    [Export] private Label _versionInfo;
     
     public const string Extension = ".jsontemplate";
     public const string Data = ".json";
@@ -28,6 +29,8 @@ public partial class Main : Control
     
     public override void _Ready()
     {
+        _versionInfo.Text = Version.Current;
+        
         UserConfig.LoadConfig();
         
         var window = GetTree().Root;
