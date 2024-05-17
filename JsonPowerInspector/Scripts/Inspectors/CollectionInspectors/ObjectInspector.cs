@@ -60,6 +60,11 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
         }
     }
 
+    protected override void Bind(ref JsonNode node)
+    {
+        _createOrDeleteBtn.Text = node != null ? "X" : "+";
+    }
+
     private void BindObject(JsonNode node)
     {
         var objectDefinition = CurrentSession.ObjectDefinitionMap[PropertyInfo.ObjectTypeName];
