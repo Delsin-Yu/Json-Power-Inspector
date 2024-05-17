@@ -14,16 +14,80 @@ public class TestModels
     [InspectorName("复杂数据")] public MyComplexModel MyComplexModel { get; set; }
     [InspectorName("集合数据")] public MyCollectionModel MyCollectionModel { get; set; }
     [InspectorName("可选数据")] public MyDropdownModel MyDropdownModel { get; set; }
+    public MyDemoModel MyDemoModel { get; set; }
+}
+
+public class MyDemoModel
+{
+    /// <summary>
+    /// Displayed as "Int Array" in inspector.
+    /// Each array element have an input range clamps to -2 to 2.
+    /// </summary>
+    [InspectorName("Int Array"), NumberRange(-2, 2)] 
+    public int[] MyIntArrayProperty { get; set; }
+    
+    /// <summary>
+    /// Displayed as "Dictionary" in inspector.
+    /// When adding a dictionary element,
+    /// the input range for the key clamps to 0 to 10.
+    /// </summary>
+    [InspectorName("Dictionary"), KeyNumberRange(0, 10)] 
+    public Dictionary<int, string> MyDictionaryProperty { get; set; }
+    
+    /// <summary>
+    /// Displayed as "MyBool" in inspector.
+    /// </summary>
+    public bool MyBool { get; set; }
+    
+    /// <summary>
+    /// Displayed as "Number Value" in inspector.
+    /// Have an input range clamps to -10 to 10.
+    /// </summary>
+    [InspectorName("Number Value"), NumberRange(-10, 10)] 
+    public float MyFloat { get; set; }
+    
+    /// <summary>
+    /// Displayed as "Number Value" in inspector.
+    /// Use a dropdown for selecting the values.
+    /// </summary>
+    /// <remarks>
+    /// StringSelection.tsv should be placed with the jsontemplate file.<br/>
+    /// File Content:<br/><br/>
+    /// Value	Display<br/>
+    /// Lorem	String Value: Lorem<br/>
+    /// ipsum	String Value: ipsum<br/>
+    /// dolor	String Value: dolor<br/>
+    /// sit	String Value: sit<br/>
+    /// amet	String Value: amet<br/>
+    /// consectetur	String Value: consectetur<br/>
+    /// adipiscing	String Value: adipiscing<br/>
+    /// elit	String Value: elit<br/>
+    /// </remarks>
+    [InspectorName("String Value"), Dropdown("StringSelection.tsv")] 
+    public string MyString { get; set; }
+    
+    /// <summary>
+    /// Displayed as "Time Type" in inspector.
+    /// Use a dropdown for selecting the enum values.
+    /// </summary>
+    [InspectorName("Time Type")]
+    public DateTimeKind MyDateTimeKind { get; set; }
+    
+    /// <summary>
+    /// Displayed as "Nested Model" in inspector.
+    /// </summary>
+    [InspectorName("Nested Model")]
+    public MyDemoModel Nested { get; set; }
 }
 
 public class MyDropdownModel
 {
-    [InspectorDropdown("StringSelection.tsv"), InspectorName("字符串可选数据")] public string StringData { get; set; }
-    [InspectorDropdown("FloatSelection.tsv"), InspectorName("浮点数可选数据")] public float FloatData { get; set; }
-    [InspectorDropdown("IntSelection.tsv"), InspectorName("整数可选数据")] public int IntData { get; set; }
-    [InspectorKeyDropdown("IntSelection.tsv"), InspectorName("字典（键可选）")] public Dictionary<int, float> DictionaryKeyData { get; set; }
-    [InspectorValueDropdown("FloatSelection.tsv"), InspectorName("字典（值可选）")] public Dictionary<int, float> DictionaryValueData { get; set; }
-    [InspectorKeyDropdown("IntSelection.tsv"), InspectorName("字典（全可选）"), InspectorValueDropdown("FloatSelection.tsv")] public Dictionary<int, float> DictionaryData { get; set; }
+    [Dropdown("StringSelection.tsv"), InspectorName("字符串可选数据")] public string StringData { get; set; }
+    [Dropdown("FloatSelection.tsv"), InspectorName("浮点数可选数据")] public float FloatData { get; set; }
+    [Dropdown("IntSelection.tsv"), InspectorName("整数可选数据")] public int IntData { get; set; }
+    [KeyDropdown("IntSelection.tsv"), InspectorName("字典（键可选）")] public Dictionary<int, float> DictionaryKeyData { get; set; }
+    [ValueDropdown("FloatSelection.tsv"), InspectorName("字典（值可选）")] public Dictionary<int, float> DictionaryValueData { get; set; }
+    [KeyDropdown("IntSelection.tsv"), InspectorName("字典（全可选）"), ValueDropdown("FloatSelection.tsv")] public Dictionary<int, float> DictionaryData { get; set; }
 }
 
 public class MyCollectionModel
@@ -34,9 +98,9 @@ public class MyCollectionModel
 
 public class MyDictionaryModel
 {
-    [InspectorName("字符串 - 整数 字典"), NumberRangeValue(0, 5)] public Dictionary<string, int> StrInt { get; set; }
-    [InspectorName("整数 - 字符串 字典"), NumberRangeKey(0, 5)] public Dictionary<int, string> IntStr { get; set; }
-    [InspectorName("浮点数 - 字符串 字典"), NumberRangeKey(0.2, 5)] public Dictionary<float, string> FPStr { get; set; }
+    [InspectorName("字符串 - 整数 字典"), ValueNumberRange(0, 5)] public Dictionary<string, int> StrInt { get; set; }
+    [InspectorName("整数 - 字符串 字典"), KeyNumberRange(0, 5)] public Dictionary<int, string> IntStr { get; set; }
+    [InspectorName("浮点数 - 字符串 字典"), KeyNumberRange(0.2, 5)] public Dictionary<float, string> FPStr { get; set; }
 }
 
 public class MyArrayModel

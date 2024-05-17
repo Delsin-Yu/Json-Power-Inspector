@@ -5,7 +5,9 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj" />
     <PackageReference Include="GDTask" Version="*" />
+    <PackageReference Include="JsonPowerInspector.Template" Version="*" />
+    <TrimmerRootAssembly Include="GodotSharp" />
+    <TrimmerRootAssembly Include="$(TargetName)" />
   </ItemGroup>
 </Project>
