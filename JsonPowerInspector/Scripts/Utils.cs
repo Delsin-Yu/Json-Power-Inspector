@@ -43,21 +43,4 @@ public static class Utils
             },
             _ => throw new InvalidOperationException()
         };
-
-    public static JsonNode CreateJsonObjectForProperty(BaseObjectPropertyInfo propertyInfo, IReadOnlyDictionary<string, ObjectDefinition> objectLookup, HashSet<BaseObjectPropertyInfo> path)
-    {
-        var jsonProperty = CreateDefaultJsonObjectForProperty(propertyInfo);
-        
-        if (propertyInfo is not ObjectPropertyInfo objectPropertyInfo) return jsonProperty;
-        jsonProperty = new JsonObject();
-        var subJsonObject = jsonProperty.AsObject();
-        var objectDefinition = objectLookup[objectPropertyInfo.ObjectTypeName];
-        foreach (var baseObjectPropertyInfo in objectDefinition.Properties.AsSpan())
-        {
-            if(!path.Add(baseObjectPropertyInfo)) continue;
-            subJsonObject.Add(baseObjectPropertyInfo.Name, CreateJsonObjectForProperty(baseObjectPropertyInfo, objectLookup, path));
-        }
-
-        return jsonProperty;
-    }
 }

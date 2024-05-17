@@ -17,6 +17,7 @@ CreateData(TestApplicationJsonContext.Default.CharacterModel);
 CreateData(TestApplicationJsonContext.Default.LocationModel);
 CreateData(TestApplicationJsonContext.Default.WeaponModel);
 CreateData(TestApplicationJsonContext.Default.ReligionModel);
+CreateData(TestApplicationJsonContext.Default.RaceModel);
 
 static void CreateData<T>(JsonTypeInfo<T> typeInfo) where T : class
 {

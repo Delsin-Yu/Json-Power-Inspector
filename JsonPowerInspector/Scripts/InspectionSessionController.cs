@@ -165,8 +165,8 @@ public partial class InspectionSessionController : Control
         JsonObject templateJsonObject = new();
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
-            var propertyPath = new HashSet<BaseObjectPropertyInfo>();
-            templateJsonObject.Add(propertyInfo.Name, Utils.CreateJsonObjectForProperty(propertyInfo, _objectDefinitionMap, propertyPath));
+            //var propertyPath = new HashSet<BaseObjectPropertyInfo>();
+            templateJsonObject.Add(propertyInfo.Name, Utils.CreateDefaultJsonObjectForProperty(propertyInfo));
         }
 
         return templateJsonObject;

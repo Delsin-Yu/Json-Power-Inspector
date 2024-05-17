@@ -134,7 +134,6 @@ public class ObjectDefinition
 [JsonDerivedType(typeof(DropdownPropertyInfo), typeDiscriminator: "Dropdown")]
 public abstract class BaseObjectPropertyInfo
 {
-    [JsonConstructor]
     private protected BaseObjectPropertyInfo(string name, string displayName)
     {
         Name = name;

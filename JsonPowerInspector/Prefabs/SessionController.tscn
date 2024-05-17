@@ -103,12 +103,12 @@ size_flags_vertical = 3
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/PanelContainer"]
 auto_translate_mode = 1
 layout_mode = 2
-size_flags_vertical = 3
 
-[node name="InspectedContents" type="VFlowContainer" parent="VBoxContainer/PanelContainer/ScrollContainer"]
+[node name="InspectedContents" type="VBoxContainer" parent="VBoxContainer/PanelContainer/ScrollContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 0
+size_flags_vertical = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2

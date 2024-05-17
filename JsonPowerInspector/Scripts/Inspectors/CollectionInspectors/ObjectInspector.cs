@@ -26,8 +26,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
             }
             else
             {
-                var hashSet = new HashSet<BaseObjectPropertyInfo>();
-                var jsonObject = Utils.CreateJsonObjectForProperty(PropertyInfo, CurrentSession.ObjectDefinitionMap, hashSet);
+                var jsonObject = CreateDefaultJsonObject(PropertyInfo);
                 SetBackingNode(jsonObject);
                 BindObject(jsonObject);
                 _createOrDeleteBtn.Text = "X";
@@ -36,6 +35,18 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
         };
     }
 
+    private JsonObject CreateDefaultJsonObject(ObjectPropertyInfo objectPropertyInfo)
+    {
+        var definition = CurrentSession.ObjectDefinitionMap[objectPropertyInfo.ObjectTypeName];
+        var jsonObject = new JsonObject();
+        foreach (var propertyInfo in definition.Properties)
+        {
+            jsonObject.Add(propertyInfo.Name, Utils.CreateDefaultJsonObjectForProperty(propertyInfo));
+        }
+
+        return jsonObject;
+    }
+    
     protected override void OnInitialPrint(JsonNode node)
     {
         if (node == null)
