@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;

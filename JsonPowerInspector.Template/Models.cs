@@ -7,10 +7,15 @@ namespace JsonPowerInspector.Template;
 
 [JsonSerializable(typeof(ApplicationJsonTypes))]
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
-public partial class PowerTemplateJsonContext : JsonSerializerContext;
+internal partial class PowerTemplateJsonContext : JsonSerializerContext;
 
-public class ApplicationJsonTypes
+internal class ApplicationJsonTypes
 {
+    public ApplicationJsonTypes(PackedObjectDefinition packedObjectDefinition)
+    {
+        PackedObjectDefinition = packedObjectDefinition;
+    }
+
     public PackedObjectDefinition PackedObjectDefinition { get; set; }
 }
 
@@ -38,13 +43,13 @@ public class InspectorNameAttribute : Attribute
 [AttributeUsage(AttributeTargets.Property)]
 public class InspectorDropdownAttribute : Attribute
 {
-    public InspectorDropdownAttribute(string dataPath, string regex = null)
+    public InspectorDropdownAttribute(string dataPath, string? regex = null)
     {
         DataPath = dataPath;
         Regex = regex;
     }
     public string DataPath { get; }
-    public string Regex { get; }
+    public string? Regex { get; }
 }
 
 /// <summary>
@@ -56,7 +61,7 @@ public class InspectorDropdownAttribute : Attribute
 [AttributeUsage(AttributeTargets.Property)]
 public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 {
-    public InspectorKeyDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
+    public InspectorKeyDropdownAttribute(string dataPath, string? regex = null) : base(dataPath, regex) { }
 }
 
 /// <summary>
@@ -68,7 +73,7 @@ public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 [AttributeUsage(AttributeTargets.Property)]
 public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
 {
-    public InspectorValueDropdownAttribute(string dataPath, string regex = null) : base(dataPath, regex) { }
+    public InspectorValueDropdownAttribute(string dataPath, string? regex = null) : base(dataPath, regex) { }
 }
 
 /// <summary>
@@ -117,8 +122,14 @@ public class PackedObjectDefinition
 
 public class ObjectDefinition
 {
-    public string ObjectTypeName { get; set; }
-    public BaseObjectPropertyInfo[] Properties { get; set; }
+    public ObjectDefinition(string objectTypeName, BaseObjectPropertyInfo[] properties)
+    {
+        ObjectTypeName = objectTypeName;
+        Properties = properties;
+    }
+
+    public string ObjectTypeName { get; }
+    public BaseObjectPropertyInfo[] Properties { get; }
 
     public override string ToString()
     {
@@ -163,8 +174,14 @@ public class ObjectDefinition
 [JsonDerivedType(typeof(DropdownPropertyInfo), typeDiscriminator: "Dropdown")]
 public abstract class BaseObjectPropertyInfo
 {
-    public string Name { get; set; }
-    public string DisplayName { get; set; }
+    protected BaseObjectPropertyInfo(string name, string displayName)
+    {
+        Name = name;
+        DisplayName = displayName;
+    }
+
+    public string Name { get; }
+    public string DisplayName { get; }
     
     public override string ToString()
     {
@@ -195,10 +212,12 @@ public abstract class BaseObjectPropertyInfo
 public class StringPropertyInfo : BaseObjectPropertyInfo
 {
     protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("String");
+    public StringPropertyInfo(string name, string displayName) : base(name, displayName) { }
 }
 public class BooleanPropertyInfo : BaseObjectPropertyInfo
 {
     protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("Bool");
+    public BooleanPropertyInfo(string name, string displayName) : base(name, displayName) { }
 }
 
 public class NumberPropertyInfo : BaseObjectPropertyInfo
@@ -211,8 +230,14 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
         Float
     }
 
-    public NumberType NumberKind { get; set; }
-    public NumberRange? Range { get; set; }
+    public NumberType NumberKind { get; }
+    public NumberRange? Range { get; }
+
+    public NumberPropertyInfo(string name, string displayName, NumberType numberKind, NumberRange? range = null) : base(name, displayName)
+    {
+        NumberKind = numberKind;
+        Range = range;
+    }
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
@@ -244,7 +269,12 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
 
 public class ObjectPropertyInfo : BaseObjectPropertyInfo
 {
-    public string ObjectTypeName { get; set; }
+    public string ObjectTypeName { get; }
+
+    public ObjectPropertyInfo(string name, string displayName, string objectTypeName) : base(name, displayName)
+    {
+        ObjectTypeName = objectTypeName;
+    }
 
     protected override void PrintType(StringBuilder stringBuilder)
     {
@@ -257,15 +287,24 @@ public class ObjectPropertyInfo : BaseObjectPropertyInfo
 
 public class DropdownPropertyInfo : BaseObjectPropertyInfo
 {
+    internal const string DEFAULT_DROPDOWN_RESOLVER = @"(?<Value>.+?)\t(?<Display>.+)";
+    
     public enum DropdownKind
     {
         Int,
         Float,
         String
     }
-    public DropdownKind Kind { get; set; }
-    public string DataSourcePath { get; set; }
-    public string ValueDisplayRegex { get; set; }
+    public DropdownKind Kind { get; }
+    public string DataSourcePath { get; }
+    public string ValueDisplayRegex { get; }
+
+    public DropdownPropertyInfo(string name, string displayName, DropdownKind kind, string dataSourcePath, string? valueDisplayRegex) : base(name, displayName)
+    {
+        Kind = kind;
+        DataSourcePath = dataSourcePath;
+        ValueDisplayRegex = valueDisplayRegex ?? DEFAULT_DROPDOWN_RESOLVER;
+    }
 
     protected override void PrintType(StringBuilder stringBuilder) => 
         stringBuilder
@@ -286,9 +325,16 @@ public class EnumPropertyInfo : BaseObjectPropertyInfo
 {
     public record struct EnumValue(string DisplayName, string DeclareName, long Value);
     
-    public string EnumTypeName { get; set; }
-    public EnumValue[] EnumValues { get; set; }
-    public bool IsFlags { get; set; }
+    public string EnumTypeName { get; }
+    public EnumValue[] EnumValues { get; }
+    public bool IsFlags { get; }
+
+    public EnumPropertyInfo(string name, string displayName, string enumTypeName, EnumValue[] enumValues, bool isFlags) : base(name, displayName)
+    {
+        EnumTypeName = enumTypeName;
+        EnumValues = enumValues;
+        IsFlags = isFlags;
+    }
 
     protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder.Append(IsFlags ? "EnumFlags<" : "Enum<")
@@ -304,8 +350,13 @@ public class EnumPropertyInfo : BaseObjectPropertyInfo
 
 public class ArrayPropertyInfo : BaseObjectPropertyInfo
 {
-    public BaseObjectPropertyInfo ArrayElementTypeInfo { get; set; }
-    
+    public BaseObjectPropertyInfo ArrayElementTypeInfo { get; }
+
+    public ArrayPropertyInfo(string name, string displayName, BaseObjectPropertyInfo arrayElementTypeInfo) : base(name, displayName)
+    {
+        ArrayElementTypeInfo = arrayElementTypeInfo;
+    }
+
     protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder
             .Append("Array<")
@@ -315,9 +366,15 @@ public class ArrayPropertyInfo : BaseObjectPropertyInfo
 
 public class DictionaryPropertyInfo : BaseObjectPropertyInfo
 {
-    public BaseObjectPropertyInfo KeyTypeInfo { get; set; }
-    public BaseObjectPropertyInfo ValueTypeInfo { get; set; }
-        
+    public BaseObjectPropertyInfo KeyTypeInfo { get; }
+    public BaseObjectPropertyInfo ValueTypeInfo { get; }
+
+    public DictionaryPropertyInfo(string name, string displayName, BaseObjectPropertyInfo keyTypeInfo, BaseObjectPropertyInfo valueTypeInfo) : base(name, displayName)
+    {
+        KeyTypeInfo = keyTypeInfo;
+        ValueTypeInfo = valueTypeInfo;
+    }
+
     protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder
             .Append("Dictionary<")

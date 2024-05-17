@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+
+[assembly: InternalsVisibleTo("JsonPowerInspector")]
 
 namespace JsonPowerInspector.Template;
 
@@ -40,7 +43,12 @@ public static class TemplateSerializer
     
     private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, Dictionary<string, ObjectDefinition> referencedPropertyInfo)
     {
-        var propertyInfos = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(x => x.CanRead && x.CanWrite).ToArray();
+        var propertyInfos = 
+            objectType
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(x => x is { CanRead: true, CanWrite: true })
+                .ToArray();
+        
         var properties = new List<BaseObjectPropertyInfo>();
         foreach (var propertyInfo in propertyInfos)
         {
@@ -55,11 +63,9 @@ public static class TemplateSerializer
                 properties.Add(parsed);
             }
         }
-        var definition = new ObjectDefinition
-        {
-            ObjectTypeName = GetTypeName(objectType),
-            Properties = properties.ToArray()
-        };
+
+        var definition = new ObjectDefinition(GetTypeName(objectType), properties.ToArray());
+        
         return definition;
     }
 
@@ -70,33 +76,42 @@ public static class TemplateSerializer
         typeof(DateTime)
     ];
 
+    private static readonly ObjectDefinition _tempObjectProperty = new("TEMP", Array.Empty<BaseObjectPropertyInfo>());
+    
     private static bool TryParseProperty(
-        string propertyName,
+        string name,
         Type propertyType,
         Dictionary<string, ObjectDefinition> referencedPropertyInfo,
         IEnumerable<Attribute> attributes,
-        out BaseObjectPropertyInfo baseObjectPropertyInfo
+        [NotNullWhen(true)] out BaseObjectPropertyInfo? baseObjectPropertyInfo
     )
     {
+        var enumerable = attributes as Attribute[] ?? attributes.ToArray();
+        var inspectorName = enumerable.OfType<InspectorNameAttribute>().FirstOrDefault();
+        var displayName = inspectorName != null ? inspectorName.DisplayName : name;
+        
         baseObjectPropertyInfo = null;
 
-        var enumerable = attributes as Attribute[] ?? attributes.ToArray();
         if (_serializeToStringTypes.Contains(propertyType))
         {
-            baseObjectPropertyInfo = new StringPropertyInfo();
+            baseObjectPropertyInfo = new StringPropertyInfo(name, displayName);
         }
         else if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
             var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
-            if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, [dropdown], out var arrayElementTypeInfo))
+            if (!TryParseProperty(
+                    GetTypeName(elementType),
+                    elementType,
+                    referencedPropertyInfo,
+                    dropdown != null ? [dropdown] : Array.Empty<Attribute>(),
+                    out var arrayElementTypeInfo
+                ))
             {
                 return false;
             }
-            baseObjectPropertyInfo = new ArrayPropertyInfo
-            {
-                ArrayElementTypeInfo = arrayElementTypeInfo,
-            };
+
+            baseObjectPropertyInfo = new ArrayPropertyInfo(name, displayName, arrayElementTypeInfo);
         }
         else if (propertyType.IsGenericType)
         {
@@ -105,14 +120,18 @@ public static class TemplateSerializer
             {
                 var elementType = propertyType.GetGenericArguments()[0];
                 var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
-                if (!TryParseProperty(GetTypeName(elementType), elementType, referencedPropertyInfo, [dropdown], out var arrayElementTypeInfo))
+                if (!TryParseProperty(
+                        GetTypeName(elementType),
+                        elementType,
+                        referencedPropertyInfo,
+                        dropdown != null ? [dropdown] : Array.Empty<Attribute>(),
+                        out var arrayElementTypeInfo
+                    ))
                 {
                     return false;
                 }
-                baseObjectPropertyInfo = new ArrayPropertyInfo
-                {
-                    ArrayElementTypeInfo = arrayElementTypeInfo,
-                };
+
+                baseObjectPropertyInfo = new ArrayPropertyInfo(name, displayName, arrayElementTypeInfo);
             }
             else if (genericTypeDef == typeof(Dictionary<,>))
             {
@@ -120,22 +139,32 @@ public static class TemplateSerializer
                 var keyType = arguments[0];
                 var valueType = arguments[1];
                 var attributeArray = enumerable.ToArray();
-                var keyDropdown = (InspectorDropdownAttribute)attributeArray.OfType<InspectorKeyDropdownAttribute>().FirstOrDefault();
-                if (!TryParseProperty(GetTypeName(keyType), keyType, referencedPropertyInfo, [keyDropdown], out var keyTypeInfo))
+                var keyDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorKeyDropdownAttribute>().FirstOrDefault();
+                if (!TryParseProperty(
+                        GetTypeName(keyType),
+                        keyType,
+                        referencedPropertyInfo,
+                        keyDropdown != null ? [keyDropdown] : Array.Empty<Attribute>(),
+                        out var keyTypeInfo
+                    ))
                 {
                     return false;
                 }
-                var valueDropdown = (InspectorDropdownAttribute)attributeArray.OfType<InspectorValueDropdownAttribute>().FirstOrDefault();
-                if (!TryParseProperty(GetTypeName(valueType), valueType, referencedPropertyInfo, [valueDropdown], out var valueTypeInfo))
+
+                var valueDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorValueDropdownAttribute>().FirstOrDefault();
+                if (!TryParseProperty(
+                        GetTypeName(valueType),
+                        valueType,
+                        referencedPropertyInfo,
+                        valueDropdown != null ? [valueDropdown] : Array.Empty<Attribute>(),
+                        out var valueTypeInfo
+                    ))
                 {
                     referencedPropertyInfo.Remove(GetTypeName(keyType));
                     return false;
                 }
-                baseObjectPropertyInfo = new DictionaryPropertyInfo
-                {
-                    KeyTypeInfo = keyTypeInfo,
-                    ValueTypeInfo = valueTypeInfo,
-                };
+
+                baseObjectPropertyInfo = new DictionaryPropertyInfo(name, displayName, keyTypeInfo, valueTypeInfo);
             }
             else
             {
@@ -144,7 +173,7 @@ public static class TemplateSerializer
         }
         else if (propertyType == typeof(bool))
         {
-            baseObjectPropertyInfo = new BooleanPropertyInfo();
+            baseObjectPropertyInfo = new BooleanPropertyInfo(name, displayName);
         }
         else if (propertyType.IsPrimitive)
         {
@@ -165,24 +194,22 @@ public static class TemplateSerializer
             var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
-                baseObjectPropertyInfo = new DropdownPropertyInfo
-                {
-                    DataSourcePath = dropdown.DataPath,
-                    ValueDisplayRegex = dropdown.Regex,
-                    Kind = numberType switch
+                baseObjectPropertyInfo = new DropdownPropertyInfo(
+                    name,
+                    displayName,
+                    numberType switch
                     {
                         NumberPropertyInfo.NumberType.Int => DropdownPropertyInfo.DropdownKind.Int,
                         NumberPropertyInfo.NumberType.Float => DropdownPropertyInfo.DropdownKind.Float,
                         _ => throw new InvalidOperationException()
-                    }
-                };
+                    },
+                    dropdown.DataPath,
+                    dropdown.Regex
+                );
             }
             else
             {
-                baseObjectPropertyInfo = new NumberPropertyInfo
-                {
-                    NumberKind = numberType
-                };
+                baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, numberType);
             }
         }
         else if (propertyType == typeof(string))
@@ -190,16 +217,17 @@ public static class TemplateSerializer
             var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
-                baseObjectPropertyInfo = new DropdownPropertyInfo
-                {
-                    DataSourcePath = dropdown.DataPath,
-                    ValueDisplayRegex = dropdown.Regex,
-                    Kind = DropdownPropertyInfo.DropdownKind.String
-                };
+                baseObjectPropertyInfo = new DropdownPropertyInfo(
+                    name,
+                    displayName,
+                    DropdownPropertyInfo.DropdownKind.String,
+                    dropdown.DataPath,
+                    dropdown.Regex
+                );
             }
             else
             {
-                baseObjectPropertyInfo = new StringPropertyInfo();
+                baseObjectPropertyInfo = new StringPropertyInfo(name, displayName);
             }
         }
         else if (propertyType.IsEnum)
@@ -217,30 +245,24 @@ public static class TemplateSerializer
                     )
                 );
             }
-            
-            baseObjectPropertyInfo = new EnumPropertyInfo
-            {
-                EnumTypeName = propertyType.Name,
-                EnumValues = enumValuesList.ToArray(),
-                IsFlags = propertyType.GetCustomAttributes<FlagsAttribute>().Any()
-            };
+
+            baseObjectPropertyInfo = new EnumPropertyInfo(
+                name,
+                displayName,
+                propertyType.Name,
+                enumValuesList.ToArray(),
+                propertyType.GetCustomAttributes<FlagsAttribute>().Any()
+            );
         }
         else if (!propertyType.IsGenericType)
         {
             EnsureTypeExists(propertyType);
-            baseObjectPropertyInfo = new ObjectPropertyInfo
-            {
-                ObjectTypeName = GetTypeName(propertyType),
-            };
+            baseObjectPropertyInfo = new ObjectPropertyInfo(name, displayName, GetTypeName(propertyType));
         }
         else
         {
             return false;
         }
-
-        baseObjectPropertyInfo.Name = propertyName;
-        var inspectorName = enumerable.OfType<InspectorNameAttribute>().FirstOrDefault();
-        baseObjectPropertyInfo.DisplayName = inspectorName != null ? inspectorName.DisplayName : baseObjectPropertyInfo.Name;
 
         return true;
 
@@ -248,7 +270,7 @@ public static class TemplateSerializer
         {
             if (type.IsPrimitive || type == typeof(string) || type.IsEnum) return;
             var typeName = GetTypeName(type);
-            if (!referencedPropertyInfo.TryAdd(typeName, null)) return;
+            if (!referencedPropertyInfo.TryAdd(typeName, _tempObjectProperty)) return;
             var typeDefinition = CollectTypeDefinitionImpl(type, referencedPropertyInfo);
             referencedPropertyInfo[typeName] = typeDefinition;
         }

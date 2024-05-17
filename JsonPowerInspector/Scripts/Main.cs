@@ -100,7 +100,7 @@ public partial class Main : Control
                     return;
                 }
                 
-                _currentFocusedSession.LoadFromJsonObject(dataFile);
+                await _currentFocusedSession.LoadFromJsonDataPathAsync(dataFile);
             }
 
             return;
@@ -153,23 +153,15 @@ public partial class Main : Control
         CallDeferred(MethodName.ApplyContentScale);
     }
 
-    private bool _isPressed;
     public override void _Input(InputEvent inputEvent)
-    {
+    {       
         if (!InputMap.ActionHasEvent("save", inputEvent)) return;
         if (inputEvent.IsPressed())
         {
-            if (!_isPressed)
-            {
-                _isPressed = true;
-                if(_currentFocusedSession == null) return;
-                _currentFocusedSession.Save().Forget();
-            }
+            if (_currentFocusedSession == null) return;
+            _currentFocusedSession.Save().Forget();
         }
-        else
-        {
-            _isPressed = false;
-        }
+        GetViewport().SetInputAsHandled();
     }
 
     private void ApplyContentScale()

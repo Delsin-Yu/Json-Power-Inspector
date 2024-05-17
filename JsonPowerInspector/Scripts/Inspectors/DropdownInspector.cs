@@ -16,7 +16,7 @@ public partial class DropdownInspector : BasePropertyInspector<DropdownPropertyI
 
     private readonly List<string> _values = [];
 
-    [GeneratedRegex(@"(?<Value>.+?)\t(?<Display>.+)")]
+    [GeneratedRegex(DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER)]
     private partial Regex GetDefaultLineMatchingRegex();
     
     protected override void OnInitialize(DropdownPropertyInfo propertyInfo)

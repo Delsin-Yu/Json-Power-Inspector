@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Godot;
 using GodotTask;
 using JsonPowerInspector.Template;
@@ -100,10 +99,12 @@ public partial class InspectionSessionController : Control
     public override void _Ready()
     {
         _save.Pressed += () => Save().Forget();
-        _revert.Pressed += () =>
+        _revert.Pressed += async () =>
         {
-            if (DataPath == null) MountJsonObject(CreateTemplateJsonObject());
-            else LoadFromJsonObject(DataPath);
+            bool success;
+            if (DataPath == null) success = await MountJsonObjectAsync(CreateTemplateJsonObject());
+            else success = await LoadFromJsonDataPathAsync(DataPath);
+            if(!success) return;
             ResetChanged();
         };
         _templatePathBtn.Pressed += () => OpenTemplateFile().Forget();
@@ -150,13 +151,13 @@ public partial class InspectionSessionController : Control
         
         if (dataPath != null)
         {
-            LoadFromJsonObject(dataPath);
+            LoadFromJsonDataPathAsync(dataPath);
             return;
         }
 
         DataPath = null;
         var templateJsonObject = CreateTemplateJsonObject();
-        MountJsonObject(templateJsonObject);
+        MountJsonObjectAsync(templateJsonObject).Forget();
     }
 
     private JsonObject CreateTemplateJsonObject()
@@ -171,7 +172,7 @@ public partial class InspectionSessionController : Control
         return templateJsonObject;
     }
 
-    public void LoadFromJsonObject(string dataPath)
+    public GDTask<bool> LoadFromJsonDataPathAsync(string dataPath)
     {
         DataPath = dataPath;
         JsonObject jsonObject;
@@ -179,17 +180,15 @@ public partial class InspectionSessionController : Control
             using var fileStream = File.OpenRead(dataPath);
             jsonObject = (JsonObject)JsonObject.Parse(fileStream);
         }
-        MountJsonObject(jsonObject);
+        return MountJsonObjectAsync(jsonObject);
     }
 
-    private void MountJsonObject(JsonObject jsonObject) => MountJsonObjectImpl(jsonObject).Forget();
-    
-    private async GDTask MountJsonObjectImpl(JsonObject jsonObject)
+    private async GDTask<bool> MountJsonObjectAsync(JsonObject jsonObject)
     {
         if (Changed)
         {
             var discard = await Dialogs.OpenDataLossDialog();
-            if(!discard) return;
+            if(!discard) return false;
         }
         
         ResetControls();
@@ -219,10 +218,12 @@ public partial class InspectionSessionController : Control
                 );
                 ResetControls();
                 DataPath = null;
-                MountJsonObject(CreateTemplateJsonObject());
-                return;
+                await MountJsonObjectAsync(CreateTemplateJsonObject());
+                return false;
             }
         }
+
+        return true;
     }
 
     private void ResetControls()
