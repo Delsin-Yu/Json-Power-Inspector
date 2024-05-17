@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -238,6 +239,8 @@ public partial class InspectionSessionController : Control
 
     private readonly JsonSerializerOptions _options = new() { WriteIndented = true, };
     
+    [SuppressMessage("Warning", "IL3050")]
+    [SuppressMessage("Warning", "IL2026")]
     public async GDTask Save()
     {
         PickPath:

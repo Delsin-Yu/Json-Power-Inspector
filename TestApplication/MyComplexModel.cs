@@ -34,9 +34,9 @@ public class MyCollectionModel
 
 public class MyDictionaryModel
 {
-    [InspectorName("字符串 - 整数 字典")] public Dictionary<string, int> StrInt { get; set; }
-    [InspectorName("整数 - 字符串 字典")] public Dictionary<int, string> IntStr { get; set; }
-    [InspectorName("浮点数 - 字符串 字典")] public Dictionary<float, string> FPStr { get; set; }
+    [InspectorName("字符串 - 整数 字典"), NumberRangeValue(0, 5)] public Dictionary<string, int> StrInt { get; set; }
+    [InspectorName("整数 - 字符串 字典"), NumberRangeKey(0, 5)] public Dictionary<int, string> IntStr { get; set; }
+    [InspectorName("浮点数 - 字符串 字典"), NumberRangeKey(0.2, 5)] public Dictionary<float, string> FPStr { get; set; }
 }
 
 public class MyArrayModel

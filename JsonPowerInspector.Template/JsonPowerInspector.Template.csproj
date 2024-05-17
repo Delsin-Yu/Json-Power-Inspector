@@ -6,7 +6,6 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Nullable>enable</Nullable>
         <CopyAllFiles>true</CopyAllFiles>
-        <RootNamespace>GodotViews</RootNamespace>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <OutputPath>./nupkg</OutputPath>
         <DebugType>portable</DebugType>

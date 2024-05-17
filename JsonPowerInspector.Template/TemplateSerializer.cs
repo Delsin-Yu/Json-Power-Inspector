@@ -142,24 +142,39 @@ public static class TemplateSerializer
                 var keyType = arguments[0];
                 var valueType = arguments[1];
                 var attributeArray = attributesArray.ToArray();
+                
+                var attributesList = new List<Attribute>(2);
+                
                 var keyDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorKeyDropdownAttribute>().FirstOrDefault();
+                var keyNumberRange = (NumberRangeAttribute?)attributeArray.OfType<NumberRangeKeyAttribute>().FirstOrDefault();
+                
+                if(keyDropdown != null) attributesList.Add(keyDropdown);                
+                if(keyNumberRange != null) attributesList.Add(keyNumberRange);        
+                
                 if (!TryParseProperty(
                         GetTypeName(keyType),
                         keyType,
                         referencedPropertyInfo,
-                        keyDropdown != null ? [keyDropdown] : Array.Empty<Attribute>(),
+                        attributesList,
                         out var keyTypeInfo
                     ))
                 {
                     return false;
                 }
 
+                attributesList.Clear();
+                
                 var valueDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorValueDropdownAttribute>().FirstOrDefault();
+                var valueNumberRange = (NumberRangeAttribute?)attributeArray.OfType<NumberRangeValueAttribute>().FirstOrDefault();
+                
+                if(valueDropdown != null) attributesList.Add(valueDropdown);                
+                if(valueNumberRange != null) attributesList.Add(valueNumberRange);       
+                
                 if (!TryParseProperty(
                         GetTypeName(valueType),
                         valueType,
                         referencedPropertyInfo,
-                        valueDropdown != null ? [valueDropdown] : Array.Empty<Attribute>(),
+                        attributesList,
                         out var valueTypeInfo
                     ))
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using Godot;
 using GodotTask;
@@ -74,6 +75,8 @@ public partial class KeyInputWindow : Window
         _removeClicked = true;
     }
 
+    [SuppressMessage("Warning", "IL3050")]
+    [SuppressMessage("Warning", "IL2026")]
     private async GDTask<(bool, TValue)> ShowAsync<TPropertyInfo, TValue>(
         TPropertyInfo propertyInfo,
         Func<InspectorSpawner, TPropertyInfo, IPropertyInspector> inspectorFactory,

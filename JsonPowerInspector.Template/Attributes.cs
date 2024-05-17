@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace JsonPowerInspector.Template;
 
@@ -6,6 +7,7 @@ namespace JsonPowerInspector.Template;
 /// Instruct the jsontemplate serializer to restrict
 /// the range for the annotated number property.
 /// </summary>
+[AttributeUsage(AttributeTargets.Property)]
 public class NumberRangeAttribute : Attribute
 {
     /// <summary>
@@ -58,7 +60,7 @@ public class InspectorDropdownAttribute : Attribute
     /// <param name="dataPath">The path to the file that contains dropdown data for this property,
     /// relative to the jsontemplate file.</param>
     /// <param name="regex">The regex to convert each line of the data file into data pairs that are required by the dropdown.</param>
-    public InspectorDropdownAttribute(string dataPath, string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER)
+    public InspectorDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER)
     {
         DataPath = dataPath;
         Regex = regex;
@@ -77,7 +79,7 @@ public class InspectorDropdownAttribute : Attribute
 public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 {
     /// <inheritdoc />
-    public InspectorKeyDropdownAttribute(string dataPath, string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+    public InspectorKeyDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
 }
 
 /// <summary>
@@ -90,5 +92,27 @@ public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
 {
     /// <inheritdoc />
-    public InspectorValueDropdownAttribute(string dataPath, string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+    public InspectorValueDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict the number range
+/// for the annotated Key of the annotated Dictionary Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property)]
+public class NumberRangeKeyAttribute : NumberRangeAttribute
+{
+    /// <inheritdoc />
+    public NumberRangeKeyAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict the number range
+/// for the annotated Value of the annotated Dictionary Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property)]
+public class NumberRangeValueAttribute : NumberRangeAttribute
+{
+    /// <inheritdoc />
+    public NumberRangeValueAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
 }

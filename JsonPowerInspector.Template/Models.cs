@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -303,7 +304,7 @@ public class ObjectPropertyInfo : BaseObjectPropertyInfo
 /// </summary>
 public class DropdownPropertyInfo : BaseObjectPropertyInfo
 {
-    internal const string DEFAULT_DROPDOWN_RESOLVER = @"(?<Value>.+?)\t(?<Display>.+)";
+    [StringSyntax("Regex")] internal const string DEFAULT_DROPDOWN_RESOLVER = @"(?<Value>.+?)\t(?<Display>.+)";
     
     /// <summary>
     /// Describes the value type for a <see cref="DropdownPropertyInfo"/>. 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using Godot;
 using JsonPowerInspector.Template;
@@ -70,6 +71,8 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         CurrentSession.MarkChanged();
     }
     
+    [SuppressMessage("Warning", "IL3050")]
+    [SuppressMessage("Warning", "IL2026")]
     protected void ReplaceValue<TValue>(TValue value)
     {
         var node = GetBackingNode();

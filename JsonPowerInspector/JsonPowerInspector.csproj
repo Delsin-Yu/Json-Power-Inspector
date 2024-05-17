@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\JsonPowerInspector.Template\JsonPowerInspector.Template.csproj" />
