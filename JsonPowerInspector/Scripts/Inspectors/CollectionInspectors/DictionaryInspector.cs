@@ -37,7 +37,9 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
                     foreach (var (key, _) in jsonObject) numberKeysInDictionary.Add(double.Parse(key));
                     var (hasValue, numberKey) = await keyInputWindow.ShowAsync(numberPropertyInfo, spawner, numberKeysInDictionary);
                     if(!hasValue) return;
-                    selectedKey = numberKey.ToString("N3", CultureInfo.InvariantCulture);
+                    selectedKey = numberPropertyInfo.NumberKind == NumberPropertyInfo.NumberType.Float ?
+                        numberKey.ToString("N3", CultureInfo.InvariantCulture) :
+                        numberKey.ToString("N0", CultureInfo.InvariantCulture);
                     break;
                 case StringPropertyInfo stringPropertyInfo:
                     var stringKeysInDictionary = new HashSet<string>();
