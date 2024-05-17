@@ -20,83 +20,28 @@ internal class ApplicationJsonTypes
 }
 
 /// <summary>
-/// Instruct the jsontemplate serializer to give the
-/// annotated Property or Enum value a customized name when displaying this Property or Enum value.
-/// </summary>
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-public class InspectorNameAttribute : Attribute
-{
-    public InspectorNameAttribute(string displayName)
-    {
-        DisplayName = displayName;
-    }
-
-    public string DisplayName { get; }
-}
-
-/// <summary>
-/// Instruct the jsontemplate serializer to mark the
-/// annotated Property as a dropdown.
-/// The JsonPowerInspector will collect the information from the provided data source
-/// and construct a dropdown for this property.
-/// </summary>
-[AttributeUsage(AttributeTargets.Property)]
-public class InspectorDropdownAttribute : Attribute
-{
-    public InspectorDropdownAttribute(string dataPath, string? regex = null)
-    {
-        DataPath = dataPath;
-        Regex = regex;
-    }
-    public string DataPath { get; }
-    public string? Regex { get; }
-}
-
-/// <summary>
-/// Instruct the jsontemplate serializer to mark the Key of the
-/// annotated Dictionary Property as a dropdown.
-/// The JsonPowerInspector will collect the information from the provided data source
-/// and construct a dropdown for this property.
-/// </summary>
-[AttributeUsage(AttributeTargets.Property)]
-public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
-{
-    public InspectorKeyDropdownAttribute(string dataPath, string? regex = null) : base(dataPath, regex) { }
-}
-
-/// <summary>
-/// Instruct the jsontemplate serializer to mark the Value of the
-/// annotated Dictionary Property as a dropdown.
-/// The JsonPowerInspector will collect the information from the provided data source
-/// and construct a dropdown for this property.
-/// </summary>
-[AttributeUsage(AttributeTargets.Property)]
-public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
-{
-    public InspectorValueDropdownAttribute(string dataPath, string? regex = null) : base(dataPath, regex) { }
-}
-
-/// <summary>
 /// Contains the necessary information required to create an inspector for a type.
 /// </summary>
 public class PackedObjectDefinition
 {
-    public PackedObjectDefinition(ObjectDefinition mainObjectDefinition, ObjectDefinition[] referencedObjectDefinition)
+    [JsonConstructor]
+    internal PackedObjectDefinition(ObjectDefinition mainObjectDefinition, ObjectDefinition[] referencedObjectDefinition)
     {
         MainObjectDefinition = mainObjectDefinition;
         ReferencedObjectDefinition = referencedObjectDefinition;
     }
 
     /// <summary>
-    /// Contains the information for the type.
+    /// Contains the serialization info for a type. 
     /// </summary>
     public ObjectDefinition MainObjectDefinition { get; set; }
     
     /// <summary>
-    /// Contains the information for the types that are referenced by the <see cref="MainObjectDefinition"/>.
+    /// Contains the serialization info for the types that are referenced by the <see cref="MainObjectDefinition"/>.
     /// </summary>
     public ObjectDefinition[] ReferencedObjectDefinition { get; set; }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         var builder = new StringBuilder();
@@ -120,17 +65,29 @@ public class PackedObjectDefinition
     }
 }
 
+/// <summary>
+/// Contains the serialization info for a type. 
+/// </summary>
 public class ObjectDefinition
 {
-    public ObjectDefinition(string objectTypeName, BaseObjectPropertyInfo[] properties)
+    [JsonConstructor]
+    internal ObjectDefinition(string objectTypeName, BaseObjectPropertyInfo[] properties)
     {
         ObjectTypeName = objectTypeName;
         Properties = properties;
     }
 
+    /// <summary>
+    /// The type name.
+    /// </summary>
     public string ObjectTypeName { get; }
+    
+    /// <summary>
+    /// The type properties.
+    /// </summary>
     public BaseObjectPropertyInfo[] Properties { get; }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         var builder = new StringBuilder();
@@ -138,7 +95,7 @@ public class ObjectDefinition
         return builder.ToString();
     }
 
-    public void ToString(StringBuilder stringBuilder, int indentationLevel)
+    internal void ToString(StringBuilder stringBuilder, int indentationLevel)
     {
         stringBuilder
             .Append(' ', indentationLevel * 4)
@@ -163,6 +120,9 @@ public class ObjectDefinition
     }
 }
 
+/// <summary>
+/// Contains serialization info for a property.
+/// </summary>
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "PropertyType", UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization)]
 [JsonDerivedType(typeof(StringPropertyInfo), typeDiscriminator: "String")]
 [JsonDerivedType(typeof(NumberPropertyInfo), typeDiscriminator: "Number")]
@@ -174,15 +134,25 @@ public class ObjectDefinition
 [JsonDerivedType(typeof(DropdownPropertyInfo), typeDiscriminator: "Dropdown")]
 public abstract class BaseObjectPropertyInfo
 {
-    protected BaseObjectPropertyInfo(string name, string displayName)
+    [JsonConstructor]
+    private protected BaseObjectPropertyInfo(string name, string displayName)
     {
         Name = name;
         DisplayName = displayName;
     }
 
+    /// <summary>
+    /// The property name.
+    /// </summary>
     public string Name { get; }
+    
+    /// <summary>
+    /// The name displayed on the inspector,
+    /// same as the <see cref="Name"/> if this property is not annotated with <see cref="InspectorNameAttribute"/>.
+    /// </summary>
     public string DisplayName { get; }
     
+    /// <inheritdoc />
     public override string ToString()
     {
         var builder = new StringBuilder();
@@ -190,11 +160,11 @@ public abstract class BaseObjectPropertyInfo
         return builder.ToString();
     }
 
-    protected abstract void PrintType(StringBuilder stringBuilder);
+    private protected abstract void PrintType(StringBuilder stringBuilder);
 
-    protected virtual void PrintAdditional(StringBuilder stringBuilder) { }
+    private protected virtual void PrintAdditional(StringBuilder stringBuilder) { }
     
-    public void ToString(StringBuilder stringBuilder, int indentationLevel)
+    internal void ToString(StringBuilder stringBuilder, int indentationLevel)
     {
         stringBuilder
             .Append(' ', indentationLevel * 4);
@@ -209,37 +179,73 @@ public abstract class BaseObjectPropertyInfo
     }
 }
 
+/// <summary>
+/// Contains serialization info for a <see cref="string"/> property.
+/// </summary>
 public class StringPropertyInfo : BaseObjectPropertyInfo
 {
-    protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("String");
-    public StringPropertyInfo(string name, string displayName) : base(name, displayName) { }
+    private protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("String");
+    [JsonConstructor]
+    internal StringPropertyInfo(string name, string displayName) : base(name, displayName) { }
 }
+
+/// <summary>
+/// Contains serialization info for a <see cref="bool"/> property.
+/// </summary>
 public class BooleanPropertyInfo : BaseObjectPropertyInfo
 {
-    protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("Bool");
-    public BooleanPropertyInfo(string name, string displayName) : base(name, displayName) { }
+    private protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("Bool");
+    [JsonConstructor]
+    internal BooleanPropertyInfo(string name, string displayName) : base(name, displayName) { }
 }
 
+/// <summary>
+/// Contains serialization info for a number property.
+/// </summary>
 public class NumberPropertyInfo : BaseObjectPropertyInfo
 {
+    /// <summary>
+    /// Describes the range for a <see cref="NumberPropertyInfo"/>.
+    /// </summary>
+    /// <param name="Lower">The lower bound.</param>
+    /// <param name="Upper">The upper bound.</param>
     public record struct NumberRange(double Lower, double Upper);
 
+    /// <summary>
+    /// The Type for a <see cref="NumberPropertyInfo"/>.
+    /// </summary>
     public enum NumberType
     {
+        /// <summary>
+        /// Represents a property type of <see cref="byte"/>, <see cref="ushort"/>,
+        /// <see cref="uint"/>, <see cref="ulong"/>, <see cref="sbyte"/>,
+        /// <see cref="short"/>, <see cref="int"/>, <see cref="long"/>.
+        /// </summary>
         Int,
+        /// <summary>
+        /// Represents a property type of <see cref="float"/>, <see cref="double"/>.
+        /// </summary>
         Float
     }
 
+    /// <summary>
+    /// The type for this number.
+    /// </summary>
     public NumberType NumberKind { get; }
+    
+    /// <summary>
+    /// The range for this number.
+    /// </summary>
     public NumberRange? Range { get; }
 
-    public NumberPropertyInfo(string name, string displayName, NumberType numberKind, NumberRange? range = null) : base(name, displayName)
+    [JsonConstructor]
+    internal NumberPropertyInfo(string name, string displayName, NumberType numberKind, NumberRange? range = null) : base(name, displayName)
     {
         NumberKind = numberKind;
         Range = range;
     }
 
-    protected override void PrintType(StringBuilder stringBuilder)
+    private protected override void PrintType(StringBuilder stringBuilder)
     {
         stringBuilder
             .Append(
@@ -247,12 +253,12 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
                 {
                     NumberType.Int => "Int",
                     NumberType.Float => "Float",
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => throw new InvalidOperationException()
                 }
             );
     }
 
-    protected override void PrintAdditional(StringBuilder stringBuilder)
+    private protected override void PrintAdditional(StringBuilder stringBuilder)
     {
         if(!Range.HasValue) return;
 
@@ -267,16 +273,23 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
     }
 }
 
+/// <summary>
+/// Contains serialization info for an object property.
+/// </summary>
 public class ObjectPropertyInfo : BaseObjectPropertyInfo
 {
+    /// <summary>
+    /// The name for this object property.
+    /// </summary>
     public string ObjectTypeName { get; }
 
-    public ObjectPropertyInfo(string name, string displayName, string objectTypeName) : base(name, displayName)
+    [JsonConstructor]
+    internal ObjectPropertyInfo(string name, string displayName, string objectTypeName) : base(name, displayName)
     {
         ObjectTypeName = objectTypeName;
     }
 
-    protected override void PrintType(StringBuilder stringBuilder)
+    private protected override void PrintType(StringBuilder stringBuilder)
     {
         stringBuilder
             .Append("Object<")
@@ -285,33 +298,65 @@ public class ObjectPropertyInfo : BaseObjectPropertyInfo
     }
 }
 
+/// <summary>
+/// Contains serialization info for a property
+/// that have dropdown value selection.
+/// </summary>
 public class DropdownPropertyInfo : BaseObjectPropertyInfo
 {
     internal const string DEFAULT_DROPDOWN_RESOLVER = @"(?<Value>.+?)\t(?<Display>.+)";
     
+    /// <summary>
+    /// Describes the value type for a <see cref="DropdownPropertyInfo"/>. 
+    /// </summary>
     public enum DropdownKind
     {
+        /// <summary>
+        /// Represents a property type of <see cref="byte"/>, <see cref="ushort"/>,
+        /// <see cref="uint"/>, <see cref="ulong"/>, <see cref="sbyte"/>,
+        /// <see cref="short"/>, <see cref="int"/>, <see cref="long"/>.
+        /// </summary>
         Int,
+        /// <summary>
+        /// Represents a property type of <see cref="float"/>, <see cref="double"/>.
+        /// </summary>
         Float,
+        /// <summary>
+        /// Represents a property type of <see cref="string"/>.
+        /// </summary>
         String
     }
+    
+    /// <summary>
+    /// The type for this <see cref="DropdownPropertyInfo"/>.
+    /// </summary>
     public DropdownKind Kind { get; }
+    
+    /// <summary>
+    /// The path to the file that contains dropdown data for this property,
+    /// relative to the jsontemplate file.
+    /// </summary>
     public string DataSourcePath { get; }
+    
+    /// <summary>
+    /// The regex to convert each line of the data file into data pairs that are required by the dropdown.
+    /// </summary>
     public string ValueDisplayRegex { get; }
 
-    public DropdownPropertyInfo(string name, string displayName, DropdownKind kind, string dataSourcePath, string? valueDisplayRegex) : base(name, displayName)
+    [JsonConstructor]
+    internal DropdownPropertyInfo(string name, string displayName, DropdownKind kind, string dataSourcePath, string valueDisplayRegex) : base(name, displayName)
     {
         Kind = kind;
         DataSourcePath = dataSourcePath;
-        ValueDisplayRegex = valueDisplayRegex ?? DEFAULT_DROPDOWN_RESOLVER;
+        ValueDisplayRegex = valueDisplayRegex;
     }
 
-    protected override void PrintType(StringBuilder stringBuilder) => 
+    private protected override void PrintType(StringBuilder stringBuilder) => 
         stringBuilder
             .Append("Dropdown<")
             .Append(Kind.ToString()).Append('>');
 
-    protected override void PrintAdditional(StringBuilder stringBuilder) =>
+    private protected override void PrintAdditional(StringBuilder stringBuilder) =>
         stringBuilder
             .Append('[')
             .Append(ValueDisplayRegex)
@@ -321,61 +366,101 @@ public class DropdownPropertyInfo : BaseObjectPropertyInfo
             .Append("\"]");
 }
 
+/// <summary>
+/// Contains serialization info for an enum property.
+/// </summary>
 public class EnumPropertyInfo : BaseObjectPropertyInfo
 {
+    /// <summary>
+    /// Describes a value information for the enum.
+    /// </summary>
+    /// <param name="DisplayName">The alternative name for JsonPowerInspector
+    /// to use when displaying this Enum value.</param>
+    /// <param name="DeclareName">The declared name for this Enum value.</param>
+    /// <param name="Value">The value for this Enum value.</param>
     public record struct EnumValue(string DisplayName, string DeclareName, long Value);
     
+    /// <summary>
+    /// The type name for this enum value.
+    /// </summary>
     public string EnumTypeName { get; }
+    
+    /// <summary>
+    /// The values for this enum type.
+    /// </summary>
     public EnumValue[] EnumValues { get; }
+    
+    /// <summary>
+    /// Has this enum annotated with <see cref="FlagsAttribute"/>.
+    /// </summary>
     public bool IsFlags { get; }
 
-    public EnumPropertyInfo(string name, string displayName, string enumTypeName, EnumValue[] enumValues, bool isFlags) : base(name, displayName)
+    [JsonConstructor]
+    internal EnumPropertyInfo(string name, string displayName, string enumTypeName, EnumValue[] enumValues, bool isFlags) : base(name, displayName)
     {
         EnumTypeName = enumTypeName;
         EnumValues = enumValues;
         IsFlags = isFlags;
     }
 
-    protected override void PrintType(StringBuilder stringBuilder) =>
+    private protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder.Append(IsFlags ? "EnumFlags<" : "Enum<")
             .Append(EnumTypeName)
             .Append('>');
 
-    protected override void PrintAdditional(StringBuilder stringBuilder) =>
+    private protected override void PrintAdditional(StringBuilder stringBuilder) =>
         stringBuilder
             .Append('[')
             .AppendJoin(", ", EnumValues.Select(x => x.DeclareName))
             .Append(']');
 }
 
+/// <summary>
+/// Contains serialization info for an array property.
+/// </summary>
 public class ArrayPropertyInfo : BaseObjectPropertyInfo
 {
+    /// <summary>
+    /// Describes the type for the elements in this array. 
+    /// </summary>
     public BaseObjectPropertyInfo ArrayElementTypeInfo { get; }
 
-    public ArrayPropertyInfo(string name, string displayName, BaseObjectPropertyInfo arrayElementTypeInfo) : base(name, displayName)
+    [JsonConstructor]
+    internal ArrayPropertyInfo(string name, string displayName, BaseObjectPropertyInfo arrayElementTypeInfo) : base(name, displayName)
     {
         ArrayElementTypeInfo = arrayElementTypeInfo;
     }
 
-    protected override void PrintType(StringBuilder stringBuilder) =>
+    private protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder
             .Append("Array<")
             .Append(ArrayElementTypeInfo)
             .Append('>');
 }
 
+/// <summary>
+/// Contains serialization info for an array property.
+/// </summary>
 public class DictionaryPropertyInfo : BaseObjectPropertyInfo
 {
+    /// <summary>
+    /// Describes the type for key of this dictionary. 
+    /// </summary>
     public BaseObjectPropertyInfo KeyTypeInfo { get; }
+    
+    /// <summary>
+    /// Describes the type for value of this dictionary. 
+    /// </summary>
     public BaseObjectPropertyInfo ValueTypeInfo { get; }
 
-    public DictionaryPropertyInfo(string name, string displayName, BaseObjectPropertyInfo keyTypeInfo, BaseObjectPropertyInfo valueTypeInfo) : base(name, displayName)
+    [JsonConstructor]
+    internal DictionaryPropertyInfo(string name, string displayName, BaseObjectPropertyInfo keyTypeInfo, BaseObjectPropertyInfo valueTypeInfo) : base(name, displayName)
     {
         KeyTypeInfo = keyTypeInfo;
         ValueTypeInfo = valueTypeInfo;
     }
 
-    protected override void PrintType(StringBuilder stringBuilder) =>
+    private protected override void PrintType(StringBuilder stringBuilder) =>
         stringBuilder
             .Append("Dictionary<")
             .Append(KeyTypeInfo)

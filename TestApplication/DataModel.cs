@@ -1,4 +1,6 @@
-﻿namespace TMI_RogueLike_DataEditor.Model;
+﻿using JsonPowerInspector.Template;
+
+namespace TMI_RogueLike_DataEditor.Model;
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -20,31 +22,31 @@ public class RogueLikeData
 
     [JsonPropertyName("RoundDuration")] public int RoundDuration { get; set; }
 
-    [JsonPropertyName("GlobalProductMultiplier")] public float GlobalProductMultiplier { get; set; }
+    [JsonPropertyName("GlobalProductMultiplier"), NumberRange(0, 1)] public float GlobalProductMultiplier { get; set; }
 
-    [JsonPropertyName("Level1RecipePriceMultiplier")] public float Level1RecipePriceMultiplier { get; set; }
+    [JsonPropertyName("Level1RecipePriceMultiplier"), NumberRange(0, 1)] public float Level1RecipePriceMultiplier { get; set; }
 
-    [JsonPropertyName("Level2RecipePriceMultiplier")] public float Level2RecipePriceMultiplier { get; set; }
+    [JsonPropertyName("Level2RecipePriceMultiplier"), NumberRange(0, 1)] public float Level2RecipePriceMultiplier { get; set; }
 
-    [JsonPropertyName("Level3RecipePriceMultiplier")] public float Level3RecipePriceMultiplier { get; set; }
+    [JsonPropertyName("Level3RecipePriceMultiplier"), NumberRange(0, 1)] public float Level3RecipePriceMultiplier { get; set; }
 
-    [JsonPropertyName("Level4RecipePriceMultiplier")] public float Level4RecipePriceMultiplier { get; set; }
+    [JsonPropertyName("Level4RecipePriceMultiplier"), NumberRange(0, 1)] public float Level4RecipePriceMultiplier { get; set; }
 
-    [JsonPropertyName("Level5RecipePriceMultiplier")] public float Level5RecipePriceMultiplier { get; set; }
+    [JsonPropertyName("Level5RecipePriceMultiplier"), NumberRange(0, 1)] public float Level5RecipePriceMultiplier { get; set; }
 
-    [JsonPropertyName("PartnerBasePrice")] public int PartnerBasePrice { get; set; }
+    [JsonPropertyName("PartnerBasePrice"), NumberRange(0, 1000)] public int PartnerBasePrice { get; set; }
 
-    [JsonPropertyName("SpecialGuestPrice")] public int SpecialGuestPrice { get; set; }
+    [JsonPropertyName("SpecialGuestPrice"), NumberRange(0, 1000)] public int SpecialGuestPrice { get; set; }
 
-    [JsonPropertyName("ClothesPrice")] public int ClothesPrice { get; set; }
+    [JsonPropertyName("ClothesPrice"), NumberRange(0, 1000)] public int ClothesPrice { get; set; }
 
-    [JsonPropertyName("DecorationPrice")] public int DecorationPrice { get; set; }
+    [JsonPropertyName("DecorationPrice"), NumberRange(0, 1000)] public int DecorationPrice { get; set; }
 
-    [JsonPropertyName("GachaNeedComboNum")] public int GachaNeedComboNum { get; set; }
+    [JsonPropertyName("GachaNeedComboNum"), NumberRange(0, 10)] public int GachaNeedComboNum { get; set; }
 
-    [JsonPropertyName("GachaNeedSpellNum")] public int GachaNeedSpellNum { get; set; }
+    [JsonPropertyName("GachaNeedSpellNum"), NumberRange(0, 10)] public int GachaNeedSpellNum { get; set; }
 
-    [JsonPropertyName("GachaMaxCardNum")] public int GachaMaxCardNum { get; set; }
+    [JsonPropertyName("GachaMaxCardNum"), NumberRange(0, 10)] public int GachaMaxCardNum { get; set; }
 
     [JsonPropertyName("BeginToSpawnDangerousCardRoundIndex")] public int BeginToSpawnDangerousCardRoundIndex { get; set; }
 

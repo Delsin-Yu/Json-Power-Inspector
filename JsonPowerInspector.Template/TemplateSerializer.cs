@@ -10,6 +10,9 @@ using System.Text.Json;
 
 namespace JsonPowerInspector.Template;
 
+/// <summary>
+/// Contains helpers to collecting and creating jsontemplate for a user type for JsonPowerInspector to use. 
+/// </summary>
 public static class TemplateSerializer
 {
     /// <summary>
@@ -86,8 +89,8 @@ public static class TemplateSerializer
         [NotNullWhen(true)] out BaseObjectPropertyInfo? baseObjectPropertyInfo
     )
     {
-        var enumerable = attributes as Attribute[] ?? attributes.ToArray();
-        var inspectorName = enumerable.OfType<InspectorNameAttribute>().FirstOrDefault();
+        var attributesArray = attributes as Attribute[] ?? attributes.ToArray();
+        var inspectorName = attributesArray.OfType<InspectorNameAttribute>().FirstOrDefault();
         var displayName = inspectorName != null ? inspectorName.DisplayName : name;
         
         baseObjectPropertyInfo = null;
@@ -99,7 +102,7 @@ public static class TemplateSerializer
         else if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
-            var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
+            var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (!TryParseProperty(
                     GetTypeName(elementType),
                     elementType,
@@ -119,7 +122,7 @@ public static class TemplateSerializer
             if (genericTypeDef == typeof(List<>))
             {
                 var elementType = propertyType.GetGenericArguments()[0];
-                var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
+                var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
                 if (!TryParseProperty(
                         GetTypeName(elementType),
                         elementType,
@@ -138,7 +141,7 @@ public static class TemplateSerializer
                 var arguments = propertyType.GetGenericArguments();
                 var keyType = arguments[0];
                 var valueType = arguments[1];
-                var attributeArray = enumerable.ToArray();
+                var attributeArray = attributesArray.ToArray();
                 var keyDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorKeyDropdownAttribute>().FirstOrDefault();
                 if (!TryParseProperty(
                         GetTypeName(keyType),
@@ -191,7 +194,7 @@ public static class TemplateSerializer
             else if (propertyType == typeof(double)) numberType = NumberPropertyInfo.NumberType.Float;
             else return false;
 
-            var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
+            var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
                 baseObjectPropertyInfo = new DropdownPropertyInfo(
@@ -209,12 +212,18 @@ public static class TemplateSerializer
             }
             else
             {
-                baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, numberType);
+                NumberPropertyInfo.NumberRange? range = null;
+                var numberRange = attributesArray.OfType<NumberRangeAttribute>().FirstOrDefault();
+                if (numberRange != null)
+                {
+                    range = new(numberRange.LowerBound, numberRange.UpperBound);
+                }
+                baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, numberType, range);
             }
         }
         else if (propertyType == typeof(string))
         {
-            var dropdown = enumerable.OfType<InspectorDropdownAttribute>().FirstOrDefault();
+            var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
                 baseObjectPropertyInfo = new DropdownPropertyInfo(

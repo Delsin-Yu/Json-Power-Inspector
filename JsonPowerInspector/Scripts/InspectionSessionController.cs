@@ -138,9 +138,9 @@ public partial class InspectionSessionController : Control
             using var fileStream = File.OpenRead(templatePath);
             setup = JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new SerializationException($"Error when reading the template file: {templatePath}");
+            throw new SerializationException($"{e.GetType().Name} when reading the template file: {templatePath}\n{e}");
         }
         
         _objectDefinitionMap = setup.ReferencedObjectDefinition.ToDictionary(x => x.ObjectTypeName, x => x);
