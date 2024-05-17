@@ -52,15 +52,15 @@ public class InspectorNameAttribute : Attribute
 /// and construct a dropdown for this property.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class InspectorDropdownAttribute : Attribute
+public class DropdownAttribute : Attribute
 {
     /// <summary>
-    /// Construct an instance of this <see cref="InspectorDropdownAttribute"/>.
+    /// Construct an instance of this <see cref="DropdownAttribute"/>.
     /// </summary>
     /// <param name="dataPath">The path to the file that contains dropdown data for this property,
     /// relative to the jsontemplate file.</param>
     /// <param name="regex">The regex to convert each line of the data file into data pairs that are required by the dropdown.</param>
-    public InspectorDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER)
+    public DropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER)
     {
         DataPath = dataPath;
         Regex = regex;
@@ -76,10 +76,10 @@ public class InspectorDropdownAttribute : Attribute
 /// and construct a dropdown for this property.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
+public class KeyDropdownAttribute : DropdownAttribute
 {
     /// <inheritdoc />
-    public InspectorKeyDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+    public KeyDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
 }
 
 /// <summary>
@@ -89,10 +89,10 @@ public class InspectorKeyDropdownAttribute : InspectorDropdownAttribute
 /// and construct a dropdown for this property.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
+public class ValueDropdownAttribute : DropdownAttribute
 {
     /// <inheritdoc />
-    public InspectorValueDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+    public ValueDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
 }
 
 /// <summary>
@@ -100,10 +100,10 @@ public class InspectorValueDropdownAttribute : InspectorDropdownAttribute
 /// for the annotated Key of the annotated Dictionary Property
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class NumberRangeKeyAttribute : NumberRangeAttribute
+public class KeyNumberRangeAttribute : NumberRangeAttribute
 {
     /// <inheritdoc />
-    public NumberRangeKeyAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
+    public KeyNumberRangeAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
 }
 
 /// <summary>
@@ -111,8 +111,8 @@ public class NumberRangeKeyAttribute : NumberRangeAttribute
 /// for the annotated Value of the annotated Dictionary Property
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class NumberRangeValueAttribute : NumberRangeAttribute
+public class ValueNumberRangeAttribute : NumberRangeAttribute
 {
     /// <inheritdoc />
-    public NumberRangeValueAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
+    public ValueNumberRangeAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
 }

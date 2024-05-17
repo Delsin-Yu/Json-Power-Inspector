@@ -48,7 +48,7 @@ public static class TemplateSerializer
     {
         var propertyInfos = 
             objectType
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(x => x is { CanRead: true, CanWrite: true })
                 .ToArray();
         
@@ -102,12 +102,11 @@ public static class TemplateSerializer
         else if (propertyType.IsArray)
         {
             var elementType = propertyType.GetElementType()!;
-            var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
             if (!TryParseProperty(
                     GetTypeName(elementType),
                     elementType,
                     referencedPropertyInfo,
-                    dropdown != null ? [dropdown] : Array.Empty<Attribute>(),
+                    attributesArray,
                     out var arrayElementTypeInfo
                 ))
             {
@@ -122,12 +121,11 @@ public static class TemplateSerializer
             if (genericTypeDef == typeof(List<>))
             {
                 var elementType = propertyType.GetGenericArguments()[0];
-                var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
                 if (!TryParseProperty(
                         GetTypeName(elementType),
                         elementType,
                         referencedPropertyInfo,
-                        dropdown != null ? [dropdown] : Array.Empty<Attribute>(),
+                        attributesArray,
                         out var arrayElementTypeInfo
                     ))
                 {
@@ -145,8 +143,8 @@ public static class TemplateSerializer
                 
                 var attributesList = new List<Attribute>(2);
                 
-                var keyDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorKeyDropdownAttribute>().FirstOrDefault();
-                var keyNumberRange = (NumberRangeAttribute?)attributeArray.OfType<NumberRangeKeyAttribute>().FirstOrDefault();
+                var keyDropdown = (DropdownAttribute?)attributeArray.OfType<KeyDropdownAttribute>().FirstOrDefault();
+                var keyNumberRange = (NumberRangeAttribute?)attributeArray.OfType<KeyNumberRangeAttribute>().FirstOrDefault();
                 
                 if(keyDropdown != null) attributesList.Add(keyDropdown);                
                 if(keyNumberRange != null) attributesList.Add(keyNumberRange);        
@@ -164,8 +162,8 @@ public static class TemplateSerializer
 
                 attributesList.Clear();
                 
-                var valueDropdown = (InspectorDropdownAttribute?)attributeArray.OfType<InspectorValueDropdownAttribute>().FirstOrDefault();
-                var valueNumberRange = (NumberRangeAttribute?)attributeArray.OfType<NumberRangeValueAttribute>().FirstOrDefault();
+                var valueDropdown = (DropdownAttribute?)attributeArray.OfType<ValueDropdownAttribute>().FirstOrDefault();
+                var valueNumberRange = (NumberRangeAttribute?)attributeArray.OfType<ValueNumberRangeAttribute>().FirstOrDefault();
                 
                 if(valueDropdown != null) attributesList.Add(valueDropdown);                
                 if(valueNumberRange != null) attributesList.Add(valueNumberRange);       
@@ -209,7 +207,7 @@ public static class TemplateSerializer
             else if (propertyType == typeof(double)) numberType = NumberPropertyInfo.NumberType.Float;
             else return false;
 
-            var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
+            var dropdown = attributesArray.OfType<DropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
                 baseObjectPropertyInfo = new DropdownPropertyInfo(
@@ -238,7 +236,7 @@ public static class TemplateSerializer
         }
         else if (propertyType == typeof(string))
         {
-            var dropdown = attributesArray.OfType<InspectorDropdownAttribute>().FirstOrDefault();
+            var dropdown = attributesArray.OfType<DropdownAttribute>().FirstOrDefault();
             if (dropdown != null)
             {
                 baseObjectPropertyInfo = new DropdownPropertyInfo(
