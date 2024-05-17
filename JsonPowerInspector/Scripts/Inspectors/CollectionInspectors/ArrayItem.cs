@@ -10,8 +10,18 @@ public partial class ArrayItem : Control
 
     private Action<IPropertyInspector, int> _deleteCurrentElementCall;
     private IPropertyInspector _inspector;
+    private int _index;
 
-    public int Index { get; set; }
+    public int Index
+    {
+        get => _index;
+        set
+        {
+            _index = value;
+            _inspector.BackingPropertyName = value.ToString();
+            _inspector.DisplayName = $"Item {value}";
+        }
+    }
     
     public override void _Ready()
     {

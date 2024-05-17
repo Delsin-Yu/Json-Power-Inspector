@@ -8,7 +8,8 @@ namespace JsonPowerInspector;
 
 public interface IPropertyInspector
 {
-    string DisplayName { get; }
+    string DisplayName { set; }
+    string BackingPropertyName { set; }
     void BindJsonNode(JsonNode parent, string propertyName);
     event Action<object> ValueChanged;
 }
@@ -17,19 +18,32 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
 {
     [Export] private Label _propertyName;
 
-    public string DisplayName { get; private set; }
+    public string DisplayName
+    {
+        set
+        {
+            _displayName = value;
+            _propertyName.Text = value;
+        }
+    }
+
+    public string BackingPropertyName
+    {
+        set => _jsonPropertyName = value;
+    }
+
     public event Action<object> ValueChanged;
     protected TPropertyInfo PropertyInfo { get; private set; }
     protected InspectionSessionController CurrentSession { get; private set; }
     
     private JsonNode _parent;
     private string _jsonPropertyName;
-    
+    private string _displayName;
+
     public void Initialize(TPropertyInfo propertyInfo, InspectionSessionController currentSession)
     {
         CurrentSession = currentSession;
         DisplayName = propertyInfo.DisplayName;
-        _propertyName.Text = DisplayName;
         PropertyInfo = propertyInfo;
         OnInitialize(propertyInfo);
     }
