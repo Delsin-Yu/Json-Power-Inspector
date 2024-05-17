@@ -21,6 +21,7 @@ public partial class Main : Control
     [Export] private Slider _slider;
     [Export] private SpinBox _displayScale;
     [Export] private Label _versionInfo;
+    [Export] private Control _nullIndicator;
     
     public const string Extension = ".jsontemplate";
     public const string Data = ".json";
@@ -74,6 +75,10 @@ public partial class Main : Control
             }
 
             child.QueueFree();
+            
+            var nullIndicatorVisible = _tabContainer.GetChildCount() - 1 == 0;
+            _nullIndicator.Visible = nullIndicatorVisible;
+            _tabContainer.Visible = !nullIndicatorVisible;
         };
 
         window.FilesDropped += async files =>
@@ -149,10 +154,16 @@ public partial class Main : Control
                 {
                     sessionController.QueueFree();
                     await Dialogs.OpenErrorDialog(serializationException.Message);
+                    return;
                 }
+                
+                _nullIndicator.Hide();
+                _tabContainer.Show();
             }
         };
         
+        _nullIndicator.Show();
+        _tabContainer.Hide();
         CallDeferred(MethodName.ApplyContentScale);
     }
 

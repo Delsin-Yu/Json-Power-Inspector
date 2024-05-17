@@ -108,7 +108,6 @@ layout_mode = 2
 
 [node name="InspectedContents" type="VFlowContainer" parent="VBoxContainer/PanelContainer/ScrollContainer"]
 auto_translate_mode = 1
-custom_minimum_size = Vector2(0, 455)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 3
