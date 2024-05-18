@@ -6,19 +6,9 @@ using System.Text.Json.Serialization;
 
 namespace JsonPowerInspector.Template;
 
-[JsonSerializable(typeof(ApplicationJsonTypes))]
+[JsonSerializable(typeof(PackedObjectDefinition))]
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
 internal partial class PowerTemplateJsonContext : JsonSerializerContext;
-
-internal class ApplicationJsonTypes
-{
-    public ApplicationJsonTypes(PackedObjectDefinition packedObjectDefinition)
-    {
-        PackedObjectDefinition = packedObjectDefinition;
-    }
-
-    public PackedObjectDefinition PackedObjectDefinition { get; set; }
-}
 
 /// <summary>
 /// Contains the necessary information required to create an inspector for a type.

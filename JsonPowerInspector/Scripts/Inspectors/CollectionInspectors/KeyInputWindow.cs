@@ -75,8 +75,8 @@ public partial class KeyInputWindow : Window
         _removeClicked = true;
     }
 
-    [SuppressMessage("Warning", "IL3050")]
-    [SuppressMessage("Warning", "IL2026")]
+    [UnconditionalSuppressMessage("Warning", "IL3050")]
+    [UnconditionalSuppressMessage("Warning", "IL2026")]
     private async GDTask<(bool, TValue)> ShowAsync<TPropertyInfo, TValue>(
         TPropertyInfo propertyInfo,
         Func<InspectorSpawner, TPropertyInfo, IPropertyInspector> inspectorFactory,

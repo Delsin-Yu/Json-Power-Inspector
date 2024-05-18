@@ -1,8 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using Godot;
 using GodotTask;
+using JsonPowerInspector.Template;
 
 namespace JsonPowerInspector;
 
@@ -28,6 +31,8 @@ public partial class Main : Control
 
     private InspectionSessionController _currentFocusedSession;
     
+    [UnconditionalSuppressMessage("Warning", "IL3050")]
+    [UnconditionalSuppressMessage("Warning", "IL2026")]
     public override void _Ready()
     {
         _versionInfo.Text = Version.Current;

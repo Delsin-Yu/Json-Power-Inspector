@@ -85,8 +85,8 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         CurrentSession.MarkChanged();
     }
     
-    [SuppressMessage("Warning", "IL3050")]
-    [SuppressMessage("Warning", "IL2026")]
+    [UnconditionalSuppressMessage("Warning", "IL3050")]
+    [UnconditionalSuppressMessage("Warning", "IL2026")]
     protected void ReplaceValue<TValue>(TValue value)
     {
         var node = GetBackingNode();

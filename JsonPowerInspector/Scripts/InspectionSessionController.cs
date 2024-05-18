@@ -137,7 +137,7 @@ public partial class InspectionSessionController : Control
         try
         {
             using var fileStream = File.OpenRead(templatePath);
-            setup = JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
+            setup = JsonSerializer.Deserialize(fileStream, Serialization.Default.PackedObjectDefinition);
         }
         catch (Exception e)
         {
@@ -239,8 +239,8 @@ public partial class InspectionSessionController : Control
 
     private readonly JsonSerializerOptions _options = new() { WriteIndented = true, };
     
-    [SuppressMessage("Warning", "IL3050")]
-    [SuppressMessage("Warning", "IL2026")]
+    [UnconditionalSuppressMessage("Warning", "IL3050")]
+    [UnconditionalSuppressMessage("Warning", "IL2026")]
     public async GDTask Save()
     {
         PickPath:

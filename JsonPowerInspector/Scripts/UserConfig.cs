@@ -1,15 +1,10 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Godot;
 
 namespace JsonPowerInspector;
 
-
 public static partial class UserConfig
 {
-    [JsonSerializable(typeof(ConfigData)), JsonSourceGenerationOptions(WriteIndented = true)]
-    private partial class ConfigSerializerContext : JsonSerializerContext;
-    
     public class ConfigData
     {
         public record struct SerializableVector2(int X, int Y)
@@ -35,13 +30,13 @@ public static partial class UserConfig
         }
         using var access = FileAccess.Open(_configPath, FileAccess.ModeFlags.Read);
         var jsonText = access.GetAsText(true);
-        Current = JsonSerializer.Deserialize(jsonText, ConfigSerializerContext.Default.ConfigData);
+        Current = JsonSerializer.Deserialize(jsonText, Serialization.Default.ConfigData);
         Current ??= new();
     }
 
     public static void SaveConfig()
     {
-        var jsonText = JsonSerializer.Serialize(Current, ConfigSerializerContext.Default.ConfigData);
+        var jsonText = JsonSerializer.Serialize(Current, Serialization.Default.ConfigData);
         using var access = FileAccess.Open(_configPath, FileAccess.ModeFlags.WriteRead);
         access.StoreLine(jsonText);
     }
