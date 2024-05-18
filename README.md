@@ -50,7 +50,7 @@ File.WriteAllText("MyItem.jsontemplate", jsonTemplateString);
 - The serializer collects type info for `instance` `Properties` that are `publicly` available and have both `get` and `set` accessors.
 - The following types and features are supported by the serializer:
 
-|Type info ______________|Restrictions ______________|Inspector type __________________________________|Customizable Display Name ___________________________________|Restrict the number range ______________________________|Dropdown support ___________________________|
+|Type info ______________|Restrictions _________________________|Inspector type __________________________________|Customizable Display Name ___________________________________|Restrict the number range ______________________________|Dropdown support ___________________________|
 |-|-|:-:|-|-|-|
 |`T[]` or `List<T>`|Nested types are displayed with their corresponding inspector|`Array Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/559687f7-3084-4c9d-b55d-c729a686af55)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Annotate the property with `NumberRangeAttribute` for the array element type, the type itself should be compatible with `NumberRange`.|Annotate the property with `DropdownAttribute` for the array element type, the type itself should be compatible with `Dropdown`|
 |`Dictionary<TKey, TValue>`|`TKey` only supports `Numbers` or `Strings` (.Net restrictions)|`Dictionary Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/4b78b962-8e34-47ab-b439-12e6091c7e87)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Annotate the property with `KeyNumberRangeAttribute` for `TKey`<br/> and use `ValueNumberRangeAttribute` for `TValue`, <br/>the annotated type should be a `NumberRange` compatible type.|Annotate the property with `KeyDropdownAttribute` for `TKey`<br/> and use `ValueDropdownAttribute` for `TValue`, <br/>the annotated type should be a `Dropdown` compatible type, the corresponding types gets |
@@ -58,7 +58,7 @@ File.WriteAllText("MyItem.jsontemplate", jsonTemplateString);
 |Primitive number types `byte`, `ushort`, `uint`, `ulong`, `sbyte`, `short`, `int`, `long`, `float`, and `double`|Integer types only support inputting integral values, where Float types support inputting values with decimal|`Number Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/85e035dc-845e-467f-89b2-8d7c7a8f0433)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Annotate the property with `NumberRangeAttribute` to customize the value range|Use `DropdownAttribute` to customize the dropdown data source and value resolver|
 |`string`|N/A|`String Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/50b37079-a32b-410f-abc2-0544054684aa)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Not supported|Annotate the property with `DropdownAttribute` to customize the dropdown data source and value resolver|
 |`enum`|Enum Flags are not supported currently |`Enum Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/7070dfe9-ed68-4813-b61e-86c1b866dbd5)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name, or annotate the enum values with `InspectorNameAttribute` to customize the names shown in the dropdown|Not supported|Not supported|
-|Other Non-Generic Types|Only `instance` `Properties` that are `publicly` available and have both `get` and `set` accessors are recorded.|`Object Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/af703fe5-a952-49ac-b859-615ea7750beb)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Not Supported|Not Supported|
+|Other Non-Generic Types|Only instance Properties that are publicly available and have both `get` and `set` accessors are recorded.|`Object Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/af703fe5-a952-49ac-b859-615ea7750beb)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Not Supported|Not Supported|
 
 ##### Example
 
@@ -124,7 +124,7 @@ var jsonText = TemplateSerializer.Serialize(definition);
 File.WriteAllText("MyDemoModel.jsontemplate", jsonText, Encoding.UTF8);
 ```
 
-- And the content for `StringSelection.tsv`, which should be placed int the same as `MyDemoModel.jsontemplate`.
+- And the content for `StringSelection.tsv`, which should be placed in the same directory with `MyDemoModel.jsontemplate`.
 
 ```text
 Value	Display
