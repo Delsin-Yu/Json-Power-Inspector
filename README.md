@@ -6,6 +6,9 @@
 
 Json Power Inspector is a JSON editor that offers advanced GUI editing experience based on the serialization information created from a typed language.
 
+![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/c0bf84bd-f970-4d6a-883b-0c9e38f15a8a)
+
+
 ## Using the application
 
 1. [Create a `.jsontemplate` file from your data structure.](#create-a-jsontemplate-file-from-your-data-structure)
