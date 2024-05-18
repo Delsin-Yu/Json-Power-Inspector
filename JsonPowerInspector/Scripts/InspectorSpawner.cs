@@ -38,21 +38,25 @@ public class InspectorSpawner
         _dropdownInspector = dropdownInspector;
     }
 
-    public StringInspector Create(StringPropertyInfo stringPropertyInfo) => Print<StringInspector, StringPropertyInfo>(_stringInspector, stringPropertyInfo);
-    public NumberInspector Create(NumberPropertyInfo numberPropertyInfo) => Print<NumberInspector, NumberPropertyInfo>(_numberInspector, numberPropertyInfo);
-    public ObjectInspector Create(ObjectPropertyInfo objectPropertyInfo) => Print<ObjectInspector, ObjectPropertyInfo>(_objectInspector, objectPropertyInfo);
-    public BooleanInspector Create(BooleanPropertyInfo booleanPropertyInfo) => Print<BooleanInspector, BooleanPropertyInfo>(_booleanInspector, booleanPropertyInfo);
-    public ArrayInspector Create(ArrayPropertyInfo arrayPropertyInfo) => Print<ArrayInspector, ArrayPropertyInfo>(_arrayInspector, arrayPropertyInfo);
-    public DictionaryInspector Create(DictionaryPropertyInfo dictionaryPropertyInfo) => Print<DictionaryInspector, DictionaryPropertyInfo>(_dictionaryInspector, dictionaryPropertyInfo);
-    public EnumInspector Create(EnumPropertyInfo enumPropertyInfo) => Print<EnumInspector, EnumPropertyInfo>(_enumInspector, enumPropertyInfo);
-    public DropdownInspector Create(DropdownPropertyInfo dropdownPropertyInfo) => Print<DropdownInspector, DropdownPropertyInfo>(_dropdownInspector, dropdownPropertyInfo);
-    
-    private TInspector Print<TInspector, TPropertyInfo>(PackedScene inspectorPrefab, TPropertyInfo propertyInfo) 
-        where TInspector : BasePropertyInspector<TPropertyInfo> 
+    public StringInspector Create(StringPropertyInfo stringPropertyInfo, bool affectMainObject) => Print<StringInspector, StringPropertyInfo>(_stringInspector, stringPropertyInfo, affectMainObject);
+    public NumberInspector Create(NumberPropertyInfo numberPropertyInfo, bool affectMainObject) => Print<NumberInspector, NumberPropertyInfo>(_numberInspector, numberPropertyInfo, affectMainObject);
+    public ObjectInspector Create(ObjectPropertyInfo objectPropertyInfo, bool affectMainObject) => Print<ObjectInspector, ObjectPropertyInfo>(_objectInspector, objectPropertyInfo, affectMainObject);
+    public BooleanInspector Create(BooleanPropertyInfo booleanPropertyInfo, bool affectMainObject) => Print<BooleanInspector, BooleanPropertyInfo>(_booleanInspector, booleanPropertyInfo, affectMainObject);
+    public ArrayInspector Create(ArrayPropertyInfo arrayPropertyInfo, bool affectMainObject) => Print<ArrayInspector, ArrayPropertyInfo>(_arrayInspector, arrayPropertyInfo, affectMainObject);
+    public DictionaryInspector Create(DictionaryPropertyInfo dictionaryPropertyInfo, bool affectMainObject) => Print<DictionaryInspector, DictionaryPropertyInfo>(_dictionaryInspector, dictionaryPropertyInfo, affectMainObject);
+    public EnumInspector Create(EnumPropertyInfo enumPropertyInfo, bool affectMainObject) => Print<EnumInspector, EnumPropertyInfo>(_enumInspector, enumPropertyInfo, affectMainObject);
+    public DropdownInspector Create(DropdownPropertyInfo dropdownPropertyInfo, bool affectMainObject) => Print<DropdownInspector, DropdownPropertyInfo>(_dropdownInspector, dropdownPropertyInfo, affectMainObject);
+
+    private TInspector Print<TInspector, TPropertyInfo>(
+        PackedScene inspectorPrefab,
+        TPropertyInfo propertyInfo,
+        bool affectMainObject
+    )
+        where TInspector : BasePropertyInspector<TPropertyInfo>
         where TPropertyInfo : BaseObjectPropertyInfo
     {
         var instance = inspectorPrefab.Instantiate<TInspector>();
-        instance.Initialize(propertyInfo, _currentSession);
+        instance.Initialize(propertyInfo, _currentSession, affectMainObject);
         return instance;
     }
 }

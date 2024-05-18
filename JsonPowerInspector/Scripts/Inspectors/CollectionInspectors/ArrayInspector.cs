@@ -54,7 +54,8 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
     {
         var inspector = Utils.CreateInspectorForProperty(
             PropertyInfo.ArrayElementTypeInfo,
-            spawner
+            spawner,
+            true
         );
         inspector.BindJsonNode(node, index.ToString());
         var arrayItem = _arrayElement.Instantiate<ArrayItem>();

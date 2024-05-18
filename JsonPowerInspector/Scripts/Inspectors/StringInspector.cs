@@ -12,6 +12,6 @@ public partial class StringInspector : BasePropertyInspector<StringPropertyInfo>
     {
         var jsonValue = node.AsValue();
         _contentControl.Text = jsonValue.GetValue<string>();
-        _contentControl.TextChanged += ReplaceValue;
+        _contentControl.TextChanged += value => ReplaceValue(JsonValue.Create(value));
     }
 }

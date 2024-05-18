@@ -27,7 +27,8 @@ public partial class KeyInputWindow : Window
     public GDTask<(bool, double)> ShowAsync(NumberPropertyInfo numberPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<double> bannedKey) =>
         ShowAsync(
             numberPropertyInfo,
-            static (spawner, info) => spawner.Create(info),
+            static (spawner, info) => spawner.Create(info, false),
+            val => JsonValue.Create(val),
             inspectorSpawner,
             bannedKey,
             0.0
@@ -36,7 +37,8 @@ public partial class KeyInputWindow : Window
     public GDTask<(bool, string)> ShowAsync(StringPropertyInfo stringPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<string> bannedKey) =>
         ShowAsync(
             stringPropertyInfo,
-            static (spawner, info) => spawner.Create(info),
+            static (spawner, info) => spawner.Create(info, false),
+            val => JsonValue.Create(val),
             inspectorSpawner,
             bannedKey,
             ""
@@ -45,7 +47,8 @@ public partial class KeyInputWindow : Window
     public GDTask<(bool, int)> ShowAsyncInt(DropdownPropertyInfo dropdownPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<int> bannedKey) =>
         ShowAsync(
             dropdownPropertyInfo,
-            static (spawner, info) => spawner.Create(info),
+            static (spawner, info) => spawner.Create(info, false),
+            val => JsonValue.Create(val),
             inspectorSpawner,
             bannedKey,
             0
@@ -54,7 +57,8 @@ public partial class KeyInputWindow : Window
     public GDTask<(bool, double)> ShowAsyncFloat(DropdownPropertyInfo dropdownPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<double> bannedKey) =>
         ShowAsync(
             dropdownPropertyInfo,
-            static (spawner, info) => spawner.Create(info),
+            static (spawner, info) => spawner.Create(info, false),
+            val => JsonValue.Create(val),
             inspectorSpawner,
             bannedKey,
             0.0
@@ -63,7 +67,8 @@ public partial class KeyInputWindow : Window
     public GDTask<(bool, string)> ShowAsyncString(DropdownPropertyInfo dropdownPropertyInfo, InspectorSpawner inspectorSpawner, HashSet<string> bannedKey) =>
         ShowAsync(
             dropdownPropertyInfo,
-            static (spawner, info) => spawner.Create(info),
+            static (spawner, info) => spawner.Create(info, false),
+            val => JsonValue.Create(val),
             inspectorSpawner,
             bannedKey,
             ""
@@ -75,11 +80,10 @@ public partial class KeyInputWindow : Window
         _removeClicked = true;
     }
 
-    [UnconditionalSuppressMessage("Warning", "IL3050")]
-    [UnconditionalSuppressMessage("Warning", "IL2026")]
     private async GDTask<(bool, TValue)> ShowAsync<TPropertyInfo, TValue>(
         TPropertyInfo propertyInfo,
         Func<InspectorSpawner, TPropertyInfo, IPropertyInspector> inspectorFactory,
+        Func<TValue, JsonValue> jsonValueFactory,
         InspectorSpawner spawner,
         IReadOnlySet<TValue> bannedKey,
         TValue defaultValue
@@ -88,13 +92,12 @@ public partial class KeyInputWindow : Window
         var inspector = inspectorFactory(spawner, propertyInfo);
         inspector.ValueChanged += value =>
         {
-            var typedValue = (TValue)value;
-            var addBtnDisabled = bannedKey.Contains(typedValue);
+            var addBtnDisabled = bannedKey.Contains(value.GetValue<TValue>());
             UpdateAddButton(addBtnDisabled);
         };
         UpdateAddButton(bannedKey.Contains(defaultValue));
         var emptyJsonObject = new JsonObject();
-        JsonNode jsonValueNode = JsonValue.Create(defaultValue);
+        JsonNode jsonValueNode = jsonValueFactory(defaultValue);
         const string name = "TempJsonNode";
         emptyJsonObject.Add(name, jsonValueNode);
         _container.AddChild((Control)inspector);

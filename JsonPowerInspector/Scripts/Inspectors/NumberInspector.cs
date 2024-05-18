@@ -60,6 +60,6 @@ public partial class NumberInspector : BasePropertyInspector<NumberPropertyInfo>
                 throw new InvalidOperationException();
         }
 
-        _contentControl.ValueChanged += ReplaceValue;
+        _contentControl.ValueChanged += value => ReplaceValue(JsonValue.Create(value));
     }
 }

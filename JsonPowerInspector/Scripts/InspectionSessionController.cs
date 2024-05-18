@@ -196,7 +196,7 @@ public partial class InspectionSessionController : Control
 
         foreach (var propertyInfo in _mainObjectDefinition.Properties)
         {
-            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner);
+            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner, false);
             _inspectorRoot.Add(inspectorForProperty);
             _container.AddChild((Control)inspectorForProperty);
         }        
@@ -237,10 +237,6 @@ public partial class InspectionSessionController : Control
         _inspectorRoot.Clear();
     }
 
-    private readonly JsonSerializerOptions _options = new() { WriteIndented = true, };
-    
-    [UnconditionalSuppressMessage("Warning", "IL3050")]
-    [UnconditionalSuppressMessage("Warning", "IL2026")]
     public async GDTask Save()
     {
         PickPath:
@@ -254,8 +250,7 @@ public partial class InspectionSessionController : Control
         string jsonString;
         try
         {
-            if(!_options.IsReadOnly) _options.MakeReadOnly(true);
-            jsonString = _editingJsonObject.ToJsonString(_options);
+            jsonString = _editingJsonObject.ToJsonString(new() { WriteIndented = true });
         }
         catch (Exception e)
         {

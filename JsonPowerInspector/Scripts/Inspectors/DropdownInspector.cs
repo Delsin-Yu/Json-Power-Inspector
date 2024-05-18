@@ -72,13 +72,13 @@ public partial class DropdownInspector : BasePropertyInspector<DropdownPropertyI
         switch (PropertyInfo.Kind)
         {
             case DropdownPropertyInfo.DropdownKind.Int:
-                ReplaceValue(int.Parse(stringValue));
+                ReplaceValue(JsonValue.Create(int.Parse(stringValue)));
                 break;
             case DropdownPropertyInfo.DropdownKind.Float:
-                ReplaceValue(double.Parse(stringValue));
+                ReplaceValue(JsonValue.Create(double.Parse(stringValue)));
                 break;
             case DropdownPropertyInfo.DropdownKind.String:
-                ReplaceValue(stringValue);
+                ReplaceValue(JsonValue.Create(stringValue));
                 break;
             default:
                 throw new InvalidOperationException();

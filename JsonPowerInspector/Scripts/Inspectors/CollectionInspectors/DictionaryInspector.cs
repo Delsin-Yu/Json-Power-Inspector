@@ -110,7 +110,8 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
     {
         var inspector = Utils.CreateInspectorForProperty(
             PropertyInfo.ValueTypeInfo,
-            spawner
+            spawner,
+            true
         );
         inspector.BindJsonNode(jsonObject, key);
         var dictionaryItem = _dictionaryElement.Instantiate<DictionaryItem>();

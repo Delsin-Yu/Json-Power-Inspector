@@ -7,18 +7,18 @@ namespace JsonPowerInspector;
 
 public static class Utils
 {
-    public static IPropertyInspector CreateInspectorForProperty(BaseObjectPropertyInfo propertyInfo, InspectorSpawner spawner)
+    public static IPropertyInspector CreateInspectorForProperty(BaseObjectPropertyInfo propertyInfo, InspectorSpawner spawner, bool affectMainObject)
     {
         return propertyInfo switch
         {
-            StringPropertyInfo stringPropertyInfo => spawner.Create(stringPropertyInfo),
-            NumberPropertyInfo numberPropertyInfo => spawner.Create(numberPropertyInfo),
-            ObjectPropertyInfo objectPropertyInfo => spawner.Create(objectPropertyInfo),
-            BooleanPropertyInfo booleanPropertyInfo => spawner.Create(booleanPropertyInfo),
-            ArrayPropertyInfo arrayPropertyInfo => spawner.Create(arrayPropertyInfo),
-            DictionaryPropertyInfo dictionaryPropertyInfo => spawner.Create(dictionaryPropertyInfo),
-            EnumPropertyInfo enumPropertyInfo => spawner.Create(enumPropertyInfo),
-            DropdownPropertyInfo dropdownPropertyInfo => spawner.Create(dropdownPropertyInfo),
+            StringPropertyInfo stringPropertyInfo => spawner.Create(stringPropertyInfo, affectMainObject),
+            NumberPropertyInfo numberPropertyInfo => spawner.Create(numberPropertyInfo, affectMainObject),
+            ObjectPropertyInfo objectPropertyInfo => spawner.Create(objectPropertyInfo, affectMainObject),
+            BooleanPropertyInfo booleanPropertyInfo => spawner.Create(booleanPropertyInfo, affectMainObject),
+            ArrayPropertyInfo arrayPropertyInfo => spawner.Create(arrayPropertyInfo, affectMainObject),
+            DictionaryPropertyInfo dictionaryPropertyInfo => spawner.Create(dictionaryPropertyInfo, affectMainObject),
+            EnumPropertyInfo enumPropertyInfo => spawner.Create(enumPropertyInfo, affectMainObject),
+            DropdownPropertyInfo dropdownPropertyInfo => spawner.Create(dropdownPropertyInfo, affectMainObject),
             _ => throw new InvalidOperationException()
         };
     }

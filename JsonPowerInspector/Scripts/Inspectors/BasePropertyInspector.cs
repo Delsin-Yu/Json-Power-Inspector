@@ -11,7 +11,7 @@ public interface IPropertyInspector
     string DisplayName { set; }
     string BackingPropertyName { set; }
     void BindJsonNode(JsonNode parent, string propertyName);
-    event Action<object> ValueChanged;
+    event Action<JsonValue> ValueChanged;
 }
 
 public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IPropertyInspector where TPropertyInfo : BaseObjectPropertyInfo
@@ -32,19 +32,21 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
         set => _jsonPropertyName = value;
     }
 
-    public event Action<object> ValueChanged;
+    public event Action<JsonValue> ValueChanged;
     protected TPropertyInfo PropertyInfo { get; private set; }
     protected InspectionSessionController CurrentSession { get; private set; }
     
     private JsonNode _parent;
     private string _jsonPropertyName;
     private string _displayName;
+    private bool _affectMainObject;
 
-    public void Initialize(TPropertyInfo propertyInfo, InspectionSessionController currentSession)
+    public void Initialize(TPropertyInfo propertyInfo, InspectionSessionController currentSession, bool affectMainObject)
     {
         CurrentSession = currentSession;
         DisplayName = propertyInfo.DisplayName;
         PropertyInfo = propertyInfo;
+        _affectMainObject = affectMainObject;
         OnInitialize(propertyInfo);
     }
 
@@ -82,17 +84,25 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
             default:
                 throw new InvalidOperationException(_parent.GetType().Name);
         }
-        CurrentSession.MarkChanged();
+        if(_affectMainObject) CurrentSession.MarkChanged();
     }
-    
-    [UnconditionalSuppressMessage("Warning", "IL3050")]
-    [UnconditionalSuppressMessage("Warning", "IL2026")]
-    protected void ReplaceValue<TValue>(TValue value)
+
+    protected void ReplaceValue(JsonValue value)
     {
         var node = GetBackingNode();
-        if (node is not JsonValue jsonValue) throw new InvalidOperationException($"{node.GetValueKind()} is not JsonValue!");
-        CurrentSession.MarkChanged();
-        jsonValue.ReplaceWith(value);
+        if (node is not JsonValue) throw new InvalidOperationException($"{node.GetValueKind()} is not JsonValue!");
+        switch (node.Parent)
+        {
+            case JsonObject jsonObject:
+                jsonObject[node.GetPropertyName()] = value;
+                break;
+            case JsonArray jsonArray:
+                jsonArray[node.GetElementIndex()] = value;
+                break;
+            default:
+                throw new InvalidOperationException(node.Parent?.GetType().Name);
+        }
+        if(_affectMainObject) CurrentSession.MarkChanged();
         ValueChanged?.Invoke(value);
     }
     
