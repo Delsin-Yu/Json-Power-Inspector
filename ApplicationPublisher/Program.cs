@@ -6,6 +6,8 @@ var programVersion = JsonPowerInspector.Version.Current;
 
 var repoDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "..");
 
+const string readmeFileName = "README.md";
+var readmePath = Path.GetFullPath(Path.Combine(repoDir, readmeFileName));
 var projectPath = Path.GetFullPath(Path.Combine(repoDir, "JsonPowerInspector"));
 var publishDir = Path.GetFullPath(Path.Combine(repoDir, "Build", $"Json Power Inspector v{programVersion}"));
 var publishPath = $"../Build/\"Json Power Inspector v{programVersion}\"/\"Json Power Inspector.exe\"";
@@ -14,6 +16,7 @@ var godotPath = args[0];
 Console.WriteLine(
     $"""
      Publishing version: {programVersion},
+     Readme Path: {readmePath},
      Project Path: {projectPath},
      Publish Path: {publishPath},
      Godot Path: {args[0]}
@@ -21,7 +24,7 @@ Console.WriteLine(
 );
 
 Directory.CreateDirectory(publishDir);
-
+File.Copy(readmePath, Path.Combine(publishDir, readmeFileName));
 
 var processStartInfo = new ProcessStartInfo
 {

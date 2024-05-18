@@ -2,6 +2,8 @@
 <!-- markdownlint-disable MD010 -->
 # Json Power Inspector for Typed Programing Languauge
 
+[![GitHub Release](https://img.shields.io/github/v/release/Delsin-Yu/Json-Power-Inspector)](https://github.com/Delsin-Yu/Json-Power-Inspector/releases/latest) [![Stars](https://img.shields.io/github/stars/Delsin-Yu/Json-Power-Inspector?color=brightgreen)](https://github.com/Delsin-Yu/Json-Power-Inspector/stargazers) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Delsin-Yu/Json-Power-Inspector/blob/main/LICENSE)
+
 Json Power Inspector is a JSON editor that offers advanced GUI editing experience based on the serialization information created from a typed language.
 
 ## Using the application
@@ -19,6 +21,8 @@ Before start using the application, it is required for the developers to seriali
 We provide a serializer Nuget package for `C#/dotnet8` developers, you are more than welcome to create your version of the serializer for your language/environment.
 
 ### Documentation for `JsonPowerInspector.Template` Nuget Package Users
+
+[![NuGet Version](https://img.shields.io/nuget/v/JsonPowerInspector.Template)](https://www.nuget.org/packages/JsonPowerInspector.Template) ![NuGet Downloads](https://img.shields.io/nuget/dt/JsonPowerInspector.Template)
 
 #### Usage
 
