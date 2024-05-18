@@ -8,7 +8,6 @@ Json Power Inspector is a JSON editor that offers advanced GUI editing experienc
 
 ![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/c0bf84bd-f970-4d6a-883b-0c9e38f15a8a)
 
-
 ## Using the application
 
 1. [Create a `.jsontemplate` file from your data structure.](#create-a-jsontemplate-file-from-your-data-structure)
@@ -16,6 +15,31 @@ Json Power Inspector is a JSON editor that offers advanced GUI editing experienc
 3. Launch the application.
 4. Drag and drop your `.jsontemplate` file to the application window.
 5. Start editing.
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [Create a JsonTemplate file from your data structure](#create-a-jsontemplate-file-from-your-data-structure)
+  - [Documentation for `JsonPowerInspector.Template` Nuget Package Users](#documentation-for-jsonpowerinspectortemplate-nuget-package-users)
+    - [Usage](#usage)
+    - [Supported features and restrictions](#supported-features-and-restrictions)
+      - [Example](#example)
+  - [Documentation for creating your serializer and `jsontemlpate` file specification](#documentation-for-creating-your-serializer-and-jsontemlpate-file-specification)
+    - [Root JSON Object Format](#root-json-object-format)
+    - [`ObjectDefiniton`](#objectdefiniton)
+    - [`PropertyInfo`](#propertyinfo)
+      - [`StringPropertyInfo`](#stringpropertyinfo)
+      - [`NumberPropertyInfo`](#numberpropertyinfo)
+      - [`ObjectPropertyInfo`](#objectpropertyinfo)
+      - [`BooleanPropertyInfo`](#booleanpropertyinfo)
+      - [`ArrayPropertyInfo`](#arraypropertyinfo)
+      - [`DictionaryPropertyInfo`](#dictionarypropertyinfo)
+      - [`EnumPropertyInfo`](#enumpropertyinfo)
+        - [`EnumValue`](#enumvalue)
+      - [`DropdownPropertyInfo`](#dropdownpropertyinfo)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Create a JsonTemplate file from your data structure
 
@@ -145,4 +169,254 @@ elit	String Value: elit
 
 ### Documentation for creating your serializer and `jsontemlpate` file specification
 
-WIP
+The serializer for your language should capable to convert a developer supplied data model type into a valid `jsontemplate` file, you may check the implementation in the `JsonPowerInspector.Template` package for reference implemntation.
+
+`jsontemplate` file itself is a valid JSON file that complies with the following format.
+
+#### Root JSON Object Format
+
+The inspector expects two key-value pairs in the JSON file:
+
+```csharp
+{
+  "MainObjectDefinition": {},
+  "ReferencedObjectDefinition": []
+}
+```
+
+|Key|Definition|
+|:-|:-|
+|`MainObjectDefinition`|An [`ObjectDefiniton`](#objectdefiniton) JSON type that describes the properties within the inspected type.|
+|`ReferencedObjectDefinition`|An array of `ObjectDefinition` that describes other types referenced by the inspected type.|
+
+#### `ObjectDefiniton`
+
+The `ObjectDefinition` JSON type contains the name and information about every serialzied properties with in a specific type, it contains two key-value pairs:
+
+```csharp
+{
+  "ObjectTypeName": string,
+  "Properties": []
+}
+```
+
+|Key|Definition|
+|:-|:-|
+|`ObjectTypeName`|The name for the type, this name should be used consistently when referring to this type.|
+|`Properties`|An array of [`PropertyInfo`](#propertyinfo) that contains type information for each serialized property within this type.|
+
+#### `PropertyInfo`
+
+The `PropertyInfo` JSON type describes the type info for a serialized property, it comes with 8 variations, these 8 variations shares three key-value pairs:
+
+```csharp
+{
+  "PropertyType": string,
+  "Name": string,
+  "DisplayName": string
+}
+```
+
+|Key|Definition|
+|:-|:-|
+|`PropertyType`|The property type, should be one of the 8 values with matching content: `String`, `Number`, `Object`, `Bool`, `Array`, `Dictionary`, `Enum`, or `Dropdown`.|
+|`Name`|This name should match the value name stored in the JSON file.|
+|`DisplayName`|The text displayed in the inspector.|
+
+##### `StringPropertyInfo`
+
+|Describes a string property, the application offers a `String Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/50b37079-a32b-410f-abc2-0544054684aa)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "String"
+  // as value for "PropertyType"
+  "PropertyType": "String",
+  "Name": string,
+  "DisplayName": string
+}
+```
+
+##### `NumberPropertyInfo`
+
+|Describes a number property, the application offers a `Number Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/85e035dc-845e-467f-89b2-8d7c7a8f0433)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Number"
+  // as value for "PropertyType"
+  "PropertyType": "Number",
+  "NumberKind": string,
+  "Range": {
+    "Lower": number,
+    "Upper": number
+  },
+  "Name": string,
+  "DisplayName": string
+}
+```
+
+|Key|Definition|
+|:-|:-|
+|`NumberKind`|This value can only be `Int` or `Float`, the application use this value to determine if float-point editing should be enabled to user.|
+|`Range`|Can be `null`, this value defines the `lower` and the `upper` bound for the value, note that the `Lower` should be lesser than `Upper`, and both value should be integer if the `NumberKind` is `Int`.|
+
+##### `ObjectPropertyInfo`
+
+Describes a nested type property, the application offers an `Object Inspector` for editing.
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Object"
+  // as value for "PropertyType"
+  "PropertyType": "Object",
+  "ObjectTypeName": string,
+  "Name": string,
+  "DisplayName": string
+}
+```
+
+|Key|Definition|
+|:-|:-|
+|`ObjectTypeName`|The type name should be consistent with the `ObjectTypeName` in the `ObjectDefiniton`.|
+
+##### `BooleanPropertyInfo`
+
+|Describes a boolean property, the application offers a `Boolean Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/5ab478be-39c1-43f7-b7e3-e2fe6e0bd419)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Bool"
+  // as value for "PropertyType"
+  "PropertyType": "Bool",
+  "Name": string,
+  "DisplayName": string
+}
+```
+
+##### `ArrayPropertyInfo`
+
+|Describes an array property, the application offers an `Array Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/559687f7-3084-4c9d-b55d-c729a686af55)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Array"
+  // as value for "PropertyType"
+  "PropertyType": "Array",
+  "ArrayElementTypeInfo": PropertyInfo,
+  "Name": string,
+  "DisplayName": string
+},
+```
+
+|Key|Definition|
+|:-|:-|
+|`ArrayElementTypeInfo`|This value can only be one of the 8 variations of `PropertyInfo` with matching content: `String`, `Number`, `Object`, `Bool`, `Array`, `Dictionary`, `Enum`, or `Dropdown`.|
+
+##### `DictionaryPropertyInfo`
+
+|Describes a dictionary property, the application offers a `Dictionary Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/4b78b962-8e34-47ab-b439-12e6091c7e87)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Dictionary"
+  // as value for "PropertyType"
+  "PropertyType": "Dictionary",
+  "KeyTypeInfo": PropertyInfo,
+  "ValueTypeInfo": PropertyInfo,
+  "Name": string,
+  "DisplayName": string
+},
+```
+
+|Key|Definition|
+|:-|:-|
+|`KeyTypeInfo`|This value can only be one of the 2 variations of `PropertyInfo` with matching content: `String` or `Number`.|
+|`ValueTypeInfo`|This value can only be one of the 8 variations of `PropertyInfo` with matching content: `String`, `Number`, `Object`, `Bool`, `Array`, `Dictionary`, `Enum`, or `Dropdown`.|
+
+##### `EnumPropertyInfo`
+
+|Describes a enum property, the application offers a `Enum Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/7070dfe9-ed68-4813-b61e-86c1b866dbd5)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Enum"
+  // as value for "PropertyType"
+  "PropertyType": "Enum",
+  "EnumTypeName": string,
+  "EnumValues": [EnumValueInfo],
+  "IsFlags": bool,
+  "Name": string,
+  "DisplayName": string
+},
+```
+
+|Key|Definition|
+|:-|:-|
+|`EnumTypeName`|The name for this enum type.|
+|`EnumValues`|The values this enum type contains, should be `EnumValue` json object.|
+|`IsFlags`|Marks whether Enum utilizes Bitfield to represents flags.|
+
+###### `EnumValue`
+
+Describes the value of an enum property.
+
+```csharp
+{
+  "DisplayName": string,
+  "DeclareName": string
+  "Value": integer
+},
+```
+
+|Key|Definition|
+|:-|:-|
+|`DisplayName`|The text displayed in the inspector.|
+|`DeclareName`|The name stored in the JSON file.|
+|`Value`|The underlying value for this enum value.|
+
+##### `DropdownPropertyInfo`
+
+|Describes a property that use a dropdown for selecting value, the application offers a `Dropdown Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/f3c711ca-99ab-44e7-836a-f5a2fab40b05)|
+|-|-|
+
+```csharp
+{
+  // This value is a defined constant,
+  // the JSON object must match the 
+  // following structure when use "Dropdown"
+  // as value for "PropertyType"
+  "PropertyType": "Dropdown",
+  "Kind": string,
+  "DataSourcePath": string,
+  "ValueDisplayRegex": string,
+  "DisplayName": string
+  "Value": integer
+},
+```
+
+|Key|Definition|
+|:-|:-|
+|`Kind`|This value can only be `Int`, `Float`, or `String`.|
+|`DataSourcePath`|The path to the file that contains the datasets of this dropdown, relative to the jsontemplate file.|
+|`ValueDisplayRegex`|The Regex express used to resolve each line (after the first line) into a data-name pair that populates the dropdown items.|
