@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD010 -->
-# Json Power Inspector for Typed Programing Languauge
+# Json Power Inspector for Typed Programming Language
 
 [![GitHub Release](https://img.shields.io/github/v/release/Delsin-Yu/Json-Power-Inspector)](https://github.com/Delsin-Yu/Json-Power-Inspector/releases/latest) [![Stars](https://img.shields.io/github/stars/Delsin-Yu/Json-Power-Inspector?color=brightgreen)](https://github.com/Delsin-Yu/Json-Power-Inspector/stargazers) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Delsin-Yu/Json-Power-Inspector/blob/main/LICENSE)
 
@@ -16,9 +16,9 @@ Json Power Inspector is a JSON editor that offers advanced GUI editing experienc
 
 ## Create a JsonTemplate file from your data structure
 
-Before start using the application, it is required for the developers to serialize their data structure into a dedicated `.jsontemplate` file that contains type information.
+Before using the application, developers must serialize their data structure into a dedicated `.jsontemplate` file that contains type information.
 
-We provide a serializer Nuget package for `C#/dotnet8` developers, you are more than welcome to create your version of the serializer for your language/environment.
+We provide a serializer Nuget package for `C#/dotnet8` developers, so you are more than welcome to create your own version of the serializer for your language/environment.
 
 ### Documentation for `JsonPowerInspector.Template` Nuget Package Users
 
@@ -26,7 +26,7 @@ We provide a serializer Nuget package for `C#/dotnet8` developers, you are more 
 
 #### Usage
 
-- Install the [JsonPowerInspector.Template](https://www.nuget.org/packages/JsonPowerInspector.Template) Nuget package into the C# project that contains the data structure you wish to work with, for demonstration purpose, let's use this `MyItem` type as an example.
+- Install the [JsonPowerInspector.Template](https://www.nuget.org/packages/JsonPowerInspector.Template) Nuget package into the C# project that contains the data structure you wish to work with. For demonstration purposes, let's use this `MyItem` type as an example.
 
 ```csharp
 public struct MyItem
@@ -47,29 +47,29 @@ File.WriteAllText("MyItem.jsontemplate", jsonTemplateString);
 
 #### Supported features and restrictions
 
-- The serializer collect type info for `instance` `Properties` that are `publicly` avaible and have both `get` and `set` accessor.
+- The serializer collects type info for `instance` `Properties` that are `publicly` available and have both `get` and `set` accessors.
 - The following types and features are supported by the serializer:
 
 |Type info|Restrictions|Inspector Type|Customizable Display Name|Restrict the number range|Displays a dropdown instead of value editor|
 |-|-|-|-|-|-|
 |`T[]` or `List<T>`|Nested types are displayed with their corresponding inspector|`Array Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Annotate the property with `NumberRangeAttribute` for the array element type, the type itself should be compatible with `NumberRange`.|Annotate the property with `DropdownAttribute` for the array element type, the type itself should be compatible with `Dropdown`|
-|`Dictionary<TKey, TValue>`|`TKey` only support `Numbers` or `Strings` (.Net restrictions)|`Dictionary Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Annotate the property with `KeyNumberRangeAttribute` for `TKey`<br/> and use `ValueNumberRangeAttribute` for `TValue`, <br/>the annotated type should be a `NumberRange` compatible type.|Annotate the property with `KeyDropdownAttribute` for `TKey`<br/> and use `ValueDropdownAttribute` for `TValue`, <br/>the annotated type should be a `Dropdown` compatible type, the correcponding types gets |
+|`Dictionary<TKey, TValue>`|`TKey` only support `Numbers` or `Strings` (.Net restrictions)|`Dictionary Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Annotate the property with `KeyNumberRangeAttribute` for `TKey`<br/> and use `ValueNumberRangeAttribute` for `TValue`, <br/>the annotated type should be a `NumberRange` compatible type.|Annotate the property with `KeyDropdownAttribute` for `TKey`<br/> and use `ValueDropdownAttribute` for `TValue`, <br/>the annotated type should be a `Dropdown` compatible type, the corresponding types gets |
 |`bool`|N/A|`Boolean Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Not supported|Not supported|
-|Primitive number types `byte`, `ushort`, `uint`, `ulong`, `sbyte`, `short`, `int`, `long`, `float`, and `double`|Integer types only support inputing integral values, where Float types support inputing values with decimal|`Number Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Annotate the property with `NumberRangeAttribute` to customize the value range|Use `DropdownAttribute` to customize the dropdown data source and value resolver|
+|Primitive number types `byte`, `ushort`, `uint`, `ulong`, `sbyte`, `short`, `int`, `long`, `float`, and `double`|Integer types only support inputting integral values, where Float types support inputting values with decimal|`Number Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Annotate the property with `NumberRangeAttribute` to customize the value range|Use `DropdownAttribute` to customize the dropdown data source and value resolver|
 |`string`|N/A|`String Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Not supported|Annotate the property with `DropdownAttribute` to customize the dropdown data source and value resolver|
-|`enum`|Enum Flags are not supported curerntly|`Enum Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name, or annotated the enum values with `InspectorNameAttribute` to customize the names shown in the dropdown|Not supported|Not supported|
-|Other Non-Generic Types|Only `instance` `Properties` that are `publicly` avaible and have both `get` and `set` accessor are recorded.|`Object Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Not Supported|Not Supported|
+|`enum`|Enum Flags are not supported currently |`Enum Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name, or annotate the enum values with `InspectorNameAttribute` to customize the names shown in the dropdown|Not supported|Not supported|
+|Other Non-Generic Types|Only `instance` `Properties` that are `publicly` available and have both `get` and `set` accessors are recorded.|`Object Inspector`|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Not Supported|Not Supported|
 
 ##### Example
 
-- The model use for serialization:
+- The model used for serialization:
 
 ```csharp
 public class MyDemoModel
 {
     /// <summary>
     /// Displayed as "Int Array" in inspector.
-    /// Each array element have an input range clamps to -2 to 2.
+    /// Each array element has an input range clamps to -2 to 2.
     /// </summary>
     [InspectorName("Int Array"), NumberRange(-2, 2)] 
     public int[] MyIntArrayProperty { get; set; }
@@ -124,7 +124,7 @@ var jsonText = TemplateSerializer.Serialize(definition);
 File.WriteAllText("MyDemoModel.jsontemplate", jsonText, Encoding.UTF8);
 ```
 
-- And the content for `StringSelection.tsv`, which should be placed int the same with `MyDemoModel.jsontemplate`.
+- And the content for `StringSelection.tsv`, which should be placed int the same as `MyDemoModel.jsontemplate`.
 
 ```text
 Value	Display
