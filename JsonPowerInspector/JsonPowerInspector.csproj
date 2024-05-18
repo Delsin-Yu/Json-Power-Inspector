@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="GDTask" Version="*" />
     <PackageReference Include="JsonPowerInspector.Template" Version="*" />
+    <ProjectReference Include="..\JsonPowerInspector.Versioning\JsonPowerInspector.Versioning.csproj" />
     <TrimmerRootAssembly Include="GodotSharp" />
     <TrimmerRootAssembly Include="$(TargetName)" />
   </ItemGroup>

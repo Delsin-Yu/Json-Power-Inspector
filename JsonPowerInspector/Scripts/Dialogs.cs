@@ -3,15 +3,6 @@ using GodotTask;
 
 namespace JsonPowerInspector;
 
-public static class Version
-{
-    public static string Current => _versions[^1];
-
-    private static readonly string[] _versions =
-    [
-        "0.0.1"
-    ];
-}
 public static class Dialogs
 {
     public static GDTask<bool> OpenDataLossDialog() =>

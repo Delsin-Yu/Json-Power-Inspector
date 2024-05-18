@@ -137,7 +137,7 @@ public partial class InspectionSessionController : Control
         try
         {
             using var fileStream = File.OpenRead(templatePath);
-            setup = JsonSerializer.Deserialize(fileStream, Serialization.Default.PackedObjectDefinition);
+            setup = JsonSerializer.Deserialize(fileStream, PowerTemplateJsonContext.Default.PackedObjectDefinition);
         }
         catch (Exception e)
         {

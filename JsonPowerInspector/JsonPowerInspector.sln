@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonPowerInspector.Template
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "..\TestApplication\TestApplication.csproj", "{EFA1A05A-2E6B-43C8-9129-289010440016}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationPublisher", "..\ApplicationPublisher\ApplicationPublisher.csproj", "{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonPowerInspector.Versioning", "..\JsonPowerInspector.Versioning\JsonPowerInspector.Versioning.csproj", "{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 	Debug|Any CPU = Debug|Any CPU
@@ -31,5 +35,17 @@ Global
 		{EFA1A05A-2E6B-43C8-9129-289010440016}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA1A05A-2E6B-43C8-9129-289010440016}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFA1A05A-2E6B-43C8-9129-289010440016}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+		{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD4CA97-9E5A-4962-A21F-DD287C2DD4F4}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+		{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{325D9CC3-0CAC-4413-9C06-8CC7DD70F9BB}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal
