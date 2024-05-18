@@ -25,7 +25,7 @@ Json Power Inspector is a JSON editor that offers advanced GUI editing experienc
     - [Usage](#usage)
     - [Supported features and restrictions](#supported-features-and-restrictions)
       - [Example](#example)
-  - [Documentation for creating your serializer and `jsontemlpate` file specification](#documentation-for-creating-your-serializer-and-jsontemlpate-file-specification)
+  - [Documentation for creating your serializer and `jsontemplate` file specification](#documentation-for-creating-your-serializer-and-jsontemplate-file-specification)
     - [Root JSON Object Format](#root-json-object-format)
     - [`ObjectDefiniton`](#objectdefiniton)
     - [`PropertyInfo`](#propertyinfo)
@@ -64,7 +64,7 @@ public struct MyItem
 }
 ```
 
-- Use the following line to serialize the model and save it into a jsontemlpate file.
+- Use the following line to serialize the model and save it into a jsontemplate file.
 
 ```csharp
 var definition = TemplateSerializer.CollectTypeDefinition<MyItem>();
@@ -167,7 +167,7 @@ elit	String Value: elit
 
 - Here is a screenshot of the inspector after loading the `MyDemoModel.jsontemplate`.
 
-### Documentation for creating your serializer and `jsontemlpate` file specification
+### Documentation for creating your serializer and `jsontemplate` file specification
 
 The serializer for your language should be capable of converting a developer-supplied data model type into a valid `jsontemplate` file; you may check the implementation in the `JsonPowerInspector.Template` package for a reference implementation.
 
@@ -320,7 +320,7 @@ Describes a nested type property, the application offers an `Object Inspector` f
   "ArrayElementTypeInfo": PropertyInfo,
   "Name": string,
   "DisplayName": string
-},
+}
 ```
 
 |Key|Definition|
@@ -343,7 +343,7 @@ Describes a nested type property, the application offers an `Object Inspector` f
   "ValueTypeInfo": PropertyInfo,
   "Name": string,
   "DisplayName": string
-},
+}
 ```
 
 |Key|Definition|
@@ -368,7 +368,7 @@ Describes a nested type property, the application offers an `Object Inspector` f
   "IsFlags": bool,
   "Name": string,
   "DisplayName": string
-},
+}
 ```
 
 |Key|Definition|
@@ -386,7 +386,7 @@ Describes the value of an enum property.
   "DisplayName": string,
   "DeclareName": string
   "Value": integer
-},
+}
 ```
 
 |Key|Definition|
@@ -412,7 +412,7 @@ Describes the value of an enum property.
   "ValueDisplayRegex": string,
   "DisplayName": string
   "Value": integer
-},
+}
 ```
 
 |Key|Definition|
