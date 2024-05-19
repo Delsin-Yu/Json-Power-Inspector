@@ -11,8 +11,8 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     [Export] private Control _contentPanel;
     [Export] private Label _emptyIndicator;
     [Export] private CheckButton _foldout;
-    
-    private bool _created;
+
+    protected bool Created { get; private set; }
 
     protected virtual bool DisplayChildObjectByDefault => true;
 
@@ -47,9 +47,9 @@ public abstract partial class CollectionInspector<TPropertyInfo> : BasePropertyI
     {
         _foldout.Toggled += on =>
         {
-            if (!_created)
+            if (!Created)
             {
-                _created = true;
+                Created = true;
                 OnInitialPrint(GetBackingNode());
             }
             _contentPanel.Visible = on;
