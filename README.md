@@ -6,7 +6,7 @@
 
 Json Power Inspector is a JSON editor that offers advanced GUI editing experience based on the serialization information created from a typed language.
 
-![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/c0bf84bd-f970-4d6a-883b-0c9e38f15a8a)
+![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/2f429ef0-2bff-4523-a230-3c2f712475f4)
 
 ## Using the application
 
@@ -84,7 +84,7 @@ File.WriteAllText("MyItem.jsontemplate", jsonTemplateString);
 |`bool`|N/A|`Boolean Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/5ab478be-39c1-43f7-b7e3-e2fe6e0bd419)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Not supported|Not supported|
 |Primitive number types `byte`, `ushort`, `uint`, `ulong`, `sbyte`, `short`, `int`, `long`, `float`, and `double`|Integer types only support inputting integral values, where Float types support inputting values with decimal|`Number Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/85e035dc-845e-467f-89b2-8d7c7a8f0433)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Annotate the property with `NumberRangeAttribute` to customize the value range|Use `DropdownAttribute` to customize the dropdown data source and value resolver|
 |`string`|N/A|`String Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/50b37079-a32b-410f-abc2-0544054684aa)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name|Not supported|Annotate the property with `DropdownAttribute` to customize the dropdown data source and value resolver|
-|`enum`|Enum Flags are not supported currently |`Enum Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/7070dfe9-ed68-4813-b61e-86c1b866dbd5)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name, or annotate the enum values with `InspectorNameAttribute` to customize the names shown in the dropdown|Not supported|Not supported|
+|`enum`|N/A|`Enum Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/7070dfe9-ed68-4813-b61e-86c1b866dbd5)<br/><br/>or `Enum Flags Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/8e0895e6-6801-448d-a34d-a6c7a87f9297)|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor name, or annotate the enum values with `InspectorNameAttribute` to customize the names shown in the dropdown|Not supported|Not supported|
 |Other Non-Generic Types| Only publicly available instance Properties and have both `get` and `set` accessors are recorded.|`Object Inspector`<br/><br/>![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/af703fe5-a952-49ac-b859-615ea7750beb)<br/>|Annotate the property with `InspectorNameAttribute` to customize the name shown in the editor header|Not Supported|Not Supported|
 
 ##### Example
@@ -353,7 +353,7 @@ Describes a nested type property, the application offers an `Object Inspector` f
 
 ##### `EnumPropertyInfo`
 
-|Describes an enum property, the application offers an `Enum Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/7070dfe9-ed68-4813-b61e-86c1b866dbd5)|
+|Describes an enum property, the application offers an `Enum Inspector` or `Enum Flags Inspector` for editing.|![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/7070dfe9-ed68-4813-b61e-86c1b866dbd5) ![image](https://github.com/Delsin-Yu/Json-Power-Inspector/assets/71481700/8e0895e6-6801-448d-a34d-a6c7a87f9297)|
 |-|-|
 
 ```csharp
