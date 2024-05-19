@@ -6,6 +6,7 @@ public static class Version
 
     private static readonly string[] _versions =
     [
-        "0.0.1"
+        "0.0.1",
+        "0.0.2",
     ];
 }
