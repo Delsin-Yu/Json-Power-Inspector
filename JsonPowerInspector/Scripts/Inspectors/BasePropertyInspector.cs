@@ -84,7 +84,7 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
             default:
                 throw new InvalidOperationException(_parent.GetType().Name);
         }
-        if(_affectMainObject) CurrentSession.MarkChanged();
+        if(_affectMainObject) MarkChangedDelayed();
     }
 
     protected void ReplaceValue(JsonValue value)
@@ -102,9 +102,11 @@ public abstract partial class BasePropertyInspector<TPropertyInfo> : Control, IP
             default:
                 throw new InvalidOperationException(node.Parent?.GetType().Name);
         }
-        if(_affectMainObject) CurrentSession.MarkChanged();
+        if(_affectMainObject) MarkChangedDelayed();
         ValueChanged?.Invoke(value);
     }
-    
+
+    private void MarkChangedDelayed() => CurrentSession.CallDeferred(InspectionSessionController.MethodName.MarkChanged);
+
     protected virtual void Bind(ref JsonNode node) { }
 }
