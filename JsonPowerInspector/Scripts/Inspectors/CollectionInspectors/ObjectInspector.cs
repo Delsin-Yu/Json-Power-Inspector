@@ -27,7 +27,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
             {
                 var jsonObject = CreateDefaultJsonObject(PropertyInfo);
                 SetBackingNode(jsonObject);
-                BindObject(jsonObject);
+                if(Created) BindObject(jsonObject);
                 _createOrDeleteBtn.Text = "X";
             }
             CurrentSession.MarkChanged();
