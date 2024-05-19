@@ -196,7 +196,7 @@ public partial class InspectionSessionController : Control
 
         foreach (var propertyInfo in _mainObjectDefinition.Properties)
         {
-            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner, false);
+            var inspectorForProperty = Utils.CreateInspectorForProperty(propertyInfo, InspectorSpawner, true);
             _inspectorRoot.Add(inspectorForProperty);
             _container.AddChild((Control)inspectorForProperty);
         }        

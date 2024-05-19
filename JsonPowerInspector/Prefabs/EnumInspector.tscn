@@ -2,10 +2,13 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/EnumInspector.cs" id="1_qk3cw"]
 
-[node name="EnumInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_propertyName")]
+[node name="EnumInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_flagsButton", "_propertyName")]
 auto_translate_mode = 1
+offset_right = 573.0
+offset_bottom = 31.0
 script = ExtResource("1_qk3cw")
 _contentControl = NodePath("PropertyContent")
+_flagsButton = NodePath("PropertyFlagsContent")
 _propertyName = NodePath("PropertyName")
 
 [node name="PropertyName" type="Label" parent="."]
@@ -25,4 +28,14 @@ size_flags_stretch_ratio = 2.0
 selected = 0
 item_count = 1
 popup/item_0/text = "Enum Content"
-popup/item_0/id = 0
+
+[node name="PropertyFlagsContent" type="Button" parent="."]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "Enum Flags Content"
+alignment = 0
+text_overrun_behavior = 4
+autowrap_mode = 3
+clip_text = true

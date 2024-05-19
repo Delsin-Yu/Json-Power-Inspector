@@ -23,8 +23,9 @@ internal class Program
         // CreateData(TestApplicationJsonContext.Default.ReligionModel);
         // CreateData(TestApplicationJsonContext.Default.RaceModel);
         CreateData(TestApplicationJsonContext.Default.MyDemoModel);
+        // CreateData(TestApplicationJsonContext.Default.MyEnumFlagsModel, new(){ DaysFlags = MyEnumFlagsModel.Days.Monday | MyEnumFlagsModel.Days.Saturday});
 
-        static void CreateData<T>(JsonTypeInfo<T> typeInfo) where T : class
+        static void CreateData<T>(JsonTypeInfo<T> typeInfo, T defaultValue = default) where T : class
         {
             if (!Directory.Exists("Data"))
             {
@@ -33,13 +34,23 @@ internal class Program
             var typeName = typeof(T).Name;
             var definition = TemplateSerializer.CollectTypeDefinition<T>();
             File.WriteAllText($"Data/{typeName}.jsontemplate", TemplateSerializer.Serialize(definition), Encoding.UTF8);
-            var filler = new Filler<T>();
-            filler
-                .Setup()
-                .DictionaryItemCount(5, 10)
-                .ListItemCount(5, 10);
-    
-            var model = filler.Create();
+
+            T model;
+            if (defaultValue != null)
+            {
+                model = defaultValue;
+            }
+            else
+            {
+
+                var filler = new Filler<T>();
+                filler
+                    .Setup()
+                    .DictionaryItemCount(5, 10)
+                    .ListItemCount(5, 10);
+                model = filler.Create();
+            }
+
             File.WriteAllText($"Data/{typeName}.json", JsonSerializer.Serialize(model, typeInfo), Encoding.UTF8);
         }
     }

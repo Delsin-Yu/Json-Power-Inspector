@@ -15,6 +15,27 @@ public class TestModels
     [InspectorName("集合数据")] public MyCollectionModel MyCollectionModel { get; set; }
     [InspectorName("可选数据")] public MyDropdownModel MyDropdownModel { get; set; }
     public MyDemoModel MyDemoModel { get; set; }
+    public MyEnumFlagsModel MyEnumFlagsModel { get; set; }
+}
+
+public class MyEnumFlagsModel
+{
+    public Days DaysFlags { get; set; }
+    
+    [Flags]
+    public enum Days
+    {
+        None      = 0b_0000_0000,  // 0
+        Monday    = 0b_0000_0001,  // 1
+        Tuesday   = 0b_0000_0010,  // 2
+        Wednesday = 0b_0000_0100,  // 4
+        Thursday  = 0b_0000_1000,  // 8
+        Friday    = 0b_0001_0000,  // 16
+        Saturday  = 0b_0010_0000,  // 32
+        Sunday    = 0b_0100_0000,  // 64
+        Weekend   = Saturday | Sunday
+    }
+
 }
 
 public class MyDemoModel
@@ -72,6 +93,13 @@ public class MyDemoModel
     /// </summary>
     [InspectorName("Time Type")]
     public DateTimeKind MyDateTimeKind { get; set; }
+    
+    /// <summary>
+    /// Displayed as "Enum Flags Type" in inspector.
+    /// Use a enum flags dropdown for selecting the enum values.
+    /// </summary>
+    [InspectorName("Enum Flags Type")]
+    public MyEnumFlagsModel.Days MyDays { get; set; }
     
     /// <summary>
     /// Displayed as "Nested Model" in inspector.
