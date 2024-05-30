@@ -40,7 +40,7 @@ public partial class ObjectInspector : CollectionInspector<ObjectPropertyInfo>
         var jsonObject = new JsonObject();
         foreach (var propertyInfo in definition.Properties)
         {
-            jsonObject.Add(propertyInfo.Name, Utils.CreateDefaultJsonObjectForProperty(propertyInfo));
+            jsonObject.Add(propertyInfo.Name, Utils.CreateDefaultJsonNodeForProperty(propertyInfo));
         }
 
         return jsonObject;

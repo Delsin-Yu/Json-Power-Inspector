@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 using GodotTask;
 
 namespace JsonPowerInspector;
@@ -52,7 +53,7 @@ public static class Dialogs
         var window = ((SceneTree)Engine.GetMainLoop()).Root;
         window.AddChild(errorDialog);
         // errorDialog.ContentScaleFactor = window.ContentScaleFactor;
-
+        GD.Print(message);
 
         var closed = false;
 

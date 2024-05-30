@@ -2,10 +2,11 @@
 
 [ext_resource type="Script" path="res://Scripts/Inspectors/BooleanInspector.cs" id="1_jvauy"]
 
-[node name="BooleanInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_propertyName")]
+[node name="BooleanInspector" type="HBoxContainer" node_paths=PackedStringArray("_contentControl", "_createOrDeleteBtn", "_propertyName")]
 auto_translate_mode = 1
 script = ExtResource("1_jvauy")
 _contentControl = NodePath("PropertyContent")
+_createOrDeleteBtn = NodePath("CreateOrDeleteBtn")
 _propertyName = NodePath("PropertyName")
 
 [node name="PropertyName" type="Label" parent="."]
@@ -21,3 +22,10 @@ auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
+
+[node name="CreateOrDeleteBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+text = "X"

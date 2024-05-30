@@ -26,7 +26,7 @@ public partial class ArrayInspector : CollectionInspector<ArrayPropertyInfo>
         _addElement.Pressed += () =>
         {
             var jsonArray = GetBackingNode().AsArray();
-            var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ArrayElementTypeInfo);
+            var newNode = Utils.CreateDefaultJsonNodeForProperty(PropertyInfo.ArrayElementTypeInfo);
             jsonArray.Add(newNode);
             BindArrayItem(CurrentSession.InspectorSpawner, jsonArray.Count - 1, jsonArray);
             _arrayElementCount.Value++;

@@ -13,7 +13,7 @@ namespace JsonPowerInspector.Template;
 /// <summary>
 /// Contains helpers to collecting and creating jsontemplate for a user type for JsonPowerInspector to use. 
 /// </summary>
-public static class TemplateSerializer
+public static partial class TemplateSerializer
 {
     /// <summary>
     /// Serialize the specified <see cref="PackedObjectDefinition"/> data model to the jsontemplate string.
@@ -74,13 +74,13 @@ public static class TemplateSerializer
 
     private static string GetTypeName(Type type) => type.Name;
 
-    private static readonly HashSet<Type> _serializeToStringTypes =
+    private static readonly HashSet<Type> SerializeToStringTypes =
     [
         typeof(DateTime)
     ];
 
-    private static readonly ObjectDefinition _tempObjectProperty = new("TEMP", Array.Empty<BaseObjectPropertyInfo>());
-    
+    private static readonly ObjectDefinition TempObjectProperty = new("TEMP", Array.Empty<BaseObjectPropertyInfo>());
+
     private static bool TryParseProperty(
         string name,
         Type propertyType,
@@ -92,194 +92,40 @@ public static class TemplateSerializer
         var attributesArray = attributes as Attribute[] ?? attributes.ToArray();
         var inspectorName = attributesArray.OfType<InspectorNameAttribute>().FirstOrDefault();
         var displayName = inspectorName != null ? inspectorName.DisplayName : name;
-        
+
         baseObjectPropertyInfo = null;
 
-        if (_serializeToStringTypes.Contains(propertyType))
+        if (SerializeToStringTypes.Contains(propertyType))
         {
             baseObjectPropertyInfo = new StringPropertyInfo(name, displayName);
         }
         else if (propertyType.IsArray)
         {
-            var elementType = propertyType.GetElementType()!;
-            if (!TryParseProperty(
-                    GetTypeName(elementType),
-                    elementType,
-                    referencedPropertyInfo,
-                    attributesArray,
-                    out var arrayElementTypeInfo
-                ))
-            {
-                return false;
-            }
-
-            baseObjectPropertyInfo = new ArrayPropertyInfo(name, displayName, arrayElementTypeInfo);
+            if (!SerializeArrayProperty(name, propertyType, referencedPropertyInfo, ref baseObjectPropertyInfo,
+                    attributesArray, displayName)) return false;
         }
         else if (propertyType.IsGenericType)
         {
-            var genericTypeDef = propertyType.GetGenericTypeDefinition();
-            if (genericTypeDef == typeof(List<>))
-            {
-                var elementType = propertyType.GetGenericArguments()[0];
-                if (!TryParseProperty(
-                        GetTypeName(elementType),
-                        elementType,
-                        referencedPropertyInfo,
-                        attributesArray,
-                        out var arrayElementTypeInfo
-                    ))
-                {
-                    return false;
-                }
-
-                baseObjectPropertyInfo = new ArrayPropertyInfo(name, displayName, arrayElementTypeInfo);
-            }
-            else if (genericTypeDef == typeof(Dictionary<,>))
-            {
-                var arguments = propertyType.GetGenericArguments();
-                var keyType = arguments[0];
-                var valueType = arguments[1];
-                var attributeArray = attributesArray.ToArray();
-                
-                var attributesList = new List<Attribute>(2);
-                
-                var keyDropdown = (DropdownAttribute?)attributeArray.OfType<KeyDropdownAttribute>().FirstOrDefault();
-                var keyNumberRange = (NumberRangeAttribute?)attributeArray.OfType<KeyNumberRangeAttribute>().FirstOrDefault();
-                
-                if(keyDropdown != null) attributesList.Add(keyDropdown);                
-                if(keyNumberRange != null) attributesList.Add(keyNumberRange);        
-                
-                if (!TryParseProperty(
-                        GetTypeName(keyType),
-                        keyType,
-                        referencedPropertyInfo,
-                        attributesList,
-                        out var keyTypeInfo
-                    ))
-                {
-                    return false;
-                }
-
-                attributesList.Clear();
-                
-                var valueDropdown = (DropdownAttribute?)attributeArray.OfType<ValueDropdownAttribute>().FirstOrDefault();
-                var valueNumberRange = (NumberRangeAttribute?)attributeArray.OfType<ValueNumberRangeAttribute>().FirstOrDefault();
-                
-                if(valueDropdown != null) attributesList.Add(valueDropdown);                
-                if(valueNumberRange != null) attributesList.Add(valueNumberRange);       
-                
-                if (!TryParseProperty(
-                        GetTypeName(valueType),
-                        valueType,
-                        referencedPropertyInfo,
-                        attributesList,
-                        out var valueTypeInfo
-                    ))
-                {
-                    referencedPropertyInfo.Remove(GetTypeName(keyType));
-                    return false;
-                }
-
-                baseObjectPropertyInfo = new DictionaryPropertyInfo(name, displayName, keyTypeInfo, valueTypeInfo);
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (propertyType == typeof(bool))
-        {
-            baseObjectPropertyInfo = new BooleanPropertyInfo(name, displayName);
+            if (!SerializeGenericProperty(name, propertyType, referencedPropertyInfo, ref baseObjectPropertyInfo,
+                    attributesArray, displayName)) return false;
         }
         else if (propertyType.IsPrimitive)
         {
-            NumberPropertyInfo.NumberType numberType;
-
-            if (propertyType == typeof(byte)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(ushort)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(uint)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(ulong)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(sbyte)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(short)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(int)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(long)) numberType = NumberPropertyInfo.NumberType.Int;
-            else if (propertyType == typeof(float)) numberType = NumberPropertyInfo.NumberType.Float;
-            else if (propertyType == typeof(double)) numberType = NumberPropertyInfo.NumberType.Float;
-            else return false;
-
-            var dropdown = attributesArray.OfType<DropdownAttribute>().FirstOrDefault();
-            if (dropdown != null)
-            {
-                baseObjectPropertyInfo = new DropdownPropertyInfo(
-                    name,
-                    displayName,
-                    numberType switch
-                    {
-                        NumberPropertyInfo.NumberType.Int => DropdownPropertyInfo.DropdownKind.Int,
-                        NumberPropertyInfo.NumberType.Float => DropdownPropertyInfo.DropdownKind.Float,
-                        _ => throw new InvalidOperationException()
-                    },
-                    dropdown.DataPath,
-                    dropdown.Regex
-                );
-            }
-            else
-            {
-                NumberPropertyInfo.NumberRange? range = null;
-                var numberRange = attributesArray.OfType<NumberRangeAttribute>().FirstOrDefault();
-                if (numberRange != null)
-                {
-                    range = new(numberRange.LowerBound, numberRange.UpperBound);
-                }
-                baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, numberType, range);
-            }
+            if (!SerializePrimitiveProperty(name, propertyType, ref baseObjectPropertyInfo, displayName,
+                    attributesArray, false)) return false;
         }
         else if (propertyType == typeof(string))
         {
-            var dropdown = attributesArray.OfType<DropdownAttribute>().FirstOrDefault();
-            if (dropdown != null)
-            {
-                baseObjectPropertyInfo = new DropdownPropertyInfo(
-                    name,
-                    displayName,
-                    DropdownPropertyInfo.DropdownKind.String,
-                    dropdown.DataPath,
-                    dropdown.Regex
-                );
-            }
-            else
-            {
-                baseObjectPropertyInfo = new StringPropertyInfo(name, displayName);
-            }
+            SerializeStringProperty(name, out baseObjectPropertyInfo, attributesArray, displayName);
         }
         else if (propertyType.IsEnum)
         {
-            var enumValuesList = new List<EnumPropertyInfo.EnumValue>();
-
-            foreach (var enumField in propertyType.GetFields(BindingFlags.Static | BindingFlags.Public))
-            {
-                var inspectorNameAttribute = enumField.GetCustomAttribute<InspectorNameAttribute>();
-                enumValuesList.Add(
-                    new(
-                        inspectorNameAttribute?.DisplayName ?? enumField.Name,
-                        enumField.Name,
-                        Convert.ToInt64(enumField.GetRawConstantValue())
-                    )
-                );
-            }
-
-            baseObjectPropertyInfo = new EnumPropertyInfo(
-                name,
-                displayName,
-                propertyType.Name,
-                enumValuesList.ToArray(),
-                propertyType.GetCustomAttributes<FlagsAttribute>().Any()
-            );
+            SerializeEnumProperty(name, propertyType, out baseObjectPropertyInfo, displayName);
         }
         else if (!propertyType.IsGenericType)
         {
-            EnsureTypeExists(propertyType);
-            baseObjectPropertyInfo = new ObjectPropertyInfo(name, displayName, GetTypeName(propertyType));
+            SerializeObjectProperty(name, propertyType, referencedPropertyInfo, out baseObjectPropertyInfo,
+                displayName);
         }
         else
         {
@@ -287,14 +133,5 @@ public static class TemplateSerializer
         }
 
         return true;
-
-        void EnsureTypeExists(Type type)
-        {
-            if (type.IsPrimitive || type == typeof(string) || type.IsEnum) return;
-            var typeName = GetTypeName(type);
-            if (!referencedPropertyInfo.TryAdd(typeName, _tempObjectProperty)) return;
-            var typeDefinition = CollectTypeDefinitionImpl(type, referencedPropertyInfo);
-            referencedPropertyInfo[typeName] = typeDefinition;
-        }
     }
 }
