@@ -12,7 +12,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <PackageId>JsonPowerInspector.Template</PackageId>
-        <PackageVersion>0.0.1</PackageVersion>
+        <PackageVersion>0.0.2</PackageVersion>
         <Authors>DE-YU</Authors>
         <Description>Provides necessary data models and serializers for developers to collect and create serialization info for their data types to use with JsonPowerInspector.</Description>
         <PackageProjectUrl>https://www.nuget.org/packages/JsonPowerInspector.Template</PackageProjectUrl>
@@ -20,7 +20,7 @@
         <RepositoryUrl>https://github.com/Delsin-Yu/Json-Power-Inspector</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>Json Inspector</PackageTags>
-        <PackageReleaseNotes>The initial release of the JsonPowerInspector.Template nuget package.</PackageReleaseNotes>
+        <PackageReleaseNotes>Add support for nullable number and boolean values.</PackageReleaseNotes>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
         <IncludeSymbols>true</IncludeSymbols>

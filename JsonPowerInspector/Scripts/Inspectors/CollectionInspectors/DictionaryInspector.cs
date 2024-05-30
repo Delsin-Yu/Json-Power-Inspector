@@ -79,7 +79,7 @@ public partial class DictionaryInspector : CollectionInspector<DictionaryPropert
                 default:
                     throw new InvalidOperationException(PropertyInfo.KeyTypeInfo.GetType().Name);
             }
-            var newNode = Utils.CreateDefaultJsonObjectForProperty(PropertyInfo.ValueTypeInfo);
+            var newNode = Utils.CreateDefaultJsonNodeForProperty(PropertyInfo.ValueTypeInfo);
             jsonObject.Add(selectedKey, newNode);
             BindDictionaryItem(spawner, selectedKey, jsonObject);
             _dictionaryElementCount.Value++;

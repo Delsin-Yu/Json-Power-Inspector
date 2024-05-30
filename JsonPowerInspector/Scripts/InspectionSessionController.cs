@@ -167,7 +167,7 @@ public partial class InspectionSessionController : Control
         foreach (var propertyInfo in _mainObjectDefinition.Properties.AsSpan())
         {
             //var propertyPath = new HashSet<BaseObjectPropertyInfo>();
-            templateJsonObject.Add(propertyInfo.Name, Utils.CreateDefaultJsonObjectForProperty(propertyInfo));
+            templateJsonObject.Add(propertyInfo.Name, Utils.CreateDefaultJsonNodeForProperty(propertyInfo));
         }
 
         return templateJsonObject;

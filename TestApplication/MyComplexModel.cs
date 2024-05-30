@@ -106,6 +106,19 @@ public class MyDemoModel
     /// </summary>
     [InspectorName("Nested Model")]
     public MyDemoModel Nested { get; set; }
+    
+    /// <summary>
+    /// Displayed as nullable number in inspector
+    /// </summary>
+    [InspectorName("Nullable Number")]
+    public int? NullableNumber { get; set; }    
+
+    /// <summary>
+    /// Displayed as nullable boolean in inspector
+    /// </summary>
+    [InspectorName("Nullable Boolean")]
+    public bool? NullableBoolean { get; set; }
+
 }
 
 public class MyDropdownModel

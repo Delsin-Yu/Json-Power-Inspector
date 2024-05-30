@@ -23,13 +23,13 @@ public static class Utils
         };
     }
 
-    public static JsonNode CreateDefaultJsonObjectForProperty(BaseObjectPropertyInfo propertyInfo) =>
+    public static JsonNode CreateDefaultJsonNodeForProperty(BaseObjectPropertyInfo propertyInfo) =>
         propertyInfo switch
         {
             StringPropertyInfo => string.Empty,
-            NumberPropertyInfo => 0,
+            NumberPropertyInfo numberProperty => numberProperty.Nullable ? null : 0,
             ObjectPropertyInfo => null,
-            BooleanPropertyInfo => false,
+            BooleanPropertyInfo boolProperty => boolProperty.Nullable ? null : false,
             ArrayPropertyInfo => new JsonArray(),
             DictionaryPropertyInfo => new JsonObject(),
             EnumPropertyInfo enumPropertyInfo => enumPropertyInfo.EnumValues.FirstOrDefault().DeclareName ?? string.Empty,

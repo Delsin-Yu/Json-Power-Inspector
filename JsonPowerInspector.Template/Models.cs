@@ -184,9 +184,18 @@ public class StringPropertyInfo : BaseObjectPropertyInfo
 /// </summary>
 public class BooleanPropertyInfo : BaseObjectPropertyInfo
 {
+    /// <summary>
+    /// Is this property nullable.
+    /// </summary>
+    public bool Nullable { get; }
+    
     private protected override void PrintType(StringBuilder stringBuilder) => stringBuilder.Append("Bool");
+
     [JsonConstructor]
-    internal BooleanPropertyInfo(string name, string displayName) : base(name, displayName) { }
+    internal BooleanPropertyInfo(string name, string displayName, bool nullable) : base(name, displayName)
+    {
+        Nullable = nullable;
+    }
 }
 
 /// <summary>
@@ -228,11 +237,17 @@ public class NumberPropertyInfo : BaseObjectPropertyInfo
     /// </summary>
     public NumberRange? Range { get; }
 
+    /// <summary>
+    /// Is this property nullable.
+    /// </summary>
+    public bool Nullable { get; }
+    
     [JsonConstructor]
-    internal NumberPropertyInfo(string name, string displayName, NumberType numberKind, NumberRange? range = null) : base(name, displayName)
+    internal NumberPropertyInfo(string name, string displayName, bool nullable, NumberType numberKind, NumberRange? range = null) : base(name, displayName)
     {
         NumberKind = numberKind;
         Range = range;
+        Nullable = nullable;
     }
 
     private protected override void PrintType(StringBuilder stringBuilder)
