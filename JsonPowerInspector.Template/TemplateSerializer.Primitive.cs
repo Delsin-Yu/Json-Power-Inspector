@@ -12,7 +12,9 @@ public static partial class TemplateSerializer
     {
         if (propertyType == typeof(bool))
         {
-            baseObjectPropertyInfo = new BooleanPropertyInfo(name, displayName, nullable);
+            var defaultValue = attributesArray.OfType<BoolDefaultValueAttribute>().FirstOrDefault();
+            var originValue = defaultValue == null ? false : defaultValue.DefaultValue;
+            baseObjectPropertyInfo = new BooleanPropertyInfo(name, displayName, nullable, originValue);
         }
         else
         {
@@ -54,8 +56,18 @@ public static partial class TemplateSerializer
                 {
                     range = new(numberRange.LowerBound, numberRange.UpperBound);
                 }
-
-                baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, nullable, numberType, range);
+                if (numberType == NumberPropertyInfo.NumberType.Int)
+                {
+                    var intDefaultValueAttribute = attributesArray.OfType<IntDefaultValueAttribute>().FirstOrDefault();
+                    var defaultValue = intDefaultValueAttribute == null ? 0 : intDefaultValueAttribute.DefaultValue;
+                    baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, nullable, numberType, defaultValue.ToString(), range);
+                }
+                else
+                {
+                    var floatDefaultValueAttribute = attributesArray.OfType<FloatDefaultValueAttribute>().FirstOrDefault();
+                    var defaultValue = floatDefaultValueAttribute == null ? 0f : floatDefaultValueAttribute.DefaultValue;
+                    baseObjectPropertyInfo = new NumberPropertyInfo(name, displayName, nullable, numberType, defaultValue.ToString(), range);
+                }
             }
         }
 

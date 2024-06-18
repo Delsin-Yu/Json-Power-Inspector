@@ -33,3 +33,4 @@ tests/metadata.json
 GDTask/nupkg
 docfx
 Build
+.vscode/

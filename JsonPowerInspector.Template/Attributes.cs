@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace JsonPowerInspector.Template;
@@ -65,6 +66,7 @@ public class DropdownAttribute : Attribute
         DataPath = dataPath;
         Regex = regex;
     }
+
     internal string DataPath { get; }
     internal string Regex { get; }
 }
@@ -79,7 +81,9 @@ public class DropdownAttribute : Attribute
 public class KeyDropdownAttribute : DropdownAttribute
 {
     /// <inheritdoc />
-    public KeyDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+    public KeyDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex)
+    {
+    }
 }
 
 /// <summary>
@@ -92,7 +96,9 @@ public class KeyDropdownAttribute : DropdownAttribute
 public class ValueDropdownAttribute : DropdownAttribute
 {
     /// <inheritdoc />
-    public ValueDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex) { }
+    public ValueDropdownAttribute(string dataPath, [StringSyntax("Regex")] string regex = DropdownPropertyInfo.DEFAULT_DROPDOWN_RESOLVER) : base(dataPath, regex)
+    {
+    }
 }
 
 /// <summary>
@@ -103,7 +109,9 @@ public class ValueDropdownAttribute : DropdownAttribute
 public class KeyNumberRangeAttribute : NumberRangeAttribute
 {
     /// <inheritdoc />
-    public KeyNumberRangeAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
+    public KeyNumberRangeAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound)
+    {
+    }
 }
 
 /// <summary>
@@ -114,5 +122,102 @@ public class KeyNumberRangeAttribute : NumberRangeAttribute
 public class ValueNumberRangeAttribute : NumberRangeAttribute
 {
     /// <inheritdoc />
-    public ValueNumberRangeAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound) { }
+    public ValueNumberRangeAttribute(double lowerBound, double upperBound) : base(lowerBound, upperBound)
+    {
+    }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict
+/// Set the default value of this string Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class StringDefaultValueAttribute : Attribute
+{
+    /// <summary>
+    /// Construct an instance of this <see cref="StringDefaultValueAttribute"/>.
+    /// </summary>
+    /// <param name="defaultValue">The default value for this property.</param>
+    public StringDefaultValueAttribute(string defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    internal string DefaultValue { get; }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict
+/// Set the default value of this boolean Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class BoolDefaultValueAttribute : Attribute
+{
+    /// <summary>
+    /// Construct an instance of this <see cref="BoolDefaultValueAttribute"/>.
+    /// </summary>
+    /// <param name="defaultValue">The default value for this property.</param>
+    public BoolDefaultValueAttribute(bool defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    internal bool DefaultValue { get; }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict
+/// Set the default value of this integer Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class IntDefaultValueAttribute : Attribute
+{
+    /// <summary>
+    /// Construct an instance of this <see cref="IntDefaultValueAttribute"/>.
+    /// </summary>
+    /// <param name="defaultValue">The default value for this property.</param>
+    public IntDefaultValueAttribute(int defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    internal int DefaultValue { get; }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict
+/// Set the default value of this float Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class FloatDefaultValueAttribute : Attribute
+{
+    /// <summary>
+    /// Construct an instance of this <see cref="FloatDefaultValueAttribute"/>.
+    /// </summary>
+    /// <param name="defaultValue">The default value for this property.</param>
+    public FloatDefaultValueAttribute(double defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    internal double DefaultValue { get; }
+}
+
+/// <summary>
+/// Instruct the jsontemplate serializer to restrict
+/// Set the default value of this enum Property
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class EnumDefaultValueAttribute : Attribute
+{
+    /// <summary>
+    /// Construct an instance of this <see cref="EnumDefaultValueAttribute"/>.
+    /// </summary>
+    /// <param name="defaultValue">The default value for this property.</param>
+    public EnumDefaultValueAttribute(string defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    internal string DefaultValue { get; }
 }
