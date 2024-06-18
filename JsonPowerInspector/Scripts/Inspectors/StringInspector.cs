@@ -11,6 +11,7 @@ public partial class StringInspector : BasePropertyInspector<StringPropertyInfo>
     protected override void Bind(ref JsonNode node)
     {
         var jsonValue = node.AsValue();
+
         _contentControl.Text = jsonValue.GetValue<string>();
         _contentControl.TextChanged += value => ReplaceValue(JsonValue.Create(value));
     }

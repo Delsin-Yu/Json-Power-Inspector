@@ -21,7 +21,7 @@ public static partial class TemplateSerializer
     /// </summary>
     /// <param name="packedObjectDefinition">The data model to serialize from.</param>
     /// <returns>A JSON string that should be saved into a .jsontemplate file for JsonPowerInspector usage.</returns>
-    public static string Serialize(PackedObjectDefinition packedObjectDefinition) => 
+    public static string Serialize(PackedObjectDefinition packedObjectDefinition) =>
         JsonSerializer.Serialize(packedObjectDefinition, PowerTemplateJsonContext.Default.PackedObjectDefinition);
 
     /// <summary>
@@ -43,15 +43,15 @@ public static partial class TemplateSerializer
         var mainObjectDefinition = CollectTypeDefinitionImpl(objectType, referencedPropertyInfo);
         return new(mainObjectDefinition, referencedPropertyInfo.Values.ToArray());
     }
-    
+
     private static ObjectDefinition CollectTypeDefinitionImpl(Type objectType, Dictionary<string, ObjectDefinition> referencedPropertyInfo)
     {
-        var propertyInfos = 
+        var propertyInfos =
             objectType
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(x => x is { CanRead: true, CanWrite: true })
                 .ToArray();
-        
+
         var properties = new List<BaseObjectPropertyInfo>();
         foreach (var propertyInfo in propertyInfos)
         {
@@ -68,7 +68,7 @@ public static partial class TemplateSerializer
         }
 
         var definition = new ObjectDefinition(GetTypeName(objectType), properties.ToArray());
-        
+
         return definition;
     }
 
@@ -97,7 +97,9 @@ public static partial class TemplateSerializer
 
         if (SerializeToStringTypes.Contains(propertyType))
         {
-            baseObjectPropertyInfo = new StringPropertyInfo(name, displayName);
+            var defaultValue = attributesArray.OfType<StringDefaultValueAttribute>().FirstOrDefault();
+            var originValue = defaultValue == null ? string.Empty : defaultValue.DefaultValue;
+            baseObjectPropertyInfo = new StringPropertyInfo(name, displayName, originValue);
         }
         else if (propertyType.IsArray)
         {
@@ -120,7 +122,7 @@ public static partial class TemplateSerializer
         }
         else if (propertyType.IsEnum)
         {
-            SerializeEnumProperty(name, propertyType, out baseObjectPropertyInfo, displayName);
+            SerializeEnumProperty(name, propertyType, out baseObjectPropertyInfo, attributesArray, displayName);
         }
         else if (!propertyType.IsGenericType)
         {

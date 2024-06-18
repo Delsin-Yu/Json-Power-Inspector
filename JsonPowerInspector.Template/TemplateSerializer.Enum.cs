@@ -8,7 +8,7 @@ namespace JsonPowerInspector.Template;
 public static partial class TemplateSerializer
 {
     private static void SerializeEnumProperty(string name, Type propertyType,
-        out BaseObjectPropertyInfo baseObjectPropertyInfo, string displayName)
+        out BaseObjectPropertyInfo baseObjectPropertyInfo, Attribute[] attributesArray, string displayName)
     {
         var enumValuesList = new List<EnumPropertyInfo.EnumValue>();
 
@@ -24,12 +24,22 @@ public static partial class TemplateSerializer
             );
         }
 
+        var defaultValue = attributesArray.OfType<EnumDefaultValueAttribute>().FirstOrDefault();
+
+        var originValue = string.Empty;
+        if (defaultValue!=null)
+        {
+            originValue = defaultValue.DefaultValue;
+        }
+        Console.WriteLine(originValue);
+
         baseObjectPropertyInfo = new EnumPropertyInfo(
             name,
             displayName,
             propertyType.Name,
             enumValuesList.ToArray(),
-            propertyType.GetCustomAttributes<FlagsAttribute>().Any()
+            propertyType.GetCustomAttributes<FlagsAttribute>().Any(),
+            originValue
         );
     }
 }

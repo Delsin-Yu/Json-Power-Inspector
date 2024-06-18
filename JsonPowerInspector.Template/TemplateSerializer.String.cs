@@ -21,7 +21,9 @@ public static partial class TemplateSerializer
         }
         else
         {
-            baseObjectPropertyInfo = new StringPropertyInfo(name, displayName);
+            var defaultValue = attributesArray.OfType<StringDefaultValueAttribute>().FirstOrDefault();
+            var originValue = defaultValue == null ? string.Empty : defaultValue.DefaultValue;
+            baseObjectPropertyInfo = new StringPropertyInfo(name, displayName, originValue);
         }
     }
 }
